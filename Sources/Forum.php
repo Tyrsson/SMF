@@ -13,6 +13,10 @@
 
 namespace SMF;
 
+use SMF\Actions\Admin\Boards;
+use SMF\Actions\BoardIndex;
+use SMF\Actions\Display;
+use SMF\Actions\MessageIndex;
 use SMF\Db\DatabaseApi as Db;
 
 /**
@@ -260,7 +264,8 @@ class Forum
 	public function execute()
 	{
 		// What function shall we execute? (done like this for memory's sake.)
-		call_user_func($this->main());
+		//call_user_func($this->main());
+		$this->main();
 
 		// Call obExit specially; we're coming from the main area ;).
 		Utils::obExit(null, null, true);
@@ -399,20 +404,23 @@ class Forum
 				// No default action huh? then go to our good old BoardIndex.
 				else
 				{
-					return 'SMF\\Actions\\BoardIndex::call';
+					//return 'SMF\\Actions\\BoardIndex::call';
+					return (BoardIndex::load())();
 				}
 			}
 
 			// Topic is empty, and action is empty.... MessageIndex!
 			elseif (empty(Topic::$topic_id))
 			{
-				return 'SMF\\Actions\\MessageIndex::call';
+				//return 'SMF\\Actions\\MessageIndex::call';
+				return (new MessageIndex())();
 			}
 
 			// Board is not empty... topic is not empty... action is empty.. Display!
 			else
 			{
-				return 'SMF\\Actions\\Display::call';
+				//return 'SMF\\Actions\\Display::call';
+				return (new Display())();
 			}
 		}
 

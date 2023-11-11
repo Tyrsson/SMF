@@ -316,6 +316,11 @@ class Display implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke()
+	{
+		self::load()->execute();
+	}
+
 	/******************
 	 * Internal methods
 	 ******************/

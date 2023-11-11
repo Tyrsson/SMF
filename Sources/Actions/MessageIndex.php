@@ -197,6 +197,11 @@ class MessageIndex implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke()
+	{
+		self::load()->execute();
+	}
+
 	/**
 	 * Buils and returns the list of available boards for a user.
 	 *

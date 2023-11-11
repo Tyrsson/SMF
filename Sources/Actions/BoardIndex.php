@@ -286,6 +286,11 @@ class BoardIndex implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke()
+	{
+		self::load()->execute();
+	}
+
 	/**
 	 * Fetches a list of boards and (optional) categories including
 	 * statistical information, child boards and moderators.

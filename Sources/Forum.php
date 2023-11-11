@@ -413,14 +413,14 @@ class Forum
 			elseif (empty(Topic::$topic_id))
 			{
 				//return 'SMF\\Actions\\MessageIndex::call';
-				return (new MessageIndex())();
+				return (MessageIndex::load())();
 			}
 
 			// Board is not empty... topic is not empty... action is empty.. Display!
 			else
 			{
 				//return 'SMF\\Actions\\Display::call';
-				return (new Display())();
+				return (Display::load())();
 			}
 		}
 

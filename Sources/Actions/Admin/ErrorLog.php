@@ -545,6 +545,11 @@ class ErrorLog implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke(): void
+	{
+		$this->execute();
+	}
+
 	/******************
 	 * Internal methods
 	 ******************/

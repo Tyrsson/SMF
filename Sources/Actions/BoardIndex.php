@@ -286,9 +286,9 @@ class BoardIndex implements ActionInterface
 		self::load()->execute();
 	}
 
-	public function __invoke()
+	public function __invoke(): void
 	{
-		self::load()->execute();
+		$this->execute();
 	}
 
 	/**

@@ -826,6 +826,11 @@ class ACP implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke(): void
+	{
+		$this->execute();
+	}
+
 	/**
 	 * Helper function, it sets up the context for database settings.
 	 *

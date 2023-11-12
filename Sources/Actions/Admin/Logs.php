@@ -345,6 +345,11 @@ class Logs implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke(): void
+	{
+		$this->execute();
+	}
+
 	/**
 	 * Gets the configuration variables for this admin area.
 	 *

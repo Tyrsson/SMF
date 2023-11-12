@@ -684,6 +684,11 @@ class Calendar implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke(): void
+	{
+		$this->execute();
+	}
+
 	/**
 	 * Backward compatibility wrapper for ical sub-action.
 	 */

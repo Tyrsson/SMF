@@ -33,7 +33,7 @@ interface ActionInterface
 	 */
 	public function execute(): void;
 
-	public function __invoke();
+	public function __invoke(): void;
 
 	/***********************
 	 * Public static methods

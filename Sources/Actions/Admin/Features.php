@@ -1607,6 +1607,11 @@ class Features implements ActionInterface
 		self::load()->execute();
 	}
 
+	public function __invoke(): void
+	{
+		$this->execute();
+	}
+
 	/**
 	 * Gets the configuration variables for the basic sub-action.
 	 *

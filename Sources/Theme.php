@@ -47,8 +47,26 @@ class Theme
 		'func_names' => array(
 			'load' => 'loadTheme',
 			'loadEssential' => 'loadEssentialThemeData',
+			'loadTemplate' => 'loadTemplate',
+			'loadSubTemplate' => 'loadSubTemplate',
+			'loadCSSFile' => 'loadCSSFile',
+			'addInlineCss' => 'addInlineCss',
+			'loadJavaScriptFile' => 'loadJavaScriptFile',
+			'addJavaScriptVar' => 'addJavaScriptVar',
+			'addInlineJavaScript' => 'addInlineJavaScript',
 			'setupContext' => 'setupThemeContext',
+			'setupMenuContext' => 'setupMenuContext',
+			'template_header' => 'template_header',
 			'copyright' => 'theme_copyright',
+			'template_footer' => 'template_footer',
+			'template_javascript' => 'template_javascript',
+			'template_css' => 'template_css',
+			'custMinify' => 'custMinify',
+			'deleteAllMinified' => 'deleteAllMinified',
+			'setJavaScript' => 'SetJavaScript',
+			'wrapAction' => 'WrapAction',
+			'dispatch' => 'dispatch',
+			'pickTheme' => 'PickTheme',
 			'createButton' => 'create_button',
 		),
 	);
@@ -2312,7 +2330,7 @@ class Theme
 					self::$current->settings['theme_variants'] = array();
 
 					// Fill settings up.
-					eval(($matches[1] === '$' ? 'global $settings; ' : '') . $matches[0]);
+					eval(($matches[1] === '$' ? 'global $settings; ' : 'use SMF\\Theme; ') . $matches[0]);
 
 					if (!empty(self::$current->settings['theme_variants']))
 					{

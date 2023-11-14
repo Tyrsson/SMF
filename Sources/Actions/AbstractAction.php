@@ -22,11 +22,12 @@ abstract class AbstractAction implements ActionInterface
 	{
 	}
 	/**
-	 * @var static $obj
+	 * @var self $obj
 	 *
 	 * An instance of the concrete class.
 	 */
 	protected static self $obj;
+
 	public static function load(): ActionInterface
 	{
 		if (!isset(static::$obj))

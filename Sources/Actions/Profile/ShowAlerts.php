@@ -52,8 +52,6 @@ class ShowAlerts extends AbstractAction
 	 */
 	public function execute(): void
 	{
-		require_once(Config::$sourcedir . '/Actions/Profile/Modify.php');
-
 		// Are we opening a specific alert? (i.e.: ?action=profile;area=showalerts;alert=12345)
 		if (!empty($_REQUEST['alert']))
 		{

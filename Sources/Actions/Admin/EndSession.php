@@ -57,21 +57,6 @@ class EndSession extends AbstractAction
 
 		Utils::redirectexit();
 	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
-	}
 }
 
 // Export public static functions and properties to global namespace for backward compatibility.

@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -28,7 +28,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Allows a user to choose, or at least request, group memberships.
  */
-class GroupMembership implements ActionInterface
+class GroupMembership extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -54,18 +54,6 @@ class GroupMembership implements ActionInterface
 	 * The type of change that was made when saving.
 	 */
 	public string $change_type;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -156,8 +144,8 @@ class GroupMembership implements ActionInterface
 
 		// In the special case that someone is requesting membership of a group, setup some special context vars.
 		if (
-			isset($_REQUEST['request']) 
-			&& isset(Utils::$context['groups']['available'][(int) $_REQUEST['request']]) 
+			isset($_REQUEST['request'])
+			&& isset(Utils::$context['groups']['available'][(int) $_REQUEST['request']])
 			&& Utils::$context['groups']['available'][(int) $_REQUEST['request']]->type == Group::TYPE_REQUESTABLE
 		)
 		{
@@ -273,27 +261,6 @@ class GroupMembership implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper for the save method.

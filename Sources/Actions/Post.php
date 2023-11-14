@@ -43,7 +43,7 @@ use SMF\Search\SearchApi;
 /**
  * This class handles posting and modifying replies and new topics.
  */
-class Post implements ActionInterface
+class Post extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -192,18 +192,6 @@ class Post implements ActionInterface
 	 * Used by getTopicSummary() method to count previous posts.
 	 */
 	protected int $counter = 0;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -399,27 +387,6 @@ class Post implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper.

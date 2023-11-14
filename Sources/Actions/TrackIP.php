@@ -31,7 +31,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Rename here and in the exportStatic call at the end of the file.
  */
-class TrackIP implements ActionInterface
+class TrackIP extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -66,18 +66,6 @@ class TrackIP implements ActionInterface
 	 * False if this was called via ?action=profile;area=tracking;sa=ip.
 	 */
 	public bool $standalone;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -363,27 +351,6 @@ class TrackIP implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Gets all the posts made from a particular IP

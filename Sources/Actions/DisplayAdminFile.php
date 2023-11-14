@@ -23,7 +23,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Get one of the admin information files from Simple Machines.
  */
-class DisplayAdminFile implements ActionInterface
+class DisplayAdminFile extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -37,18 +37,6 @@ class DisplayAdminFile implements ActionInterface
 			'call' => 'DisplayAdminFile',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -104,42 +92,6 @@ class DisplayAdminFile implements ActionInterface
 		header('content-type: ' . $filetype);
 		echo $file_data;
 		Utils::obExit(false);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
 	}
 }
 

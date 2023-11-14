@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\IP;
@@ -31,7 +31,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Shows a summary of a member's profile.
  */
-class Summary implements ActionInterface
+class Summary extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -45,18 +45,6 @@ class Summary implements ActionInterface
 			'summary' => 'summary',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -269,27 +257,6 @@ class Summary implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper.

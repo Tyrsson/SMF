@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Category;
 use SMF\Config;
@@ -39,7 +39,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Forum maintenance. Important stuff.
  */
-class Maintenance implements ActionInterface
+class Maintenance extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -159,24 +159,6 @@ class Maintenance implements ActionInterface
 			'activities' => array(),
 		),
 	);
-
-	/*********************
-	 * Internal properties
-	 *********************/
-
-	// code...
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -2075,27 +2057,6 @@ class Maintenance implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Callback function for the integration hooks list (list_integration_hooks)

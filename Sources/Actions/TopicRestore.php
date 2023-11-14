@@ -27,7 +27,7 @@ use SMF\Db\DatabaseApi as Db;
  * This action handles restoring a topic from the recycle board back to its
  * original board.
  */
-class TopicRestore implements ActionInterface
+class TopicRestore extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -41,18 +41,6 @@ class TopicRestore implements ActionInterface
 			'call' => 'RestoreTopic',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -264,42 +252,6 @@ class TopicRestore implements ActionInterface
 
 		// Just send them to the index if they get here.
 		Utils::redirectexit();
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
 	}
 
 	/*************************

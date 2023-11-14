@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\IntegrationHook;
@@ -26,7 +26,7 @@ use SMF\Utils;
 /**
  * This my friend, is for all the mod authors out there.
  */
-class Mods implements ActionInterface
+class Mods extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -65,18 +65,6 @@ class Mods implements ActionInterface
 	public static array $subactions = array(
 		'general' => 'general',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -145,27 +133,6 @@ class Mods implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Gets the configuration variables for the general sub-action.

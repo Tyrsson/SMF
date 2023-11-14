@@ -35,7 +35,7 @@ use SMF\Db\DatabaseApi as Db;
  * This class has only one real task, showing the calendar.
  * Original module by Aaron O'Neil - aaron@mud-master.com
  */
-class Calendar implements ActionInterface
+class Calendar extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -98,18 +98,6 @@ class Calendar implements ActionInterface
 		'post' => 'post',
 		'clock' => 'clock',
 	);
-
-	/*********************
-	 * Internal properties
-	 *********************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of the class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static $obj;
 
 	/****************
 	 * Public methods
@@ -682,27 +670,6 @@ class Calendar implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper for ical sub-action.

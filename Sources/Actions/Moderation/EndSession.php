@@ -14,7 +14,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Utils;
 
@@ -22,7 +22,7 @@ use SMF\Utils;
  * Ends a moderator session, requiring authentication to access the moderation
  * center again.
  */
-class EndSession implements ActionInterface
+class EndSession extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -36,18 +36,6 @@ class EndSession implements ActionInterface
 			'call' => 'ModEndSession',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -71,41 +59,6 @@ class EndSession implements ActionInterface
 		Utils::redirectexit();
 	}
 
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
-	}
 }
 
 // Export public static functions and properties to global namespace for backward compatibility.

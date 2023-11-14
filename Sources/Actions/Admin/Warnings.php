@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\IntegrationHook;
@@ -26,7 +26,7 @@ use SMF\Utils;
 /**
  * Moderation type settings - although there are fewer than we have you believe ;)
  */
-class Warnings implements ActionInterface
+class Warnings extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -40,18 +40,6 @@ class Warnings implements ActionInterface
 			'modifyWarningSettings' => 'ModifyWarningSettings',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -146,27 +134,6 @@ class Warnings implements ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/**
 	 * Gets the configuration variables for the warnings area.
 	 *
 	 * @return array $config_vars for the warnings area.
@@ -247,7 +214,7 @@ class Warnings implements ActionInterface
 	 */
 	protected function __construct()
 	{
-		
+
 	}
 }
 

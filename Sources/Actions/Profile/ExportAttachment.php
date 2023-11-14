@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\Profile;
@@ -25,7 +25,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Downloads an attachment that was linked from a profile export.
  */
-class ExportAttachment implements ActionInterface
+class ExportAttachment extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -130,31 +130,6 @@ class ExportAttachment implements ActionInterface
 
 		// We should now have what we need to serve the file.
 		AttachmentDownload::call();
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

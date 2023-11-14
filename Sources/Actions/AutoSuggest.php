@@ -24,7 +24,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Suggests members, membergroups, or SMF versions in reply to AJAX requests.
  */
-class AutoSuggest implements ActionInterface
+class AutoSuggest extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -84,18 +84,6 @@ class AutoSuggest implements ActionInterface
 		'membergroups' => 'membergroups',
 		'versions' => 'versions',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -294,27 +282,6 @@ class AutoSuggest implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Checks whether the given suggestion type is supported.

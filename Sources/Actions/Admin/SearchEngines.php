@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\IntegrationHook;
@@ -34,7 +34,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Manages the settings related to search engines.
  */
-class SearchEngines implements ActionInterface
+class SearchEngines extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -100,20 +100,6 @@ class SearchEngines implements ActionInterface
 	/*********************
 	 * Internal properties
 	 *********************/
-
-	// code...
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/**
 	 * @var string
@@ -808,27 +794,6 @@ class SearchEngines implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Gets the configuration variables for this admin area.

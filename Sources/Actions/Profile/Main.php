@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -34,7 +34,7 @@ use SMF\Db\DatabaseApi as Db;
  * It also allows the user to change some of their or another's preferences,
  * and such things.
  */
-class Main implements ActionInterface
+class Main extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -549,18 +549,6 @@ class Main implements ActionInterface
 	 */
 	public bool $check_password;
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -725,27 +713,6 @@ class Main implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper.

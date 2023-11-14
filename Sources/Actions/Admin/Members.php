@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\Group;
@@ -34,7 +34,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Shows a list of members or a selection of members.
  */
-class Members implements ActionInterface
+class Members extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -141,18 +141,6 @@ class Members implements ActionInterface
 		'search' => array('search', 'moderate_forum'),
 		'query' => array('view', 'moderate_forum'),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -1373,27 +1361,6 @@ class Members implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Callback for SMF\ItemList().

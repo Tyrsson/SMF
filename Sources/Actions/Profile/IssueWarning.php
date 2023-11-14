@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\BBCodeParser;
 use SMF\Config;
@@ -32,7 +32,7 @@ use SMF\PersonalMessage\PM;
 /**
  * Rename here and in the exportStatic call at the end of the file.
  */
-class IssueWarning implements ActionInterface
+class IssueWarning extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -59,18 +59,6 @@ class IssueWarning implements ActionInterface
 	 * This stores any legitimate errors.
 	 */
 	public array $issueErrors = array();
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -331,27 +319,6 @@ class IssueWarning implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Get the data about a user's warnings.

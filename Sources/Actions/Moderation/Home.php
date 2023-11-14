@@ -14,7 +14,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\BBCodeParser;
 use SMF\Config;
@@ -33,7 +33,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * This is the home page of the moderation center.
  */
-class Home implements ActionInterface
+class Home extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -84,18 +84,6 @@ class Home implements ActionInterface
 			'permissions' => array('can_moderate_users'),
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -149,31 +137,6 @@ class Home implements ActionInterface
 		self::integrateModBlocks();
 
 		Utils::$context['admin_prefs'] = !empty(Theme::$current->options['admin_preferences']) ? Utils::jsonDecode(Theme::$current->options['admin_preferences'], true) : array();
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************
@@ -514,7 +477,7 @@ class Home implements ActionInterface
 			return;
 
 		$cachekey = md5(Utils::jsonEncode((int) User::$me->allowedTo('moderate_forum')));
-		
+
 		if (($reported_users = CacheApi::get('reported_users_' . $cachekey, 90)) === null)
 		{
 			$reported_users = array();
@@ -567,7 +530,7 @@ class Home implements ActionInterface
 
 	/**
 	 * Provides a home for the deprecated integrate_mod_centre_blocks hook.
-	 * 
+	 *
 	 * MOD AUTHORS: Please use the integrate_moderation_home_blocks instead.
 	 */
 	protected static function integrateModBlocks()
@@ -578,7 +541,7 @@ class Home implements ActionInterface
 
 		if (empty($valid_blocks))
 			return;
-		
+
 		foreach ($valid_blocks as $k => $func)
 		{
 			$func = 'ModBlock' . $func;

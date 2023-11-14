@@ -36,7 +36,7 @@ use SMF\Search\SearchApi;
 /**
  * This action handles moving topics from one board to another board.
  */
-class TopicMove2 implements ActionInterface
+class TopicMove2 extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -51,18 +51,6 @@ class TopicMove2 implements ActionInterface
 			'moveTopicConcurrence' => 'moveTopicConcurrence',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -346,27 +334,6 @@ class TopicMove2 implements ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/**
 	 * Called after a topic is moved to update $board_link and $topic_link to point to new location
 	 */
 	public static function moveTopicConcurrence()
@@ -403,17 +370,6 @@ class TopicMove2 implements ActionInterface
 
 			ErrorHandler::fatalLang('topic_already_moved', false, array($topic_link, $board_link));
 		}
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
 	}
 }
 

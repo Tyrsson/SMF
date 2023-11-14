@@ -29,7 +29,7 @@ use SMF\Db\DatabaseApi as Db;
  * This action prepares credit and copyright information for the credits page
  * and the admin page.
  */
-class Credits implements ActionInterface
+class Credits extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -54,18 +54,6 @@ class Credits implements ActionInterface
 	 * If true, will not load the sub-template nor the template file.
 	 */
 	public bool $in_admin = false;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -428,19 +416,6 @@ class Credits implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
 
 	/**
 	 * Convenience method to load() and execute() an instance of this class.

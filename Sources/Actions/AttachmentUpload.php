@@ -25,7 +25,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * This class handles adding/deleting attachments
  */
-class AttachmentUpload implements ActionInterface
+class AttachmentUpload extends AbstractAction
 {
 	/**
 	 * @var int $_msg The ID of the message this attachment is associated with
@@ -103,36 +103,6 @@ class AttachmentUpload implements ActionInterface
 	 * @var string|bool $_sa The current sub-action, or false if there isn't one
 	 */
 	protected $_sa = false;
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 */
-	protected static $obj;
-
-	/**
-	 * Wrapper for constructor. Ensures only one instance is created.
-	 *
-	 * @todo Add a reference to Utils::$context['instances'] as well?
-	 *
-	 * @return An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Attachments constructor.

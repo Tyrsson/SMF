@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\Cookie;
@@ -29,7 +29,7 @@ use SMF\TOTP\Auth as Tfa;
 /**
  * Provides interface to set up two-factor authentication in SMF.
  */
-class TFASetup implements ActionInterface
+class TFASetup extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -54,18 +54,6 @@ class TFASetup implements ActionInterface
 	 * An instance of the SMF\TOTP\Auth class.
 	 */
 	protected object $totp;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -108,31 +96,6 @@ class TFASetup implements ActionInterface
 		}
 
 		Utils::$context['tfa_qr_url'] = $this->totp->getQrCodeUrl(Utils::$context['forum_name'] . ':' . User::$me->name, Utils::$context['tfa_secret']);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

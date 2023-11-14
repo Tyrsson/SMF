@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\BBCodeParser;
 use SMF\Config;
@@ -33,7 +33,7 @@ use SMF\Db\DatabaseApi as Db;
  * Shows a list of all errors that were logged on the forum,
  * and allows filtering and deleting them.
  */
-class ErrorLog implements ActionInterface
+class ErrorLog extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -106,18 +106,6 @@ class ErrorLog implements ActionInterface
 			'datatype' => 'int',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -339,7 +327,7 @@ class ErrorLog implements ActionInterface
 			{
 				$id = $this->filter['value']['sql'];
 
-				User::load($id, self::LOAD_BY_ID, 'minimal');
+				User::load($id, User::LOAD_BY_ID, 'minimal');
 
 				Utils::$context['filter']['value']['html'] = '<a href="' . Config::$scripturl . '?action=profile;u=' . $id . '">' . (isset(User::$loaded[$id]) ? User::$loaded[$id]->name : Lang::$txt['guest']) . '</a>';
 			}
@@ -517,31 +505,6 @@ class ErrorLog implements ActionInterface
 		Lang::load('ManageMaintenance');
 		Utils::$context['template_layers'] = array();
 		Utils::$context['sub_template'] = 'show_backtrace';
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

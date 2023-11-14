@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\Lang;
@@ -33,7 +33,7 @@ use SMF\Actions\Groups;
  * It uses the index administrative area.
  * It can be found by going to ?action=admin.
  */
-class Home implements ActionInterface
+class Home extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -89,18 +89,6 @@ class Home implements ActionInterface
 		'php',
 		'server',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -167,42 +155,6 @@ class Home implements ActionInterface
 		{
 			Theme::loadJavaScriptFile('admin.js', array('defer' => false, 'minimize' => true), 'smf_admin');
 		}
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
 	}
 }
 

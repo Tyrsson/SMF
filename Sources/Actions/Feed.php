@@ -57,7 +57,7 @@ use SMF\Db\DatabaseApi as Db;
  *
  * Uses Stats, Profile, Post, and PersonalMessage language files.
  */
-class Feed implements ActionInterface
+class Feed extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -255,17 +255,6 @@ class Feed implements ActionInterface
 	 * Used to generate globally unique identifiers.
 	 */
 	protected string $host = '';
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -2746,31 +2735,6 @@ class Feed implements ActionInterface
 		Db::$db->free_result($request);
 
 		return $data;
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of the class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of the child class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/**

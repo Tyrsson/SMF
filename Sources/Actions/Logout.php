@@ -42,18 +42,6 @@ class Logout extends Login2
 		),
 	);
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -175,19 +163,6 @@ class Logout extends Login2
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
 	 * Convenience method to load() and execute() an instance of this class.
 	 *
 	 * @param bool $internal If true, it doesn't check the session
@@ -195,18 +170,7 @@ class Logout extends Login2
 	 */
 	public static function call(bool $internal = false, bool $redirect = true): void
 	{
-		self::load()->execute($internal, $redirect);
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
+		static::load()->execute($internal, $redirect);
 	}
 }
 

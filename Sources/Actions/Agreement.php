@@ -28,7 +28,7 @@ use SMF\Utils;
  * and privacy policy, and to ask the user to accept them if they haven't
  * already done so.
  */
-class Agreement implements ActionInterface
+class Agreement extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -44,18 +44,6 @@ class Agreement implements ActionInterface
 			'canRequirePrivacyPolicy' => 'canRequirePrivacyPolicy',
 		),
 	);
-
-	/*********************
-	 * Internal properties
-	 *********************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of the class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static $obj;
 
 	/****************
 	 * Public methods
@@ -90,31 +78,6 @@ class Agreement implements ActionInterface
 
 		if (isset($_SESSION['old_url']))
 			$_SESSION['redirect_url'] = $_SESSION['old_url'];
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/**

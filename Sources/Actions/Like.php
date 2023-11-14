@@ -27,7 +27,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Handles liking posts and displaying the list of who liked a post.
  */
-class Like implements ActionInterface
+class Like extends AbstractAction
 {
 	/*******************
 	 * Public properties
@@ -180,17 +180,6 @@ class Like implements ActionInterface
 	 */
 	protected $data;
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 */
-	protected static $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -252,31 +241,6 @@ class Like implements ActionInterface
 	public function get($property = ''): mixed
 	{
 		return property_exists($this, $property) ? $this->$property : false;
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Wrapper for constructor. Ensures only one instance is created.
-	 *
-	 * @return An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

@@ -30,7 +30,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Handles moderation from the message index.
  */
-class QuickModeration implements ActionInterface
+class QuickModeration extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -169,18 +169,6 @@ class QuickModeration implements ActionInterface
 		'restore' => array(),
 	);
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -227,27 +215,6 @@ class QuickModeration implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Gets the list of known quick moderation actions.

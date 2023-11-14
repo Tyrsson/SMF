@@ -30,7 +30,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Validates the submitted credentials and logs the user in if they pass.
  */
-class Login2 implements ActionInterface
+class Login2 extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -73,18 +73,6 @@ class Login2 implements ActionInterface
 		'salt' => 'updateSalt',
 		'check' => 'checkCookie',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -349,27 +337,6 @@ class Login2 implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Checks whether this is an AJAX request.

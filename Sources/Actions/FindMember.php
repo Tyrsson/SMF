@@ -30,7 +30,7 @@ use SMF\Utils;
  * @deprecated 3.0 An unused leftover from SMF 2.0's wap2/imode support.
  * @todo This was already unused in SMF 2.1. Maybe just remove in 3.0?
  */
-class FindMember implements ActionInterface
+class FindMember extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -44,18 +44,6 @@ class FindMember implements ActionInterface
 			'call' => 'JSMembers',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -122,43 +110,6 @@ class FindMember implements ActionInterface
 		else
 			Utils::$context['links']['up'] = Config::$scripturl . '?action=pm;sa=send' . (empty($_REQUEST['u']) ? '' : ';u=' . $_REQUEST['u']);
 	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
-	}
-
 }
 
 // Export public static functions and properties to global namespace for backward compatibility.

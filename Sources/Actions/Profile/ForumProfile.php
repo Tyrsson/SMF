@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Lang;
 use SMF\Profile;
@@ -24,7 +24,7 @@ use SMF\Utils;
 /**
  * Handles the main "Forum Profile" section of the profile.
  */
-class ForumProfile implements ActionInterface
+class ForumProfile extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -38,18 +38,6 @@ class ForumProfile implements ActionInterface
 			'call' => 'forumProfile',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -73,43 +61,18 @@ class ForumProfile implements ActionInterface
 
 		Profile::$member->setupContext(
 			array(
-				'avatar_choice', 
-			'hr', 
-				'personal_text', 
+				'avatar_choice',
 			'hr',
-				'bday1', 
-				'usertitle', 
-				'signature', 
+				'personal_text',
 			'hr',
-				'website_title', 
+				'bday1',
+				'usertitle',
+				'signature',
+			'hr',
+				'website_title',
 				'website_url',
 			),
 		);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

@@ -13,9 +13,8 @@
 
 namespace SMF\Actions\Admin;
 
+use SMF\Actions\AbstractAction;
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
-
 use SMF\Config;
 use SMF\IntegrationHook;
 use SMF\Lang;
@@ -29,7 +28,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Handles anti-spam settings.
  */
-class AntiSpam implements ActionInterface
+class AntiSpam extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -43,18 +42,6 @@ class AntiSpam implements ActionInterface
 			'modifyAntispamSettings' => 'ModifyAntispamSettings',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -376,26 +363,7 @@ class AntiSpam implements ActionInterface
 	 * Public static methods
 	 ***********************/
 
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
 
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Gets the configuration variables for the anti-spam area.
@@ -492,7 +460,7 @@ class AntiSpam implements ActionInterface
 	 */
 	protected function __construct()
 	{
-		
+
 	}
 }
 

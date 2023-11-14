@@ -30,7 +30,7 @@ use SMF\Db\DatabaseApi as Db;
  * Only deals with actions that work on individual messages, such as deleting,
  * restoring, and spliting into a new topic.
  */
-class QuickModerationInTopic implements ActionInterface
+class QuickModerationInTopic extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -56,18 +56,6 @@ class QuickModerationInTopic implements ActionInterface
 	 */
 	public array $messages = array();
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -86,31 +74,6 @@ class QuickModerationInTopic implements ActionInterface
 			$this->split();
 		else
 			$this->delete();
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

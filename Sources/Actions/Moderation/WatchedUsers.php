@@ -14,7 +14,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\BBCodeParser;
 use SMF\Config;
@@ -31,7 +31,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Rename here and in the exportStatic call at the end of the file.
  */
-class WatchedUsers implements ActionInterface
+class WatchedUsers extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -49,18 +49,6 @@ class WatchedUsers implements ActionInterface
 			'list_getWatchedUserPosts' => 'list_getWatchedUserPosts',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -258,27 +246,6 @@ class WatchedUsers implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Callback for SMF\ItemList().

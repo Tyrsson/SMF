@@ -30,7 +30,7 @@ use SMF\Search\SearchApi;
 /**
  * Shows the search form.
  */
-class Search implements ActionInterface
+class Search extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -44,18 +44,6 @@ class Search implements ActionInterface
 			'call' => 'PlushSearch1',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -298,42 +286,6 @@ class Search implements ActionInterface
 		Utils::$context['page_title'] = Lang::$txt['set_parameters'];
 
 		IntegrationHook::call('integrate_search');
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
 	}
 }
 

@@ -14,7 +14,6 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
 
 use SMF\BBCodeParser;
 use SMF\Config;
@@ -39,7 +38,7 @@ use SMF\PersonalMessage\PM;
 /**
  * This class manages... the news. :P
  */
-class News extends ACP implements ActionInterface
+class News extends ACP
 {
 	use BackwardCompatibility;
 
@@ -242,18 +241,6 @@ class News extends ACP implements ActionInterface
 		'mailingsend' => array('send', 'send_mail'),
 		'settings' => array('settings', 'admin_forum'),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -1132,27 +1119,6 @@ class News extends ACP implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Gets the configuration variables for this admin area.

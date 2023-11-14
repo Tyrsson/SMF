@@ -29,7 +29,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Deals with reporting posts or profiles to mods and admins.
  */
-class ReportToMod implements ActionInterface
+class ReportToMod extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -110,18 +110,6 @@ class ReportToMod implements ActionInterface
 	 * The text content of the report.
 	 */
 	protected string $comment = '';
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -318,27 +306,6 @@ class ReportToMod implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper for the submit sub-action.

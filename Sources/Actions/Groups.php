@@ -36,7 +36,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Shows group info and allows certain priviledged members to add/remove members.
  */
-class Groups implements ActionInterface
+class Groups extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -100,18 +100,6 @@ class Groups implements ActionInterface
 	 *  - '?action=moderate;area=viewgroups'
 	 */
 	protected string $action_url = '?action=groups';
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -729,31 +717,6 @@ class Groups implements ActionInterface
 		Menu::$loaded['moderate']->tab_data = array(
 			'title' => Lang::$txt['mc_group_requests'],
 		);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/**

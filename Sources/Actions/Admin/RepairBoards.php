@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Board;
 use SMF\Config;
@@ -31,7 +31,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * This is here for the "repair any errors" feature in the admin center.
  */
-class RepairBoards implements ActionInterface
+class RepairBoards extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -781,18 +781,6 @@ class RepairBoards implements ActionInterface
 	 */
 	public int $salvage_category;
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -869,31 +857,6 @@ class RepairBoards implements ActionInterface
 			// We are done at this point, dump the token,
 			SecurityToken::validate('admin-repairboards', 'request', false);
 		}
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

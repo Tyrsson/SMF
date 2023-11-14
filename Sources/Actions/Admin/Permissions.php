@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Board;
 use SMF\Category;
@@ -34,7 +34,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Permissions handles all possible permission stuff.
  */
-class Permissions implements ActionInterface
+class Permissions extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -941,14 +941,6 @@ class Permissions implements ActionInterface
 	 */
 	protected static array $illegal = array();
 
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -1612,27 +1604,6 @@ class Permissions implements ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/**
 	 * Gets the configuration variables for this admin area.
 	 *
 	 * @return array $config_vars for the permissions area.
@@ -1794,19 +1765,19 @@ class Permissions implements ActionInterface
 			{
 				switch ($perm_info['group_level'])
 				{
-					case GROUP_LEVEL_RESTRICT;
+					case self::GROUP_LEVEL_RESTRICT;
 						$group_levels[$perm_info['scope']]['restrict'][] = $permission;
 						// no break
 
-					case GROUP_LEVEL_STANDARD;
+					case self::GROUP_LEVEL_STANDARD;
 						$group_levels[$perm_info['scope']]['standard'][] = $permission;
 						// no break
 
-					case GROUP_LEVEL_MODERATOR;
+					case self::GROUP_LEVEL_MODERATOR;
 						$group_levels[$perm_info['scope']]['moderator'][] = $permission;
 						// no break
 
-					case GROUP_LEVEL_MAINTENANCE;
+					case self::GROUP_LEVEL_MAINTENANCE;
 						$group_levels[$perm_info['scope']]['maintenance'][] = $permission;
 						break;
 				}
@@ -1816,19 +1787,19 @@ class Permissions implements ActionInterface
 			{
 				switch ($perm_info['board_level'])
 				{
-					case BOARD_LEVEL_STANDARD;
+					case self::BOARD_LEVEL_STANDARD;
 						$group_levels[$perm_info['scope']]['standard'][] = $permission;
 						// no break
 
-					case BOARD_LEVEL_LOCKED;
+					case self::BOARD_LEVEL_LOCKED;
 						$group_levels[$perm_info['scope']]['locked'][] = $permission;
 						// no break
 
-					case BOARD_LEVEL_PUBLISH;
+					case self::BOARD_LEVEL_PUBLISH;
 						$group_levels[$perm_info['scope']]['publish'][] = $permission;
 						// no break
 
-					case BOARD_LEVEL_FREE;
+					case self::BOARD_LEVEL_FREE;
 						$group_levels[$perm_info['scope']]['free'][] = $permission;
 						break;
 				}

@@ -31,7 +31,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Shows the registration form.
  */
-class Register implements ActionInterface
+class Register extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -77,18 +77,6 @@ class Register implements ActionInterface
 		'show' => 'show',
 		'usernamecheck' => 'checkUsername',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -339,27 +327,6 @@ class Register implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper for show sub-action.

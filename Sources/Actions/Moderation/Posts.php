@@ -14,7 +14,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Attachment;
 use SMF\BBCodeParser;
@@ -38,7 +38,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Handles things related to post moderation.
  */
-class Posts implements ActionInterface
+class Posts extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -86,18 +86,6 @@ class Posts implements ActionInterface
 		'attachments' => 'attachments',
 		'approve' => 'approve',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -300,11 +288,11 @@ class Posts implements ActionInterface
 			{
 				if ($curAction == 'approve')
 				{
-					approveMessages($toAction, $details, Utils::$context['current_view']);
+					self::approveMessages($toAction, $details, Utils::$context['current_view']);
 				}
 				else
 				{
-					removeMessages($toAction, $details, Utils::$context['current_view']);
+					self::removeMessages($toAction, $details, Utils::$context['current_view']);
 				}
 			}
 		}
@@ -756,27 +744,6 @@ class Posts implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * This is a helper function - basically approve everything!

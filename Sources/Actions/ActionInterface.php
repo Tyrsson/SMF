@@ -38,11 +38,9 @@ interface ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of the class.
+	 * @return ActionInterface
 	 */
-	public static function load(): object;
+	public static function load(): self;
 
 	/**
 	 * Convenience method to load() and execute() an instance of the class.

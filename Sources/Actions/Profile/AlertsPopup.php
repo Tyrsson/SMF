@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Alert;
 use SMF\Config;
@@ -25,7 +25,7 @@ use SMF\Utils;
 /**
  * Shows the popup for the current user's alerts.
  */
-class AlertsPopup implements ActionInterface
+class AlertsPopup extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -39,18 +39,6 @@ class AlertsPopup implements ActionInterface
 			'call' => 'alerts_popup',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -78,32 +66,7 @@ class AlertsPopup implements ActionInterface
 		{
 			// Now fetch me my unread alerts, pronto!
 			Utils::$context['unread_alerts'] = Alert::fetch(User::$me->id, false, !empty($counter) ? User::$me->alerts - $counter : $limit, 0, !isset($_REQUEST['counter']));
-		}	
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
+		}
 	}
 
 	/******************

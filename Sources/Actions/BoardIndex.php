@@ -38,7 +38,7 @@ use SMF\Cache\CacheApi;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class BoardIndex implements ActionInterface
+class BoardIndex extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -59,12 +59,6 @@ class BoardIndex implements ActionInterface
 	 * Internal static properties
 	 ****************************/
 
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -265,27 +259,6 @@ class BoardIndex implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Fetches a list of boards and (optional) categories including

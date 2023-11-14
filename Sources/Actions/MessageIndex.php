@@ -35,7 +35,7 @@ use SMF\Db\DatabaseApi as Db;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class MessageIndex implements ActionInterface
+class MessageIndex extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -140,17 +140,6 @@ class MessageIndex implements ActionInterface
 	 */
 	protected bool $ascending_is_default = false;
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -176,27 +165,6 @@ class MessageIndex implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Buils and returns the list of available boards for a user.

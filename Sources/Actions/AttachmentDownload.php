@@ -33,7 +33,7 @@ use SMF\Db\DatabaseApi as Db;
  * It is accessed via the query string ?action=dlattach.
  * Views to attachments do not increase hits and are not logged in the "Who's Online" log.
  */
-class AttachmentDownload implements ActionInterface
+class AttachmentDownload extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -65,18 +65,6 @@ class AttachmentDownload implements ActionInterface
 	 * Whether to show the thumbnail image, if one is available.
 	 */
 	public int $showThumb;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -327,31 +315,6 @@ class AttachmentDownload implements ActionInterface
 			$file->filename = $_REQUEST['attach'] . ' - ' . $file->filename;
 
 		Utils::emitFile($file, $this->showThumb);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

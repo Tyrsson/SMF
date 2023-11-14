@@ -18,7 +18,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -38,7 +38,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * This class contains all the methods used for the ban center.
  */
-class Bans implements ActionInterface
+class Bans extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -96,18 +96,6 @@ class Bans implements ActionInterface
 		'edittrigger' => 'editTrigger',
 		'log' => 'log',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -1017,7 +1005,7 @@ class Bans implements ActionInterface
 					'data' => array(
 						'function' => function($rowData)
 						{
-							return timeformat($rowData['log_time']);
+							return Time::timeformat($rowData['log_time']);
 						},
 					),
 					'sort' => array(
@@ -1075,27 +1063,6 @@ class Bans implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * As it says... this tries to review the list of banned members, to match new bans.

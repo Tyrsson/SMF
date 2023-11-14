@@ -27,7 +27,7 @@ use SMF\Db\DatabaseApi as Db;
  * @deprecated 3.0 The requestmembers action wasn't used even in SMF 2.0!
  * @todo This is 100% obsolete, but was never officially deprecated. Remove?
  */
-class RequestMembers implements ActionInterface
+class RequestMembers extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -52,18 +52,6 @@ class RequestMembers implements ActionInterface
 	 * Search string.
 	 */
 	public string $search = '';
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -109,31 +97,6 @@ class RequestMembers implements ActionInterface
 		Db::$db->free_result($request);
 
 		Utils::obExit(false);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

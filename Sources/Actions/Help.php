@@ -24,7 +24,7 @@ use SMF\Utils;
 /**
  * This class has the important job of taking care of help messages and the help center.
  */
-class Help implements ActionInterface
+class Help extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -64,18 +64,6 @@ class Help implements ActionInterface
 	public static array $subactions = array(
 		'index' => 'index',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -133,27 +121,6 @@ class Help implements ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/**
 	 * Backward compatibility wrapper for the index sub-action.
 	 */
 	public static function HelpIndex(): void
@@ -182,7 +149,7 @@ class Help implements ActionInterface
 		Lang::load('Manual');
 
 		// CRUD $subactions as needed.
-		IntegrationHook::call('integrate_manage_help', array(&$subactions));
+		IntegrationHook::call('integrate_manage_help', array(&self::$subactions));
 
 		if (!empty($_GET['sa']) && isset(self::$subactions[$_GET['sa']]))
 			$this->subaction = $_GET['sa'];

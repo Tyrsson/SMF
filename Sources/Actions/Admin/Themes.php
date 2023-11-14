@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -49,7 +49,7 @@ use SMF\PackageManager\SubsPackage;
  * - tar and gzip the directory - and you're done!
  * - please include any special license in a license.txt file.
  */
-class Themes implements ActionInterface
+class Themes extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -104,18 +104,6 @@ class Themes implements ActionInterface
 		'edit' => 'edit',
 		'copy' => 'copy',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -1424,27 +1412,6 @@ class Themes implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper for the admin sub-action.

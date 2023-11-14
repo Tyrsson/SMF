@@ -29,7 +29,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Finds and retrieves information about new posts and topics.
  */
-class Unread implements ActionInterface
+class Unread extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -254,31 +254,6 @@ class Unread implements ActionInterface
 
 		// Allow helpdesks and bug trackers and what not to add their own unread data (just add a template_layer to show custom stuff in the template!)
 		IntegrationHook::call('integrate_unread_list');
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

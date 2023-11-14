@@ -17,8 +17,8 @@
 
 namespace SMF\Actions\Admin;
 
+use SMF\Actions\AbstractAction;
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
 
 use SMF\Attachment;
 use SMF\Config;
@@ -36,7 +36,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Maintains and manages attachments and avatars.
  */
-class Attachments implements ActionInterface
+class Attachments extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -101,18 +101,6 @@ class Attachments implements ActionInterface
 		'attachpaths' => 'paths',
 		'transfer' => 'transfer',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -2224,27 +2212,6 @@ class Attachments implements ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/**
 	 * Gets the configuration variables for the attachments sub-action.
 	 *
 	 * @return array $config_vars for the attachments sub-action.
@@ -2593,7 +2560,7 @@ class Attachments implements ActionInterface
 				$expected_files[$id] = 0;
 
 			// Check if the directory is doing okay.
-			list($status, $error, $files) = attachDirStatus($dir, $expected_files[$id]);
+			list($status, $error, $files) = self::attachDirStatus($dir, $expected_files[$id]);
 
 			// If it is one, let's show that it's a base directory.
 			$sub_dirs = 0;

@@ -33,7 +33,7 @@ use SMF\Search\SearchApi;
 /**
  * This action provides UI to allow topics to be moved from one board to another.
  */
-class TopicMove implements ActionInterface
+class TopicMove extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -47,18 +47,6 @@ class TopicMove implements ActionInterface
 			'call' => 'MoveTopic',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -166,42 +154,6 @@ class TopicMove implements ActionInterface
 		// Register this form and get a sequence number in Utils::$context.
 		Security::checkSubmitOnce('register');
 
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
 	}
 }
 

@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\IntegrationHook;
 use SMF\Lang;
@@ -26,7 +26,7 @@ use SMF\Utils;
 /**
  * Handles the "Look and Layout" section of the profile
  */
-class ThemeOptions implements ActionInterface
+class ThemeOptions extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -40,18 +40,6 @@ class ThemeOptions implements ActionInterface
 			'call' => 'theme',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -79,40 +67,15 @@ class ThemeOptions implements ActionInterface
 
 		Profile::$member->setupContext(
 			array(
-				'id_theme', 
-				'smiley_set', 
+				'id_theme',
+				'smiley_set',
 			'hr',
-				'time_format', 
-				'timezone', 
+				'time_format',
+				'timezone',
 			'hr',
 				'theme_settings',
 			),
 		);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

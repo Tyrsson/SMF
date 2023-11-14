@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -33,7 +33,7 @@ use SMF\Db\DatabaseApi as Db;
  *
  * @todo Add CSV, JSON as other possible export formats besides XML and HTML?
  */
-class Export implements ActionInterface
+class Export extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -115,14 +115,6 @@ class Export implements ActionInterface
 		//	'per_page' => 2000,
 		// ),
 	);
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -379,27 +371,6 @@ class Export implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Returns the path to a secure directory for storing exported profile data.

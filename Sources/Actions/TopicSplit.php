@@ -40,7 +40,7 @@ use SMF\Search\SearchApi;
 /**
  * Handles splitting of topics.
  */
-class TopicSplit implements ActionInterface
+class TopicSplit extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -93,24 +93,6 @@ class TopicSplit implements ActionInterface
 		'selectTopics' => 'select',
 		'splitSelection' => 'splitSelection',
 	);
-
-	/*********************
-	 * Internal properties
-	 *********************/
-
-	// code...
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -196,7 +178,7 @@ class TopicSplit implements ActionInterface
 
 		// Check if this is the first message in the topic (if so, the first and second option won't be available)
 		if ($id_first_msg == $_GET['at'])
-			return select();
+			return self::select();
 
 		// Basic template information....
 		Utils::$context['message'] = array(
@@ -267,7 +249,7 @@ class TopicSplit implements ActionInterface
 		}
 
 		Utils::$context['old_topic'] = Topic::$topic_id;
-		Utils::$context['new_topic'] = splitTopic(Topic::$topic_id, $messagesToBeSplit, $_POST['subname']);
+		Utils::$context['new_topic'] = self::splitTopic(Topic::$topic_id, $messagesToBeSplit, $_POST['subname']);
 		Utils::$context['page_title'] = Lang::$txt['split'];
 	}
 
@@ -593,34 +575,13 @@ class TopicSplit implements ActionInterface
 			ErrorHandler::fatalLang('no_posts_selected', false);
 
 		Utils::$context['old_topic'] = Topic::$topic_id;
-		Utils::$context['new_topic'] = splitTopic(Topic::$topic_id, $_SESSION['split_selection'][Topic::$topic_id], $_POST['subname']);
+		Utils::$context['new_topic'] = self::splitTopic(Topic::$topic_id, $_SESSION['split_selection'][Topic::$topic_id], $_POST['subname']);
 		Utils::$context['page_title'] = Lang::$txt['split'];
 	}
 
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * General function to split off a topic.

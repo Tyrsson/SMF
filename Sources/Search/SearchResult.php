@@ -18,6 +18,7 @@ use SMF\BBCodeParser;
 use SMF\Config;
 use SMF\IP;
 use SMF\Lang;
+use SMF\Msg;
 use SMF\Theme;
 use SMF\Time;
 use SMF\User;
@@ -27,7 +28,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  *
  */
-class SearchResult extends \SMF\Msg
+class SearchResult extends Msg
 {
 	use BackwardCompatibility;
 

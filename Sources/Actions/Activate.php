@@ -30,7 +30,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Activates a user's account.
  */
-class Activate implements ActionInterface
+class Activate extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -70,18 +70,6 @@ class Activate implements ActionInterface
 		'activate' => 'activate',
 		'resend' => 'resend',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -247,31 +235,6 @@ class Activate implements ActionInterface
 			'never_expire' => false,
 			'description' => Lang::$txt['activate_success']
 		);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

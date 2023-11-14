@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -34,7 +34,7 @@ use SMF\Db\DatabaseApi as Db;
  * Contains all the administration functions for paid subscriptions.
  * (and some more than that :P)
  */
-class Subscriptions implements ActionInterface
+class Subscriptions extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -98,24 +98,6 @@ class Subscriptions implements ActionInterface
 	 * Data about all the subscriptions the admin has created.
 	 */
 	public static array $all = array();
-
-	/*********************
-	 * Internal properties
-	 *********************/
-
-	// code...
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -1370,27 +1352,6 @@ class Subscriptions implements ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/**
 	 * Gets the configuration variables for this admin area.
 	 *
 	 * @return array $config_vars for the news area.
@@ -1644,7 +1605,7 @@ class Subscriptions implements ActionInterface
 	public static function add($id_subscribe, $id_member, $renewal = 0, $forceStartTime = 0, $forceEndTime = 0): void
 	{
 		// Take the easy way out...
-		getSubs();
+		self::getSubs();
 
 		// Exists, yes?
 		if (!isset(self::$all[$id_subscribe]))

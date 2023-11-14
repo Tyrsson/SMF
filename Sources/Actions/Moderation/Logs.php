@@ -14,7 +14,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\IntegrationHook;
@@ -33,7 +33,7 @@ use SMF\Db\DatabaseApi as Db;
  * The moderation and adminstration logs are this class's only job.
  * It views them, and that's about all it does.
  */
-class Logs implements ActionInterface
+class Logs extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -230,18 +230,6 @@ class Logs implements ActionInterface
 	 */
 	protected array $search_info;
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -286,27 +274,6 @@ class Logs implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Get the number of mod log entries.

@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\IntegrationHook;
@@ -25,7 +25,7 @@ use SMF\Utils;
 /**
  * Shows the popup menu for the current user's profile.
  */
-class Popup implements ActionInterface
+class Popup extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -48,11 +48,11 @@ class Popup implements ActionInterface
 	 * @var array
 	 *
 	 * A list of menu items to pull from the main profile menu.
-	 * 
-	 * The values of all 'title' elements are Lang::$txt keys, and will be 
+	 *
+	 * The values of all 'title' elements are Lang::$txt keys, and will be
 	 * replaced at runtime with the values of those Lang::$txt strings.
-	 * 
-	 * Occurrences of '{scripturl}' in value strings will be replaced at runtime 
+	 *
+	 * Occurrences of '{scripturl}' in value strings will be replaced at runtime
 	 * with the value of Config::$scripturl.
 	 */
 	public array $profile_items = array(
@@ -110,19 +110,6 @@ class Popup implements ActionInterface
 		),
 	);
 
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -142,39 +129,14 @@ class Popup implements ActionInterface
 
 		// Now check if these items are available
 		Utils::$context['profile_items'] = array();
-				
+
 		foreach ($this->profile_items as $item)
 		{
 			if (isset(Menu::$loaded['profile']['sections'][$item['menu']]['areas'][$item['area']]))
 			{
 				Utils::$context['profile_items'][] = $item;
 			}
-		}	
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
+		}
 	}
 
 	/******************

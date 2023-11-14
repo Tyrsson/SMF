@@ -22,7 +22,7 @@ use SMF\Actions\Admin\ACP;
 /**
  * Lets simplemachines.org gather statistics if, and only if, the admin allows.
  */
-class SmStats implements ActionInterface
+class SmStats extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -36,18 +36,6 @@ class SmStats implements ActionInterface
 			'call' => 'SMStats',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -139,42 +127,6 @@ class SmStats implements ActionInterface
 
 		// Die.
 		die('OK');
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
 	}
 }
 

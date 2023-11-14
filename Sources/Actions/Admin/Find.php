@@ -14,13 +14,14 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
 use SMF\IntegrationHook;
 use SMF\Lang;
 use SMF\Menu;
+use SMF\PackageManager\XmlArray;
 use SMF\User;
 use SMF\Utils;
 use SMF\WebFetch\WebFetchApi;
@@ -28,7 +29,7 @@ use SMF\WebFetch\WebFetchApi;
 /**
  * Provides the search functionality inside the admin control panel.
  */
-class Find implements ActionInterface
+class Find extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -151,18 +152,6 @@ class Find implements ActionInterface
 		'online' => 'online',
 		'member' => 'member',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -393,26 +382,7 @@ class Find implements ActionInterface
 	 * Public static methods
 	 ***********************/
 
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
 
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/******************
 	 * Internal methods

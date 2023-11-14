@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\BBCodeParser;
 use SMF\Config;
@@ -31,7 +31,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Show all the users buddies, as well as a add/delete interface.
  */
-class BuddyIgnoreLists implements ActionInterface
+class BuddyIgnoreLists extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -84,18 +84,6 @@ class BuddyIgnoreLists implements ActionInterface
 		'ignore' => 'editIgnoreList',
 	);
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -127,7 +115,7 @@ class BuddyIgnoreLists implements ActionInterface
 		);
 
 		Theme::loadJavaScriptFile('suggest.js', array('defer' => false, 'minimize' => true), 'smf_suggest');
-		
+
 		$call = method_exists($this, self::$subactions[$this->subaction]) ? array($this, self::$subactions[$this->subaction]) : Utils::getCallable(self::$subactions[$this->subaction]);
 
 		if (!empty($call))
@@ -240,9 +228,9 @@ class BuddyIgnoreLists implements ActionInterface
 
 		// Gotta load the custom profile fields names.
 		Utils::$context['custom_pf'] = array();
-		
+
 		$disabled_fields = isset(Config::$modSettings['disabled_profile_fields']) ? array_flip(explode(',', Config::$modSettings['disabled_profile_fields'])) : array();
-		
+
 		$request = Db::$db->query('', '
 			SELECT col_name, field_name, field_desc, field_type, field_options, show_mlist, bbc, enclose
 			FROM {db_prefix}custom_fields
@@ -404,17 +392,17 @@ class BuddyIgnoreLists implements ActionInterface
 			// Redirect off the page because we don't like all this ugly query stuff to stick in the history.
 			Utils::redirectexit('action=profile;area=lists;sa=ignore;u=' . Profile::$member->id);
 		}
-		
+
 		// Adding a member to the ignore list?
 		if (isset($_POST['new_ignore']))
 		{
 			User::$me->checkSession();
-			
+
 			// Prepare the string for extraction...
 			$_POST['new_ignore'] = strtr(Utils::htmlspecialchars($_POST['new_ignore'], ENT_QUOTES), array('&quot;' => '"'));
-			
+
 			preg_match_all('~"([^"]+)"~', $_POST['new_ignore'], $matches);
-			
+
 			$new_entries = array_unique(array_merge($matches[1], explode(',', preg_replace('~"[^"]+"~', '', $_POST['new_ignore']))));
 
 			foreach ($new_entries as $k => $dummy)
@@ -517,27 +505,6 @@ class BuddyIgnoreLists implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Backward compatibility wrapper for the buddies sub-action.

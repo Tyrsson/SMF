@@ -14,7 +14,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\BBCodeParser;
 use SMF\ErrorHandler;
@@ -27,7 +27,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Shows a notice sent to a user.
  */
-class ShowNotice implements ActionInterface
+class ShowNotice extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -41,18 +41,6 @@ class ShowNotice implements ActionInterface
 			'call' => 'ShowNotice',
 		),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -81,31 +69,6 @@ class ShowNotice implements ActionInterface
 		Db::$db->free_result($request);
 
 		Utils::$context['notice_body'] = BBCodeParser::load()->parse(Utils::$context['notice_body'], false);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

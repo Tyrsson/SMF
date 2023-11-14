@@ -15,9 +15,11 @@ namespace SMF\Actions;
 
 use SMF\BackwardCompatibility;
 
+use SMF\Config;
 use SMF\ErrorHandler;
 use SMF\Lang;
 use SMF\Topic;
+use SMF\Utils;
 use SMF\Db\DatabaseApi as Db;
 
 /**
@@ -59,7 +61,7 @@ class NotifyTopic extends Notify implements ActionInterface
 	 * An instance of this class.
 	 * This is used by the load() method to prevent mulitple instantiations.
 	 */
-	protected static object $obj;
+	protected static self $obj;
 
 	/***********************
 	 * Public static methods
@@ -68,14 +70,14 @@ class NotifyTopic extends Notify implements ActionInterface
 	/**
 	 * Static wrapper for constructor.
 	 *
-	 * @return object An instance of this class.
+	 * @return static An instance of this class.
 	 */
-	public static function load(): object
+	public static function load(): static
 	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
+		if (!isset(static::$obj))
+			static::$obj = new static();
 
-		return self::$obj;
+		return static::$obj;
 	}
 
 	/**
@@ -83,7 +85,7 @@ class NotifyTopic extends Notify implements ActionInterface
 	 */
 	public static function call(): void
 	{
-		self::load()->execute();
+		static::load()->execute();
 	}
 
 	/******************

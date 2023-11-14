@@ -52,12 +52,12 @@ class NotifyAnnouncements extends Notify implements ActionInterface
 	 ****************************/
 
 	/**
-	 * @var object
+	 * @var static
 	 *
 	 * An instance of this class.
 	 * This is used by the load() method to prevent mulitple instantiations.
 	 */
-	protected static object $obj;
+	protected static self $obj;
 
 	/***********************
 	 * Public static methods
@@ -68,12 +68,12 @@ class NotifyAnnouncements extends Notify implements ActionInterface
 	 *
 	 * @return object An instance of this class.
 	 */
-	public static function load(): object
+	public static function load(): static
 	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
+		if (!isset(static::$obj))
+			static::$obj = new static();
 
-		return self::$obj;
+		return static::$obj;
 	}
 
 	/**
@@ -81,7 +81,7 @@ class NotifyAnnouncements extends Notify implements ActionInterface
 	 */
 	public static function call(): void
 	{
-		self::load()->execute();
+		static::load()->execute();
 	}
 
 	/******************

@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -32,7 +32,7 @@ use SMF\Db\DatabaseApi as Db;
  * This class is exclusively for generating reports to help assist forum
  * administrators keep track of their forum configuration and state.
  */
-class Reports implements ActionInterface
+class Reports extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -148,18 +148,6 @@ class Reports implements ActionInterface
 	 * Can be either 'rows' or 'cols'.
 	 */
 	protected string $key_method;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -991,27 +979,6 @@ class Reports implements ActionInterface
 	 ***********************/
 
 	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
-
-	/**
 	 * Backward compatibility wrapper for the boards sub-action.
 	 */
 	public static function boardReport(): void
@@ -1245,11 +1212,10 @@ class Reports implements ActionInterface
 		if (empty($this->table_count))
 			return;
 
+		$table = $custom_table ?? $this->current_table;
 		// Specific table?
 		if ($custom_table !== null && !isset($this->tables[$table]))
 			return;
-
-		$table = $custom_table ?? $this->current_table;
 
 		// Plumb in the separator
 		$this->tables[$table]['data'][] = array(0 => array(

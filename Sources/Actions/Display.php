@@ -49,7 +49,7 @@ use SMF\Db\DatabaseApi as Db;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class Display implements ActionInterface
+class Display extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -107,17 +107,6 @@ class Display implements ActionInterface
 	 * Might or might not be set.
 	 */
 	private $virtual_msg;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -288,31 +277,6 @@ class Display implements ActionInterface
 		IntegrationHook::call('integrate_prepare_display_context', array(&$output, $message, $counter));
 
 		return $output;
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

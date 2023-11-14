@@ -14,7 +14,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\IntegrationHook;
@@ -33,7 +33,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Allows the moderator to view stuff related to warnings.
  */
-class Warnings implements ActionInterface
+class Warnings extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -81,18 +81,6 @@ class Warnings implements ActionInterface
 		'templates' => array('templates', 'issue_warning'),
 		'templateedit' => array('templateEdit', 'issue_warning'),
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -176,7 +164,7 @@ class Warnings implements ActionInterface
 
 		// Setup the search context.
 		Utils::$context['search_params'] = empty($search_params['string']) ? '' : base64_encode(Utils::jsonEncode($search_params));
-		
+
 		Utils::$context['search'] = array(
 			'string' => $search_params['string'],
 			'type' => $search_params['type'],
@@ -602,27 +590,6 @@ class Warnings implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Callback for SMF\ItemList().

@@ -16,7 +16,7 @@
 namespace SMF\Actions\Moderation;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -29,7 +29,7 @@ use SMF\Utils;
 /**
  * This is the Moderation Center.
  */
-class Main implements ActionInterface
+class Main extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -212,18 +212,6 @@ class Main implements ActionInterface
 		)
 	);
 
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
-
 	/**
 	 * @var bool
 	 *
@@ -319,27 +307,6 @@ class Main implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Figures out which parts of the moderation center can be accessed by the

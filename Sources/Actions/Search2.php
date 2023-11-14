@@ -34,7 +34,7 @@ use SMF\Search\SearchResult;
 /**
  * Shows the search form.
  */
-class Search2 implements ActionInterface
+class Search2 extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -73,18 +73,6 @@ class Search2 implements ActionInterface
 	 * ID numbers of the authors of the $messages.
 	 */
 	public array $posters = array();
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -206,31 +194,6 @@ class Search2 implements ActionInterface
 		IntegrationHook::call('integrate_search_message_context', array(&$output, &$message, $counter));
 
 		return $output;
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

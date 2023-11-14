@@ -14,7 +14,7 @@
 namespace SMF\Actions\Profile;
 
 use SMF\BackwardCompatibility;
-use SMF\Actions\ActionInterface;
+use SMF\Actions\AbstractAction;
 
 use SMF\BBCodeParser;
 use SMF\Board;
@@ -37,7 +37,7 @@ use SMF\Db\DatabaseApi as Db;
 /**
  * Rename here and in the exportStatic call at the end of the file.
  */
-class ShowPosts implements ActionInterface
+class ShowPosts extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -85,18 +85,6 @@ class ShowPosts implements ActionInterface
 		'unwatchedtopics' => 'unwatched',
 		'attach' => 'attachments',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -401,27 +389,6 @@ class ShowPosts implements ActionInterface
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Gets information about unwatched (disregarded) topics. Callback for the list in show_unwatched

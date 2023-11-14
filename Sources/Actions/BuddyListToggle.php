@@ -27,7 +27,7 @@ use SMF\Db\DatabaseApi as Db;
  * Called by ?action=buddy;u=x;session_id=y.
  * Redirects to ?action=profile;u=x.
  */
-class BuddyListToggle implements ActionInterface
+class BuddyListToggle extends AbstractAction
 {
 	use BackwardCompatibility;
 
@@ -52,18 +52,6 @@ class BuddyListToggle implements ActionInterface
 	 * ID of the user being added or removed from the buddy list.
 	 */
 	public string $userReceiver;
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -117,31 +105,6 @@ class BuddyListToggle implements ActionInterface
 
 		// Redirect back to the profile
 		Utils::redirectexit('action=profile;u=' . $this->userReceiver);
-	}
-
-	/***********************
-	 * Public static methods
-	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
 	}
 
 	/******************

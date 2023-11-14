@@ -22,6 +22,7 @@ use SMF\Group;
 use SMF\IntegrationHook;
 use SMF\Lang;
 use SMF\Logging;
+use SMF\Mail;
 use SMF\Profile;
 use SMF\Security;
 use SMF\SecurityToken;
@@ -101,18 +102,6 @@ class Register2 extends Register
 	public array $possible_bools = array(
 		'show_online',
 	);
-
-	/****************************
-	 * Internal static properties
-	 ****************************/
-
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 * This is used by the load() method to prevent mulitple instantiations.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -431,7 +420,7 @@ class Register2 extends Register
 		// Don't update if the default is the same.
 		if ($var != $pref)
 		{
-			setNotifyPrefs($member_id, array('announcements' => (int) !empty($_POST['notify_announcements'])));
+			Notify::setNotifyPrefs($member_id, array('announcements' => (int) !empty($_POST['notify_announcements'])));
 		}
 
 		// We'll do custom fields after as then we get to use the helper function!
@@ -472,27 +461,6 @@ class Register2 extends Register
 	/***********************
 	 * Public static methods
 	 ***********************/
-
-	/**
-	 * Static wrapper for constructor.
-	 *
-	 * @return object An instance of this class.
-	 */
-	public static function load(): object
-	{
-		if (!isset(self::$obj))
-			self::$obj = new self();
-
-		return self::$obj;
-	}
-
-	/**
-	 * Convenience method to load() and execute() an instance of this class.
-	 */
-	public static function call(): void
-	{
-		self::load()->execute();
-	}
 
 	/**
 	 * Registers a member to the forum.
@@ -964,18 +932,6 @@ class Register2 extends Register
 		IntegrationHook::call('integrate_register_after', array($reg_options, $member_id));
 
 		return $member_id;
-	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
-
 	}
 }
 

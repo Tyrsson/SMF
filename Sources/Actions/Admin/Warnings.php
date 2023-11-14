@@ -204,18 +204,6 @@ class Warnings extends AbstractAction
 		self::load();
 		self::$obj->execute();
 	}
-
-	/******************
-	 * Internal methods
-	 ******************/
-
-	/**
-	 * Constructor. Protected to force instantiation via self::load().
-	 */
-	protected function __construct()
-	{
-
-	}
 }
 
 // Export public static functions and properties to global namespace for backward compatibility.

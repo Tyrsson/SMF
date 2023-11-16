@@ -20,6 +20,8 @@
  * @version 3.0 Alpha 1
  */
 
+use SMF\Container\Container;
+
 /********************************************************
  * Initialize things that are common to all entry points.
  * (i.e. index.php, SSI.php, cron.php, proxy.php)
@@ -81,7 +83,7 @@ if (SMF === 1)
 }
 
 // This is wrapped in a closure to keep the global namespace clean.
-call_user_func(function()
+(function()
 {
 	require_once(SMF_SETTINGS_FILE);
 
@@ -105,7 +107,7 @@ call_user_func(function()
 	// Pass all the settings to SMF\Config.
 	require_once($sourcedir . '/Config.php');
 	SMF\Config::set(get_defined_vars());
-});
+})();
 
 // Devs want all error messages, but others don't.
 if (SMF === 1)
@@ -127,7 +129,9 @@ require_once(SMF\Config::$sourcedir . '/Subs-Compat.php');
 
 if (SMF === 1)
 {
-	(new SMF\Forum())->execute();
+	$config = (require __DIR__ . '/Sources/Container/config.php');
+
+	(new SMF\Forum(new Container($config)))->execute();
 }
 
 ?>

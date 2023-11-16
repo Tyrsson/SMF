@@ -49,7 +49,7 @@ use SMF\Db\DatabaseApi as Db;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class Display implements ActionInterface
+class Display
 {
 	use BackwardCompatibility;
 
@@ -122,6 +122,11 @@ class Display implements ActionInterface
 	/****************
 	 * Public methods
 	 ****************/
+
+	public function __invoke()
+	{
+		return $this->execute();
+	}
 
 	/**
 	 * Does the heavy lifting to show the posts in this topic.
@@ -327,7 +332,7 @@ class Display implements ActionInterface
 	 * - Loads permissions.
 	 * - Prepares most of the stuff for the templates.
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		// What are you gonna display if this is empty?!
 		if (empty(Topic::$topic_id))

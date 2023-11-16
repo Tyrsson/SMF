@@ -14,6 +14,7 @@
 namespace SMF;
 
 use SMF\Db\DatabaseApi as Db;
+use SMF\Container\ContainerInterface;
 
 /**
  * The root Forum class. Used when browsing the forum normally.
@@ -191,7 +192,7 @@ class Forum
 	/**
 	 * Constructor
 	 */
-	public function __construct()
+	public function __construct(ContainerInterface $container)
 	{
 		// If Config::$maintenance is set specifically to 2, then we're upgrading or something.
 		if (!empty(Config::$maintenance) &&  2 === Config::$maintenance)
@@ -260,7 +261,8 @@ class Forum
 	public function execute()
 	{
 		// What function shall we execute? (done like this for memory's sake.)
-		call_user_func($this->main());
+		//call_user_func($this->main());
+		$this->main();
 
 		// Call obExit specially; we're coming from the main area ;).
 		Utils::obExit(null, null, true);

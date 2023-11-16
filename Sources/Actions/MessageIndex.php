@@ -35,7 +35,7 @@ use SMF\Db\DatabaseApi as Db;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class MessageIndex implements ActionInterface
+class MessageIndex
 {
 	use BackwardCompatibility;
 
@@ -461,7 +461,7 @@ class MessageIndex implements ActionInterface
 	 *
 	 * Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		if (empty(Board::$info->id))
 			ErrorHandler::fatalLang('no_board', false);

@@ -38,7 +38,7 @@ use SMF\Cache\CacheApi;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class BoardIndex implements ActionInterface
+class BoardIndex
 {
 	use BackwardCompatibility;
 
@@ -667,7 +667,7 @@ class BoardIndex implements ActionInterface
 	 *
 	 * Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		Theme::loadTemplate('BoardIndex');
 		Utils::$context['template_layers'][] = 'boardindex_outer';

@@ -129,7 +129,7 @@ require_once(SMF\Config::$sourcedir . '/Subs-Compat.php');
 
 if (SMF === 1)
 {
-	$config = (require __DIR__ . '/Sources/Container/config.php');
+	$config = (require __DIR__ . '/Sources/Container/smf-config.php');
 
 	(new SMF\Forum(new Container($config)))->execute();
 }

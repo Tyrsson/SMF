@@ -16,8 +16,10 @@ return [
 
 	],
 	'invokables' => [
+		Actions\Admin\ACP::class    => Actions\Admin\ACP::class,
 		Actions\BoardIndex::class   => Actions\BoardIndex::class,
 		Actions\Display::class      => Actions\Display::class,
+		Actions\Groups::class       => Actions\Groups::class,
 		Actions\MessageIndex::class => Actions\MessageIndex::class,
 	],
 ];

@@ -697,6 +697,11 @@ class BoardIndex
 		Utils::$context['show_who'] = User::$me->allowedTo('who_view') && !empty(Config::$modSettings['who_enabled']);
 	}
 
+	public function __invoke()
+	{
+		return new $this();
+	}
+
 	/*************************
 	 * Internal static methods
 	 *************************/

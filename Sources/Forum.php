@@ -406,8 +406,7 @@ class Forum
 				else
 				{
 					//return 'SMF\\Actions\\BoardIndex::call';
-					$object = $this->container->get(BoardIndex::class);
-					return $object::call();
+					return ($this->container->get(BoardIndex::class))->execute();
 				}
 			}
 
@@ -415,16 +414,14 @@ class Forum
 			elseif (empty(Topic::$topic_id))
 			{
 				//return 'SMF\\Actions\\MessageIndex::call';
-				$object = $this->container->get(MessageIndex::class);
-				return $object::call();
+				return ($this->container->get(MessageIndex::class))->execute();
 			}
 
 			// Board is not empty... topic is not empty... action is empty.. Display!
 			else
 			{
 				//return 'SMF\\Actions\\Display::call';
-				$object = $this->container->get(Display::class);
-				return $object::call();
+				return ($this->container->get(Display::class))->execute();
 			}
 		}
 
@@ -466,7 +463,7 @@ class Forum
 		//$object = $container->get(self::$actions[$_REQUEST['action']]);
 		if ($this->container->has(self::$actions[$_REQUEST['action']])) {
 			$object = $this->container->get(self::$actions[$_REQUEST['action']]);
-			return $object::call();
+			return $object->execute();
 		}
 	}
 }

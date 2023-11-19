@@ -24,12 +24,18 @@ spl_autoload_register(function ($class)
 
 	static $class_map = array(
 		// Some special cases.
-		'ReCaptcha\\' => 'ReCaptcha/',
+		'Laminas\\ConfigAggregator\\' => 'laminas/laminas-config-aggregator/src/',
+		'Laminas\\Diactoros' => 'laminas/laminas-diactoros/src/',
+		'Laminas\\ServiceManager\\' => 'laminas/laminas-servicemanager/src/',
+		'Laminas\\Stdlib\\' => 'laminas/laminas-stdlib/src/',
 		'MatthiasMullie\\Minify\\' => 'minify/src/',
 		'MatthiasMullie\\PathConverter\\' => 'minify/path-converter/src/',
-
+		'Psr\\Container\\' => 'psr/container/src/',
+		'Psr\\Http\\Message\\' => ['psr/http-factory/src/', 'psr/http-message/src/'],
+		'ReCaptcha\\' => 'ReCaptcha/',
 		// In general, the SMF namespace maps to $sourcedir.
 		'SMF\\' => '',
+		'Webimpress\\SafeWriter\\' => 'webimpress/safe-writer/src/',
 	);
 
 	// Ensure $sourcedir is set to something valid.

@@ -28,7 +28,7 @@ class Config
 	 *
 	 * Master switch to enable backward compatibility behaviours.
 	 */
-	public static bool $backward_compatibility = true;
+	public static bool $backward_compatibility = false;
 
 	########## Maintenance ##########
 	/**
@@ -260,7 +260,7 @@ class Config
 	 *
 	 * Whether to show debug info.
 	 */
-	public static $db_show_debug;
+	public static $db_show_debug = true;
 
 	/**
 	 * @var string

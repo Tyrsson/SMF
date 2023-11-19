@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    bootstrap="./vendor/autoload.php"
+    colors="true"
+    xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd">
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
+
+    <testsuites>
+        <testsuite name="Laminas\\Diactoros Tests">
+            <directory>./test</directory>
+        </testsuite>
+
+        <testsuite name="PSR-17 Integration Tests">
+            <directory>./vendor/http-interop/http-factory-tests/test</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <env name="ALWAYS_REFRESH_IANA_HTTP_STATUS_CODES" value="false"/>
+        <const name="REQUEST_FACTORY" value="Laminas\Diactoros\RequestFactory"/>
+        <const name="RESPONSE_FACTORY" value="Laminas\Diactoros\ResponseFactory"/>
+        <const name="SERVER_REQUEST_FACTORY" value="Laminas\Diactoros\ServerRequestFactory"/>
+        <const name="STREAM_FACTORY" value="Laminas\Diactoros\StreamFactory"/>
+        <const name="UPLOADED_FILE_FACTORY" value="Laminas\Diactoros\UploadedFileFactory"/>
+        <const name="URI_FACTORY" value="Laminas\Diactoros\UriFactory"/>
+    </php>
+</phpunit>

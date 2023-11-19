@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
+  <file src="src/AbstractOptions.php">
+    <DocblockTypeContradiction>
+      <code><![CDATA[! is_array($options) && ! $options instanceof Traversable]]></code>
+    </DocblockTypeContradiction>
+    <MixedArgument>
+      <code>$value</code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code>$value</code>
+    </MixedAssignment>
+    <MixedInferredReturnType>
+      <code>TValue</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement>
+      <code><![CDATA[$this->{$getter}()]]></code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/ArrayObject.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$data['iteratorClass']]]></code>
+      <code><![CDATA[(int) $data['flag']]]></code>
+    </ArgumentTypeCoercion>
+    <DocblockTypeContradiction>
+      <code><![CDATA[! is_array($data) && ! is_object($data)]]></code>
+    </DocblockTypeContradiction>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->storage]]></code>
+    </InvalidPropertyAssignmentValue>
+    <MethodSignatureMustProvideReturnType>
+      <code>serialize</code>
+      <code>unserialize</code>
+    </MethodSignatureMustProvideReturnType>
+    <MixedArgument>
+      <code>$v</code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code>$v</code>
+    </MixedAssignment>
+    <MixedInferredReturnType>
+      <code>TValue|null</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement>
+      <code><![CDATA[$this->$key]]></code>
+    </MixedReturnStatement>
+    <MixedReturnTypeCoercion>
+      <code><![CDATA[Iterator<TKey, TValue>]]></code>
+      <code><![CDATA[new $class($this->storage)]]></code>
+    </MixedReturnTypeCoercion>
+    <PossiblyInvalidPropertyAssignmentValue>
+      <code>$input</code>
+      <code>$input</code>
+    </PossiblyInvalidPropertyAssignmentValue>
+    <PropertyNotSetInConstructor>
+      <code>$iteratorClass</code>
+    </PropertyNotSetInConstructor>
+    <PropertyTypeCoercion>
+      <code>$class</code>
+    </PropertyTypeCoercion>
+    <RedundantConditionGivenDocblockType>
+      <code><![CDATA[in_array($key, $this->protectedProperties, true)]]></code>
+      <code>is_callable($function)</code>
+      <code>is_callable($function)</code>
+    </RedundantConditionGivenDocblockType>
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$ret = &$this->storage[$key]]]></code>
+    </UnsupportedPropertyReferenceUsage>
+    <UnsupportedReferenceUsage>
+      <code><![CDATA[$ret = &$this->offsetGet($key)]]></code>
+    </UnsupportedReferenceUsage>
+  </file>
+  <file src="src/ArrayUtils.php">
+    <MixedArgumentTypeCoercion>
+      <code>$callback</code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment>
+      <code>$a[$key]</code>
+      <code>$a[$key]</code>
+      <code>$a[$key]</code>
+      <code>$a[]</code>
+      <code>$h</code>
+      <code>$value</code>
+    </MixedAssignment>
+  </file>
+  <file src="src/ErrorHandler.php">
+    <InvalidArgument>
+      <code><![CDATA[[static::class, 'addError']]]></code>
+    </InvalidArgument>
+    <InvalidArrayOffset>
+      <code>static::$stack[count(static::$stack) - 1]</code>
+    </InvalidArrayOffset>
+    <MixedArgument>
+      <code>$stack</code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code>$stack</code>
+    </MixedAssignment>
+    <UnsupportedReferenceUsage>
+      <code><![CDATA[$stack = &static::$stack[count(static::$stack) - 1]]]></code>
+    </UnsupportedReferenceUsage>
+  </file>
+  <file src="src/FastPriorityQueue.php">
+    <DocblockTypeContradiction>
+      <code>is_int($priority)</code>
+      <code><![CDATA[throw new Exception\InvalidArgumentException("The extract flag specified is not valid")]]></code>
+    </DocblockTypeContradiction>
+    <ImplementedReturnTypeMismatch>
+      <code>TValue|int|array{data: TValue|false, priority: int|null}|false</code>
+    </ImplementedReturnTypeMismatch>
+    <LessSpecificReturnStatement>
+      <code>$array</code>
+      <code>$value</code>
+    </LessSpecificReturnStatement>
+    <MethodSignatureMustProvideReturnType>
+      <code>serialize</code>
+      <code>unserialize</code>
+    </MethodSignatureMustProvideReturnType>
+    <MixedArgument>
+      <code><![CDATA[$item['data']]]></code>
+      <code><![CDATA[$item['priority']]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$item['data']]]></code>
+      <code><![CDATA[$item['priority']]]></code>
+    </MixedArrayAccess>
+    <MixedAssignment>
+      <code>$item</code>
+      <code><![CDATA[$this->maxPriority]]></code>
+    </MixedAssignment>
+    <MoreSpecificReturnType>
+      <code>TValue|int|array{data: TValue, priority: int}|false</code>
+      <code><![CDATA[list<TValue|int|array{data: TValue, priority: int}>]]></code>
+    </MoreSpecificReturnType>
+    <PossiblyNullArrayOffset>
+      <code><![CDATA[$this->priorities]]></code>
+      <code><![CDATA[$this->priorities]]></code>
+      <code><![CDATA[$this->subPriorities]]></code>
+      <code><![CDATA[$this->values]]></code>
+      <code><![CDATA[$this->values]]></code>
+      <code><![CDATA[$this->values]]></code>
+      <code><![CDATA[$this->values]]></code>
+      <code><![CDATA[$this->values]]></code>
+    </PossiblyNullArrayOffset>
+  </file>
+  <file src="src/Glob.php">
+    <ArgumentTypeCoercion>
+      <code>$globFlags</code>
+    </ArgumentTypeCoercion>
+    <PossiblyNullArrayOffset>
+      <code>$pattern</code>
+    </PossiblyNullArrayOffset>
+    <PossiblyNullOperand>
+      <code>$next</code>
+      <code>$next</code>
+    </PossiblyNullOperand>
+  </file>
+  <file src="src/Message.php">
+    <DocblockTypeContradiction>
+      <code><![CDATA[! is_array($spec) && ! $spec instanceof Traversable]]></code>
+      <code>is_scalar($key)</code>
+    </DocblockTypeContradiction>
+    <MixedArrayOffset>
+      <code><![CDATA[$this->metadata[$key]]]></code>
+    </MixedArrayOffset>
+    <MixedAssignment>
+      <code>$key</code>
+      <code>$key</code>
+      <code>$value</code>
+      <code>$value</code>
+    </MixedAssignment>
+    <MixedOperand>
+      <code><![CDATA[$this->getContent()]]></code>
+    </MixedOperand>
+    <ParamNameMismatch>
+      <code>$value</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="src/MessageInterface.php">
+    <MissingReturnType>
+      <code>setMetadata</code>
+    </MissingReturnType>
+  </file>
+  <file src="src/PriorityList.php">
+    <FalsableReturnStatement>
+      <code><![CDATA[$node ? $node['data'] : false]]></code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType>
+      <code>current</code>
+    </InvalidFalsableReturnType>
+    <InvalidReturnStatement>
+      <code><![CDATA[$node ? $node['data'] : false]]></code>
+    </InvalidReturnStatement>
+    <MixedReturnTypeCoercion>
+      <code>next</code>
+    </MixedReturnTypeCoercion>
+    <RedundantCastGivenDocblockType>
+      <code>(int) $priority</code>
+      <code>(int) $priority</code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/PriorityQueue.php">
+    <MethodSignatureMustProvideReturnType>
+      <code>serialize</code>
+      <code>unserialize</code>
+    </MethodSignatureMustProvideReturnType>
+  </file>
+  <file src="src/SplPriorityQueue.php">
+    <DocblockTypeContradiction>
+      <code>is_array($priority)</code>
+    </DocblockTypeContradiction>
+    <ImplementedReturnTypeMismatch>
+      <code>void</code>
+    </ImplementedReturnTypeMismatch>
+    <InvalidArgument>
+      <code>$priority</code>
+      <code>$priority</code>
+    </InvalidArgument>
+    <MethodSignatureMismatch>
+      <code>public function insert($datum, $priority)</code>
+    </MethodSignatureMismatch>
+    <MethodSignatureMustProvideReturnType>
+      <code>insert</code>
+      <code>serialize</code>
+      <code>unserialize</code>
+    </MethodSignatureMustProvideReturnType>
+    <MixedArgument>
+      <code><![CDATA[$item['data']]]></code>
+    </MixedArgument>
+  </file>
+  <file src="src/StringUtils.php">
+    <DocblockTypeContradiction>
+      <code>static::$hasPcreUnicodeSupport === null</code>
+    </DocblockTypeContradiction>
+    <PossiblyNullArrayAccess>
+      <code>static::$wrapperRegistry[$index]</code>
+    </PossiblyNullArrayAccess>
+    <RedundantCastGivenDocblockType>
+      <code>(string) $wrapper</code>
+      <code>(string) $wrapper</code>
+    </RedundantCastGivenDocblockType>
+    <RedundantConditionGivenDocblockType>
+      <code>is_string($str)</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="src/StringWrapper/AbstractStringWrapper.php">
+    <ImplementedReturnTypeMismatch>
+      <code>string|false</code>
+    </ImplementedReturnTypeMismatch>
+    <ParamNameMismatch>
+      <code>$string</code>
+    </ParamNameMismatch>
+    <PossiblyFalseArgument>
+      <code>$breakWidth</code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code>$breakWidth</code>
+      <code>$breakWidth</code>
+      <code>$lastString</code>
+      <code>$lastString</code>
+      <code>$lastStringLeft</code>
+      <code>$lastStringRight</code>
+      <code>$padStringLength</code>
+      <code>$padStringLength</code>
+      <code>$padStringLength</code>
+      <code><![CDATA[$this->strlen($input)]]></code>
+      <code><![CDATA[$this->substr($string, $lastStart, $current - $lastStart + $breakWidth)]]></code>
+      <code><![CDATA[$this->substr($string, $lastStart, $current - $lastStart)]]></code>
+      <code><![CDATA[$this->substr($string, $lastStart, $current - $lastStart)]]></code>
+      <code><![CDATA[$this->substr($string, $lastStart, $current - $lastStart)]]></code>
+      <code><![CDATA[$this->substr($string, $lastStart, $lastSpace - $lastStart)]]></code>
+    </PossiblyFalseOperand>
+    <PossiblyInvalidArgument>
+      <code>$repeatCountLeft</code>
+      <code>$repeatCountRight</code>
+    </PossiblyInvalidArgument>
+    <PossiblyNullArgument>
+      <code><![CDATA[$this->getEncoding()]]></code>
+      <code><![CDATA[$this->getEncoding()]]></code>
+    </PossiblyNullArgument>
+    <RedundantCastGivenDocblockType>
+      <code>(int) $width</code>
+      <code>(string) $break</code>
+      <code>(string) $string</code>
+    </RedundantCastGivenDocblockType>
+  </file>
+  <file src="src/StringWrapper/Native.php">
+    <NonInvariantDocblockPropertyType>
+      <code>$encoding</code>
+    </NonInvariantDocblockPropertyType>
+  </file>
+  <file src="src/StringWrapper/StringWrapperInterface.php">
+    <MissingReturnType>
+      <code>isSupported</code>
+    </MissingReturnType>
+  </file>
+  <file src="test/ArrayObjectTest.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA['ArrayIterator']]></code>
+      <code><![CDATA['InvalidArrayIterator']]></code>
+    </ArgumentTypeCoercion>
+    <InvalidArgument>
+      <code><![CDATA['Bacon']]></code>
+    </InvalidArgument>
+    <MissingClosureParamType>
+      <code>$a</code>
+      <code>$b</code>
+    </MissingClosureParamType>
+    <MixedAssignment>
+      <code>$unserialized</code>
+    </MixedAssignment>
+    <MixedMethodCall>
+      <code>isImmutable</code>
+    </MixedMethodCall>
+    <PossiblyNullArgument>
+      <code><![CDATA[$ar['foo']['bar']]]></code>
+    </PossiblyNullArgument>
+    <PossiblyNullArrayAccess>
+      <code><![CDATA[$ar['foo']['bar']]]></code>
+      <code><![CDATA[$ar['foo']['bar']['baz']]]></code>
+    </PossiblyNullArrayAccess>
+    <RedundantConditionGivenDocblockType>
+      <code>assertSame</code>
+    </RedundantConditionGivenDocblockType>
+    <UndefinedClass>
+      <code><![CDATA['InvalidArrayIterator']]></code>
+    </UndefinedClass>
+    <UndefinedInterfaceMethod>
+      <code>getArrayCopy</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="test/ArrayUtilsTest.php">
+    <DeprecatedConstant>
+      <code>ArrayUtils::ARRAY_FILTER_USE_BOTH</code>
+      <code>ArrayUtils::ARRAY_FILTER_USE_KEY</code>
+    </DeprecatedConstant>
+    <DeprecatedMethod>
+      <code>ArrayUtils::filter($data, $callback, $flag)</code>
+      <code><![CDATA[ArrayUtils::filter([], "INVALID")]]></code>
+    </DeprecatedMethod>
+    <DuplicateArrayKey>
+      <code><![CDATA['-10000' => null]]></code>
+    </DuplicateArrayKey>
+    <MixedArgument>
+      <code>$test</code>
+    </MixedArgument>
+    <UndefinedFunction>
+      <code><![CDATA["INVALID"]]></code>
+    </UndefinedFunction>
+  </file>
+  <file src="test/CustomArrayObject.php">
+    <PropertyNotSetInConstructor>
+      <code>CustomArrayObject</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="test/ErrorHandlerTest.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA['ErrorException']]></code>
+      <code><![CDATA['ErrorException']]></code>
+      <code><![CDATA['ErrorException']]></code>
+    </ArgumentTypeCoercion>
+    <PossiblyNullReference>
+      <code>getFile</code>
+      <code>getFile</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod>
+      <code>getSeverity</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="test/FastPriorityQueueTest.php">
+    <MixedAssignment>
+      <code>$datum</code>
+      <code>$item</code>
+      <code>$test[]</code>
+      <code>$test[]</code>
+      <code>$test[]</code>
+      <code>$test[]</code>
+      <code>$test[]</code>
+      <code>$test[]</code>
+      <code>$value</code>
+      <code>$value</code>
+      <code>$value</code>
+      <code>$value</code>
+    </MixedAssignment>
+  </file>
+  <file src="test/GlobTest.php">
+    <MixedArgument>
+      <code>$result[$i]</code>
+    </MixedArgument>
+    <RedundantConditionGivenDocblockType>
+      <code>assertIsArray</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="test/ParametersTest.php">
+    <UndefinedPropertyFetch>
+      <code><![CDATA[$parameters->bar]]></code>
+      <code><![CDATA[$parameters->baz]]></code>
+      <code><![CDATA[$parameters->five]]></code>
+      <code><![CDATA[$parameters->foo]]></code>
+      <code><![CDATA[$parameters->foo]]></code>
+      <code><![CDATA[$parameters->foof]]></code>
+    </UndefinedPropertyFetch>
+  </file>
+</files>

@@ -1,0 +1,55 @@
+{
+    "name": "webimpress/safe-writer",
+    "description": "Tool to write files safely, to avoid race conditions",
+    "license": "BSD-2-Clause",
+    "keywords": [
+        "webimpress",
+        "safe writer",
+        "file writer",
+        "concurrent write",
+        "race condition"
+    ],
+    "require": {
+        "php": "^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6.7",
+        "vimeo/psalm": "^5.9",
+        "webimpress/coding-standard": "^1.3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webimpress\\SafeWriter\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WebimpressTest\\SafeWriter\\": "test/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.99"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.2.x-dev",
+            "dev-develop": "2.3.x-dev",
+            "dev-release-1.0": "1.0.x-dev"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test",
+            "@static-analysis"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "static-analysis": "psalm --shepherd --stats",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+    }
+}

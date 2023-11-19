@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace LaminasBench\ServiceManager\BenchAsset;
+
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
+
+class FactoryFoo implements FactoryInterface
+{
+    /** {@inheritDoc} */
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
+    {
+        return new Foo($options);
+    }
+}

@@ -21,6 +21,7 @@
  */
 
 use SMF\Container\Container;
+use SMF\Forum;
 
 /********************************************************
  * Initialize things that are common to all entry points.
@@ -129,9 +130,12 @@ require_once(SMF\Config::$sourcedir . '/Subs-Compat.php');
 
 if (SMF === 1)
 {
-	$config = (require __DIR__ . '/Sources/Container/smf-config.php');
-
-	(new SMF\Forum(new Container($config)))->execute();
+	// we gotz services?
+	$container = (require __DIR__ . '/config/container.php');
+	if (! $container->has(Forum::class)) {
+		// throw exception
+	}
+	($container->get(Forum::class))->execute();
 }
 
 ?>

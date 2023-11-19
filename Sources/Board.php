@@ -2341,8 +2341,9 @@ class Board implements \ArrayAccess
 	 * @param array $props Properties to set for this board. Only used when $id
 	 *    is not null.
 	 */
-	protected function __construct(?int $id = null, array $props = array())
+	public function __construct(?int $id = null, array $props = array())
 	{
+
 		// This should already have been set, but just in case...
 		if (!isset(self::$board_id))
 			self::$board_id = (int) ($_REQUEST['board'] ?? 0);

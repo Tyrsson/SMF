@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<psalm
+    totallyTyped="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedCode="true"
+    findUnusedBaselineEntry="true"
+>
+    <projectFiles>
+        <directory name="src"/>
+        <directory name="test"/>
+        <ignoreFiles>
+            <directory name="vendor"/>
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <InternalMethod>
+            <errorLevel type="suppress">
+                <directory name="test/Exception/"/>
+            </errorLevel>
+        </InternalMethod>
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress">
+                <directory name="test/"/>
+                <referencedProperty name="$backupStaticAttributes"/>
+            </errorLevel>
+        </PropertyNotSetInConstructor>
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="test/"/>
+            </errorLevel>
+        </UnusedClass>
+    </issueHandlers>
+</psalm>

@@ -13,11 +13,11 @@
 
 namespace SMF;
 
+use Psr\Container\ContainerInterface;
 use SMF\Actions\BoardIndex;
 use SMF\Actions\Display;
 use SMF\Actions\MessageIndex;
 use SMF\Db\DatabaseApi as Db;
-use SMF\Container\ContainerInterface;
 
 /**
  * The root Forum class. Used when browsing the forum normally.

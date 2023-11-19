@@ -250,7 +250,7 @@ class Main implements ActionInterface
 		$call = method_exists($this, Menu::$loaded['moderate']->include_data['function']) ? array($this, Menu::$loaded['moderate']->include_data['function']) : Utils::getCallable(Menu::$loaded['moderate']->include_data['function']);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**

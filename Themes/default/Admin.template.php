@@ -825,8 +825,9 @@ function template_show_settings()
 		// Hang about? Are you pulling my leg - a callback?!
 		if (is_array($config_var) && $config_var['type'] == 'callback')
 		{
-			if (function_exists('template_callback_' . $config_var['name']))
-				call_user_func('template_callback_' . $config_var['name']);
+			$callback = 'template_callback_' . $config_var['name'];
+			if (function_exists($callback))
+				$callback();
 
 			continue;
 		}

@@ -515,7 +515,7 @@ class Feed implements ActionInterface
 				$call = Utils::getCallable(self::$subactions[$this->subaction]);
 			}
 
-			$this->data = !empty($call) ? call_user_func($call, $this->format) : array();
+			$this->data = !empty($call) ? $call($this->format) : array();
 
 			if (
 				!empty(CacheApi::$enable)

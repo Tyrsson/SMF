@@ -105,7 +105,7 @@ class XmlHttp implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction]) ? array($this, self::$subactions[$this->subaction]) : Utils::getCallable(self::$subactions[$this->subaction]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**
@@ -163,7 +163,7 @@ class XmlHttp implements ActionInterface
 		if (!isset($_POST['item']) || !in_array($_POST['item'], $items))
 			return false;
 
-		call_user_func(array($this, $_POST['item']));
+		$this->{$_POST['item']}();
 	}
 
 	/**

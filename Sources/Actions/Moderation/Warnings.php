@@ -114,7 +114,7 @@ class Warnings implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction][0]) ? array($this, self::$subactions[$this->subaction][0]) : Utils::getCallable(self::$subactions[$this->subaction][0]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**
@@ -176,7 +176,7 @@ class Warnings implements ActionInterface
 
 		// Setup the search context.
 		Utils::$context['search_params'] = empty($search_params['string']) ? '' : base64_encode(Utils::jsonEncode($search_params));
-		
+
 		Utils::$context['search'] = array(
 			'string' => $search_params['string'],
 			'type' => $search_params['type'],

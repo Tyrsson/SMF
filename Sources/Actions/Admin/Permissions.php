@@ -968,7 +968,7 @@ class Permissions implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction][0]) ? array($this, self::$subactions[$this->subaction][0]) : Utils::getCallable(self::$subactions[$this->subaction][0]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**
@@ -1794,19 +1794,19 @@ class Permissions implements ActionInterface
 			{
 				switch ($perm_info['group_level'])
 				{
-					case GROUP_LEVEL_RESTRICT;
+					case self::GROUP_LEVEL_RESTRICT;
 						$group_levels[$perm_info['scope']]['restrict'][] = $permission;
 						// no break
 
-					case GROUP_LEVEL_STANDARD;
+					case self::GROUP_LEVEL_STANDARD;
 						$group_levels[$perm_info['scope']]['standard'][] = $permission;
 						// no break
 
-					case GROUP_LEVEL_MODERATOR;
+					case self::GROUP_LEVEL_MODERATOR;
 						$group_levels[$perm_info['scope']]['moderator'][] = $permission;
 						// no break
 
-					case GROUP_LEVEL_MAINTENANCE;
+					case self::GROUP_LEVEL_MAINTENANCE;
 						$group_levels[$perm_info['scope']]['maintenance'][] = $permission;
 						break;
 				}
@@ -1816,19 +1816,19 @@ class Permissions implements ActionInterface
 			{
 				switch ($perm_info['board_level'])
 				{
-					case BOARD_LEVEL_STANDARD;
+					case self::BOARD_LEVEL_STANDARD;
 						$group_levels[$perm_info['scope']]['standard'][] = $permission;
 						// no break
 
-					case BOARD_LEVEL_LOCKED;
+					case self::BOARD_LEVEL_LOCKED;
 						$group_levels[$perm_info['scope']]['locked'][] = $permission;
 						// no break
 
-					case BOARD_LEVEL_PUBLISH;
+					case self::BOARD_LEVEL_PUBLISH;
 						$group_levels[$perm_info['scope']]['publish'][] = $permission;
 						// no break
 
-					case BOARD_LEVEL_FREE;
+					case self::BOARD_LEVEL_FREE;
 						$group_levels[$perm_info['scope']]['free'][] = $permission;
 						break;
 				}

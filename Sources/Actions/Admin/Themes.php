@@ -139,7 +139,7 @@ class Themes implements ActionInterface
 		}
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**

@@ -204,7 +204,7 @@ class Reports implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction]) ? array($this, self::$subactions[$this->subaction]) : Utils::getCallable(self::$subactions[$this->subaction]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 
 		// Finish the tables before exiting - this is to help the templates a little more.
 		$this->finishTables();

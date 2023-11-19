@@ -94,30 +94,36 @@ function template_main()
 		topics (# of), posts (# of), link, href, and last_post. (see below.) */
 		foreach ($category['boards'] as $board)
 		{
+			$iconFunction = 'template_bi_' . $board['type'] . '_icon';
+			$infoFunction = 'template_bi_' . $board['type'] . '_info';
+			$statsFunction = 'template_bi_' . $board['type'] . '_stats';
+			$lastPostFunction = 'template_bi_' . $board['type'] . '_lastpost';
+			$childFunction = 'template_bi_' . $board['type'] . '_children';
+
 			echo '
 				<div id="board_', $board['id'], '" class="up_contain ', (!empty($board['css_class']) ? $board['css_class'] : ''), '">
 					<div class="board_icon">
-						', function_exists('template_bi_' . $board['type'] . '_icon') ? call_user_func('template_bi_' . $board['type'] . '_icon', $board) : template_bi_board_icon($board), '
+						', function_exists($iconFunction) ? $iconFunction($board) : template_bi_board_icon($board), '
 					</div>
 					<div class="info">
-						', function_exists('template_bi_' . $board['type'] . '_info') ? call_user_func('template_bi_' . $board['type'] . '_info', $board) : template_bi_board_info($board), '
+						', function_exists($infoFunction) ? $infoFunction($board) : template_bi_board_info($board), '
 					</div><!-- .info -->';
 
 			// Show some basic information about the number of posts, etc.
 			echo '
 					<div class="board_stats">
-						', function_exists('template_bi_' . $board['type'] . '_stats') ? call_user_func('template_bi_' . $board['type'] . '_stats', $board) : template_bi_board_stats($board), '
+						', function_exists($statsFunction) ? $statsFunction($board) : template_bi_board_stats($board), '
 					</div>';
 
 			// Show the last post if there is one.
 			echo'
 					<div class="lastpost">
-						', function_exists('template_bi_' . $board['type'] . '_lastpost') ? call_user_func('template_bi_' . $board['type'] . '_lastpost', $board) : template_bi_board_lastpost($board), '
+						', function_exists($lastPostFunction) ? $lastPostFunction($board) : template_bi_board_lastpost($board), '
 					</div>';
 
 			// Won't somebody think of the children!
-			if (function_exists('template_bi_' . $board['type'] . '_children'))
-				call_user_func('template_bi_' . $board['type'] . '_children', $board);
+			if (function_exists($childFunction))
+				 $childFunction($board);
 			else
 				template_bi_board_children($board);
 

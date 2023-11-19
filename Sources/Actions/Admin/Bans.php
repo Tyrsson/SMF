@@ -123,7 +123,7 @@ class Bans implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction]) ? array($this, self::$subactions[$this->subaction]) : Utils::getCallable(self::$subactions[$this->subaction]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**
@@ -1792,7 +1792,7 @@ class Bans implements ActionInterface
 		foreach ($search_list as $key => $callable)
 		{
 			if (is_callable($callable))
-				$return[$key] = call_user_func($callable, $member_id);
+				$return[$key] = $callable($member_id);
 		}
 
 		return $return;

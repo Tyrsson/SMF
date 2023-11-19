@@ -805,7 +805,7 @@ class ACP implements ActionInterface
 
 		// Is it valid?
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/***********************

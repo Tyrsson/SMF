@@ -713,7 +713,7 @@ class Main implements ActionInterface
 
 		// Is it valid?
 		if (!empty($call))
-			call_user_func($call, Profile::$member->id);
+			$call(Profile::$member->id);
 
 		// Set the page title if it's not already set...
 		if (!isset(Utils::$context['page_title']))

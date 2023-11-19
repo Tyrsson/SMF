@@ -74,49 +74,49 @@ class Notification implements ActionInterface
 	 * @var array
 	 *
 	 * Defines all the types of alerts and their default values.
-	 * 
+	 *
 	 * The 'alert' and 'email' keys are required for each alert type.
 	 * The 'help' and 'permission' keys are optional.
-	 * 
+	 *
 	 * Valid values for 'alert' and 'email' keys are: 'always', 'yes', 'never'.
 	 * If using 'always' or 'never' you should add a help string.
 	 */
 	public array $alert_types = array(
 		'board' => array(
 			'topic_notify' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 			'board_notify' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 		),
 		'msg' => array(
 			'msg_mention' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 			'msg_quote' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 			'msg_like' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'never',
 			),
 			'unapproved_reply' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 		),
 		'pm' => array(
 			'pm_new' => array(
-				'alert' => 'never', 
-				'email' => 'yes', 
-				'help' => 'alert_pm_new', 
+				'alert' => 'never',
+				'email' => 'yes',
+				'help' => 'alert_pm_new',
 				'permission' => array(
-					'name' => 'pm_read', 
+					'name' => 'pm_read',
 					'is_board' => false,
 				),
 			),
@@ -132,11 +132,11 @@ class Notification implements ActionInterface
 		),
 		'groupr' => array(
 			'groupr_approved' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 			'groupr_rejected' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 		),
@@ -229,7 +229,7 @@ class Notification implements ActionInterface
 		),
 		'paidsubs' => array(
 			'paidsubs_expiring' => array(
-				'alert' => 'yes', 
+				'alert' => 'yes',
 				'email' => 'yes',
 			),
 		),
@@ -243,19 +243,19 @@ class Notification implements ActionInterface
 	public array $group_options = array(
 		'board' => array(
 			'msg_auto_notify' => array(
-				'check', 
-				'msg_auto_notify', 
+				'check',
+				'msg_auto_notify',
 				'label' => 'after',
 			),
 			'msg_receive_body' => array(
-				'check', 
-				'msg_receive_body', 
+				'check',
+				'msg_receive_body',
 				'label' => 'after',
 			),
 			'msg_notify_pref' => array(
-				'select', 
-				'msg_notify_pref', 
-				'label' => 'before', 
+				'select',
+				'msg_notify_pref',
+				'label' => 'before',
 				'opts' => array(
 					0 => 'alert_opt_msg_notify_pref_never',
 					1 => 'alert_opt_msg_notify_pref_instant',
@@ -265,9 +265,9 @@ class Notification implements ActionInterface
 				),
 			),
 			'msg_notify_type' => array(
-				'select', 
-				'msg_notify_type', 
-				'label' => 'before', 
+				'select',
+				'msg_notify_type',
+				'label' => 'before',
 				'opts' => array(
 					1 => 'notify_send_type_everything',
 					2 => 'notify_send_type_everything_own',
@@ -278,9 +278,9 @@ class Notification implements ActionInterface
 		),
 		'pm' => array(
 			'pm_notify' => array(
-				'select', 
-				'pm_notify', 
-				'label' => 'before', 
+				'select',
+				'pm_notify',
+				'label' => 'before',
 				'opts' => array(
 					1 => 'email_notify_all',
 					2 => 'email_notify_buddies',
@@ -355,7 +355,7 @@ class Notification implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction]) ? array($this, self::$subactions[$this->subaction]) : Utils::getCallable(self::$subactions[$this->subaction]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**
@@ -1198,7 +1198,7 @@ class Notification implements ActionInterface
 
 			foreach ($_POST['notify_boards'] as $board)
 				$prefs[] = 'board_notify_' . $board;
-			
+
 			Notify::deleteNotifyPrefs(Profile::$member->id, $prefs);
 		}
 	}

@@ -81,7 +81,7 @@ if (SMF === 1)
 }
 
 // This is wrapped in a closure to keep the global namespace clean.
-call_user_func(function()
+(function()
 {
 	require_once(SMF_SETTINGS_FILE);
 
@@ -105,7 +105,7 @@ call_user_func(function()
 	// Pass all the settings to SMF\Config.
 	require_once($sourcedir . '/Config.php');
 	SMF\Config::set(get_defined_vars());
-});
+})();
 
 // Devs want all error messages, but others don't.
 if (SMF === 1)

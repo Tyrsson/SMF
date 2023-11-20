@@ -808,6 +808,11 @@ class ACP implements ActionInterface
 			$call();
 	}
 
+	public function __invoke()
+	{
+		return new $this();
+	}
+
 	/***********************
 	 * Public static methods
 	 ***********************/

@@ -23,9 +23,11 @@ final class ConfigProvider
 				Board::class => Factories\BoardFactory::class,
 			],
 			'invokables' => [
-				Actions\BoardIndex::class => Actions\BoardIndex::class,
+				Actions\Admin\ACP::class    => Actions\Admin\ACP::class,
+				Actions\Admin\Logs::class   => Actions\Admin\Logs::class,
+				Actions\BoardIndex::class   => Actions\BoardIndex::class,
 				Actions\MessageIndex::class => Actions\MessageIndex::class,
-				Actions\Display::class => Actions\Display::class,
+				Actions\Display::class      => Actions\Display::class,
 			],
 		];
 	}

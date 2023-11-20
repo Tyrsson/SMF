@@ -318,6 +318,11 @@ class Logs implements ActionInterface
 		ACP::prepareDBSettingContext($config_vars);
 	}
 
+	public function __invoke()
+	{
+		return new $this();
+	}
+
 	/***********************
 	 * Public static methods
 	 ***********************/
@@ -425,7 +430,7 @@ class Logs implements ActionInterface
 	/**
 	 * Constructor. Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		foreach (self::$subactions as &$subaction)
 		{

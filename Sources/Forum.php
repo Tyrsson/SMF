@@ -265,7 +265,7 @@ class Forum
 	public function execute()
 	{
 		// What function shall we execute? (done like this for memory's sake.)
-		$this->main()();
+		$this->main();
 
 		// Call obExit specially; we're coming from the main area ;).
 		Utils::obExit(null, null, true);

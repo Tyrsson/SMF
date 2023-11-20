@@ -13,6 +13,9 @@
 
 namespace SMF;
 
+use const SMF_INTEGRATION_SETTINGS;
+use const SMF_SETTINGS_FILE;
+
 /**
  * Handles loading and saving SMF's settings, both in Settings.php and database.
  * Handles checking and modifying certain server and forum configuration values.

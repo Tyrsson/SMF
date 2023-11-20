@@ -228,7 +228,7 @@ class Post implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction]) ? array($this, self::$subactions[$this->subaction]) : Utils::getCallable(self::$subactions[$this->subaction]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**

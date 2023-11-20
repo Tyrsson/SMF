@@ -139,7 +139,7 @@ class Home implements ActionInterface
 				$call = Utils::getCallable($block['func']);
 
 				if (!empty($call))
-					call_user_func($call);
+					$call();
 			}
 
 			Utils::$context['mod_blocks'][] = $this->blocks[$k]['sub_template'];
@@ -333,8 +333,9 @@ class Home implements ActionInterface
 		}
 
 		// Lets construct a page index.
-		Utils::$context['page_index'] = new PageIndex(Config::$scripturl . '?action=moderate;area=index;notes', $_GET['start'], $moderator_notes_total, 10);
-		Utils::$context['start'] = $_GET['start'];
+		$start = (int) ($_GET['start'] ?? 0);
+		Utils::$context['page_index'] = new PageIndex(Config::$scripturl . '?action=moderate;area=index;notes', $start, $moderator_notes_total, 10);
+		Utils::$context['start'] = $start;
 
 		Utils::$context['notes'] = array();
 
@@ -514,7 +515,7 @@ class Home implements ActionInterface
 			return;
 
 		$cachekey = md5(Utils::jsonEncode((int) User::$me->allowedTo('moderate_forum')));
-		
+
 		if (($reported_users = CacheApi::get('reported_users_' . $cachekey, 90)) === null)
 		{
 			$reported_users = array();
@@ -567,7 +568,7 @@ class Home implements ActionInterface
 
 	/**
 	 * Provides a home for the deprecated integrate_mod_centre_blocks hook.
-	 * 
+	 *
 	 * MOD AUTHORS: Please use the integrate_moderation_home_blocks instead.
 	 */
 	protected static function integrateModBlocks()
@@ -578,7 +579,7 @@ class Home implements ActionInterface
 
 		if (empty($valid_blocks))
 			return;
-		
+
 		foreach ($valid_blocks as $k => $func)
 		{
 			$func = 'ModBlock' . $func;

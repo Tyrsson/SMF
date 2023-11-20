@@ -15,6 +15,7 @@ namespace SMF\Actions;
 
 use SMF\BackwardCompatibility;
 
+use SMF\Mail;
 use SMF\Config;
 use SMF\Cookie;
 use SMF\ErrorHandler;

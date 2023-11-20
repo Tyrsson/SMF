@@ -2436,7 +2436,7 @@ class Utils
 		if ($return)
 			return $callable;
 
-		call_user_func($func);
+		$callable();
 	}
 
 	/**

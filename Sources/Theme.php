@@ -406,8 +406,9 @@ class Theme
 			}
 
 			// If they have specified an initialization function for this template, go ahead and call it now.
-			if (function_exists('template_' . $template_name . '_init'))
-				call_user_func('template_' . $template_name . '_init');
+			$func = 'template_' . $template_name . '_init';
+			if (function_exists($func))
+				$func();
 		}
 		// Hmmm... doesn't exist?!  I don't suppose the directory is wrong, is it?
 		elseif (!file_exists(self::$current->settings['default_theme_dir']) && file_exists(Config::$boarddir . '/Themes/default'))

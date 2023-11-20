@@ -190,7 +190,7 @@ class Maintenance implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction]['function']) ? array($this, self::$subactions[$this->subaction]['function']) : Utils::getCallable(self::$subactions[$this->subaction]['function']);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 
 		// Any special activity?
 		if (!empty($this->activity))
@@ -198,7 +198,7 @@ class Maintenance implements ActionInterface
 			$call = method_exists($this, self::$subactions[$this->subaction]['activities'][$this->activity]) ? array($this, self::$subactions[$this->subaction]['activities'][$this->activity]) : Utils::getCallable(self::$subactions[$this->subaction]['activities'][$this->activity]);
 
 			if (!empty($call))
-				call_user_func($call);
+				$call();
 		}
 
 		// Create a maintenance token.  Kinda hard to do it any other way.

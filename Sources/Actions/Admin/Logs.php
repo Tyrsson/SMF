@@ -181,7 +181,7 @@ class Logs implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction][1]) ? array($this, self::$subactions[$this->subaction][1]) : Utils::getCallable(self::$subactions[$this->subaction][1]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**

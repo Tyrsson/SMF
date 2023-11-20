@@ -68,7 +68,7 @@ if (!empty(SMF\Config::$backward_compatibility))
 if (version_compare(PHP_VERSION, '8.0.0', '>='))
 {
 	// This is wrapped in a closure to keep the global namespace clean.
-	call_user_func(function()
+	(function()
 	{
 		/*
 		 * This array contains function names that meet the following conditions:
@@ -92,7 +92,7 @@ if (version_compare(PHP_VERSION, '8.0.0', '>='))
 				eval('function ' . $func . '() { trigger_error("' . $func . '() has been disabled", E_USER_WARNING); }');
 			}
 		}
-	});
+	})();
 }
 
 if (!function_exists('smf_crc32'))
@@ -374,30 +374,30 @@ function mb_ord_chr_encoding($encoding = null)
 	return false;
 }
 
-// This is wrapped in a closure to keep the global namespace clean.
-call_user_func(function()
-{
-	/**
-	 * IDNA_* constants used as flags for the idn_to_* functions.
-	 */
-	$idna_constants = array(
-		'IDNA_DEFAULT' => 0,
-		'IDNA_ALLOW_UNASSIGNED' => 1,
-		'IDNA_USE_STD3_RULES' => 2,
-		'IDNA_CHECK_BIDI' => 4,
-		'IDNA_CHECK_CONTEXTJ' => 8,
-		'IDNA_NONTRANSITIONAL_TO_ASCII' => 16,
-		'IDNA_NONTRANSITIONAL_TO_UNICODE' => 32,
-		'INTL_IDNA_VARIANT_2003' => 0,
-		'INTL_IDNA_VARIANT_UTS46' => 1,
-	);
-
-	foreach ($idna_constants as $name => $value)
+	// This is wrapped in a closure to keep the global namespace clean.
+	(function()
 	{
-		if (!defined($name))
-			define($name, $value);
-	}
-});
+		/**
+		 * IDNA_* constants used as flags for the idn_to_* functions.
+		 */
+		$idna_constants = array(
+			'IDNA_DEFAULT' => 0,
+			'IDNA_ALLOW_UNASSIGNED' => 1,
+			'IDNA_USE_STD3_RULES' => 2,
+			'IDNA_CHECK_BIDI' => 4,
+			'IDNA_CHECK_CONTEXTJ' => 8,
+			'IDNA_NONTRANSITIONAL_TO_ASCII' => 16,
+			'IDNA_NONTRANSITIONAL_TO_UNICODE' => 32,
+			'INTL_IDNA_VARIANT_2003' => 0,
+			'INTL_IDNA_VARIANT_UTS46' => 1,
+		);
+
+		foreach ($idna_constants as $name => $value)
+		{
+			if (!defined($name))
+				define($name, $value);
+		}
+	})();
 
 if (!function_exists('idn_to_ascii'))
 {

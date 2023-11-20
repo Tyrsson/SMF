@@ -639,7 +639,7 @@ class ErrorHandler
 		{
 			if (!empty(SSI::$on_error_method) && SSI::$on_error_method !== true && is_callable(SSI::$on_error_method))
 			{
-				call_user_func(SSI::$on_error_method);
+				SSI::$on_error_method();
 			}
 			elseif (empty(SSI::$on_error_method) || SSI::$on_error_method !== true)
 			{

@@ -13,6 +13,7 @@
 
 namespace SMF;
 
+use ErrorException;
 use SMF\Db\DatabaseApi as Db;
 use SMF\Search\SearchApi;
 

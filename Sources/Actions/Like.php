@@ -228,11 +228,11 @@ class Like implements ActionInterface
 			// Call the appropriate method.
 			if (method_exists($this, self::$subactions[$this->subaction]))
 			{
-				call_user_func(array($this, self::$subactions[$this->subaction]));
+				$this->{$this->subaction}();
 			}
 			else
 			{
-				call_user_func(self::$subactions[$this->subaction]);
+				self::$subactions[$this->subaction]();
 			}
 		}
 

@@ -127,11 +127,11 @@ class BuddyIgnoreLists implements ActionInterface
 		);
 
 		Theme::loadJavaScriptFile('suggest.js', array('defer' => false, 'minimize' => true), 'smf_suggest');
-		
+
 		$call = method_exists($this, self::$subactions[$this->subaction]) ? array($this, self::$subactions[$this->subaction]) : Utils::getCallable(self::$subactions[$this->subaction]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**
@@ -240,9 +240,9 @@ class BuddyIgnoreLists implements ActionInterface
 
 		// Gotta load the custom profile fields names.
 		Utils::$context['custom_pf'] = array();
-		
+
 		$disabled_fields = isset(Config::$modSettings['disabled_profile_fields']) ? array_flip(explode(',', Config::$modSettings['disabled_profile_fields'])) : array();
-		
+
 		$request = Db::$db->query('', '
 			SELECT col_name, field_name, field_desc, field_type, field_options, show_mlist, bbc, enclose
 			FROM {db_prefix}custom_fields
@@ -404,17 +404,17 @@ class BuddyIgnoreLists implements ActionInterface
 			// Redirect off the page because we don't like all this ugly query stuff to stick in the history.
 			Utils::redirectexit('action=profile;area=lists;sa=ignore;u=' . Profile::$member->id);
 		}
-		
+
 		// Adding a member to the ignore list?
 		if (isset($_POST['new_ignore']))
 		{
 			User::$me->checkSession();
-			
+
 			// Prepare the string for extraction...
 			$_POST['new_ignore'] = strtr(Utils::htmlspecialchars($_POST['new_ignore'], ENT_QUOTES), array('&quot;' => '"'));
-			
+
 			preg_match_all('~"([^"]+)"~', $_POST['new_ignore'], $matches);
-			
+
 			$new_entries = array_unique(array_merge($matches[1], explode(',', preg_replace('~"[^"]+"~', '', $_POST['new_ignore']))));
 
 			foreach ($new_entries as $k => $dummy)

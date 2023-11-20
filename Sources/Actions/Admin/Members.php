@@ -166,7 +166,7 @@ class Members implements ActionInterface
 		$call = method_exists($this, self::$subactions[$this->subaction][0]) ? array($this, self::$subactions[$this->subaction][0]) : Utils::getCallable(self::$subactions[$this->subaction][0]);
 
 		if (!empty($call))
-			call_user_func($call);
+			$call();
 	}
 
 	/**

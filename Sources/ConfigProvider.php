@@ -28,6 +28,8 @@ final class ConfigProvider
 				Actions\BoardIndex::class   => Actions\BoardIndex::class,
 				Actions\MessageIndex::class => Actions\MessageIndex::class,
 				Actions\Display::class      => Actions\Display::class,
+				Actions\Profile\Main::class  => Actions\Profile\Main::class,
+				Actions\Profile\Popup::class => Actions\Profile\Popup::class,
 			],
 		];
 	}

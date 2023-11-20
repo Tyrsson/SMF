@@ -48,11 +48,11 @@ class Popup implements ActionInterface
 	 * @var array
 	 *
 	 * A list of menu items to pull from the main profile menu.
-	 * 
-	 * The values of all 'title' elements are Lang::$txt keys, and will be 
+	 *
+	 * The values of all 'title' elements are Lang::$txt keys, and will be
 	 * replaced at runtime with the values of those Lang::$txt strings.
-	 * 
-	 * Occurrences of '{scripturl}' in value strings will be replaced at runtime 
+	 *
+	 * Occurrences of '{scripturl}' in value strings will be replaced at runtime
 	 * with the value of Config::$scripturl.
 	 */
 	public array $profile_items = array(
@@ -142,14 +142,19 @@ class Popup implements ActionInterface
 
 		// Now check if these items are available
 		Utils::$context['profile_items'] = array();
-				
+
 		foreach ($this->profile_items as $item)
 		{
 			if (isset(Menu::$loaded['profile']['sections'][$item['menu']]['areas'][$item['area']]))
 			{
 				Utils::$context['profile_items'][] = $item;
 			}
-		}	
+		}
+	}
+
+	public function __invoke()
+	{
+		return new $this();
 	}
 
 	/***********************
@@ -184,7 +189,7 @@ class Popup implements ActionInterface
 	/**
 	 * Constructor. Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		// Finalize various string values.
 		array_walk_recursive(

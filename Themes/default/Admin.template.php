@@ -15,6 +15,7 @@ use SMF\Lang;
 use SMF\Theme;
 use SMF\Utils;
 use SMF\User;
+use SMF\Actions\Admin\Permissions;
 
 /**
  * This is the administration center home.
@@ -929,7 +930,7 @@ function template_show_settings()
 										<textarea rows="', (!empty($config_var['size']) ? $config_var['size'] : (!empty($config_var['rows']) ? $config_var['rows'] : 4)), '" cols="', (!empty($config_var['cols']) ? $config_var['cols'] : 30), '" ', $javascript, $disabled, ' name="', $config_var['name'], '" id="', $config_var['name'], '">', $config_var['value'], '</textarea>';
 				// Permission group?
 				elseif ($config_var['type'] == 'permissions')
-					theme_inline_permissions($config_var['name']);
+					Permissions::theme_inline_permissions($config_var['name']);
 
 				// BBC selection?
 				elseif ($config_var['type'] == 'bbc')

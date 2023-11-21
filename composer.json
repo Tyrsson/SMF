@@ -13,7 +13,15 @@
     },
     "config": {
         "platform": {
-            "php": "7.0.2"
+            "php": "8.0"
         }
+    },
+	"autoload": {
+		"classmap": ["./Sources"]
+	},
+    "require": {
+        "laminas/laminas-servicemanager": "^3.20",
+        "laminas/laminas-diactoros": "^3.2",
+        "laminas/laminas-config-aggregator": "^1.13"
     }
 }

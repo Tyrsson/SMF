@@ -1,8 +1,0 @@
-/.phpunit.cache
-/.psalm-cache
-.phpcs-cache
-/docs/html/
-/laminas-mkdoc-theme.tgz
-/laminas-mkdoc-theme/
-/phpunit.xml
-/vendor/

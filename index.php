@@ -118,7 +118,9 @@ if (SMF === 1)
  * 3. Load some other essential includes.
  */
 
-require_once(SMF\Config::$sourcedir . '/Autoloader.php');
+//require_once(SMF\Config::$sourcedir . '/Autoloader.php');
+chdir(dirname(__DIR__));
+require 'vendor/autoload.php';
 
 // Ensure we don't trip over disabled internal functions
 require_once(SMF\Config::$sourcedir . '/Subs-Compat.php');

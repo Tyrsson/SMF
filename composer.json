@@ -11,6 +11,9 @@
     "require-dev": {
         "simplemachines/build-tools": "dev-master"
     },
+	"autoload": {
+		"classmap": ["./Sources"]
+	},
     "config": {
         "platform": {
             "php": "7.0.2"

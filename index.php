@@ -137,7 +137,7 @@ if (SMF === 1)
 	if (! $container->has(Forum::class)) {
 		// throw exception
 	}
-	($container->get(Forum::class))->execute();
+	$container->get(Forum::class)->execute();
 }
 
 ?>

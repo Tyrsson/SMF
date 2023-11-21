@@ -29,6 +29,8 @@ use SMF\User;
 use SMF\Utils;
 use SMF\Cache\CacheApi;
 
+use function SMF\test_one;
+
 /**
  * This class shows the board index.
  *

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SMF;
 
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use SMF\Actions;
 
 final class ConfigProvider
@@ -21,6 +23,7 @@ final class ConfigProvider
 			'factories'  => [
 				Forum::class => Factories\ForumFactory::class,
 				Board::class => Factories\BoardFactory::class,
+				ServerRequestInterface::class => Factories\RequestFactory::class,
 			],
 			'invokables' => [
 				Actions\Admin\ACP::class    => Actions\Admin\ACP::class,

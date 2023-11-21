@@ -54,6 +54,14 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         ?array $files = null,
         ?FilterServerRequestInterface $requestFilter = null
     ): ServerRequestInterface {
+
+		include_once 'functions/normalize_server.php';
+		include_once 'functions/normalize_uploaded_files.php';
+		include_once 'functions/marshal_headers_from_sapi.php';
+		include_once 'functions/parse_cookie_header.php';
+		include_once 'functions/marshal_method_from_sapi.php';
+		include_once 'functions/marshal_protocol_version_from_sapi.php';
+
         $requestFilter = $requestFilter ?? FilterUsingXForwardedHeaders::trustReservedSubnets();
 
         $server  = normalizeServer(

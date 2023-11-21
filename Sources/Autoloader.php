@@ -31,7 +31,7 @@ spl_autoload_register(function ($class)
 		'MatthiasMullie\\Minify\\' => 'minify/src/',
 		'MatthiasMullie\\PathConverter\\' => 'minify/path-converter/src/',
 		'Psr\\Container\\' => 'psr/container/src/',
-		'Psr\\Http\\Message\\' => ['psr/http-factory/src/', 'psr/http-message/src/'],
+		'Psr\\Http\\Message\\' => 'psr/http-message/src/',
 		'ReCaptcha\\' => 'ReCaptcha/',
 		// In general, the SMF namespace maps to $sourcedir.
 		'SMF\\' => '',

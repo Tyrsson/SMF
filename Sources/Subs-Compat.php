@@ -38,18 +38,18 @@ if (!empty(SMF\Config::$backward_compatibility))
 	 * functions to be available. So if backward compatibilty support is enabled,
 	 * we need to load a bunch of classes in order to make them available.
 	 */
-	class_exists('SMF\\Attachment');
-	class_exists('SMF\\BBCodeParser');
-	class_exists('SMF\\Logging');
-	class_exists('SMF\\PageIndex');
-	class_exists('SMF\\Theme');
-	class_exists('SMF\\Time');
-	class_exists('SMF\\TimeZone');
-	class_exists('SMF\\Topic');
-	class_exists('SMF\\Url');
-	class_exists('SMF\\User');
-	class_exists('SMF\\Graphics\\Image');
-	class_exists('SMF\\WebFetch\\WebFetchApi');
+	// class_exists('SMF\\Attachment');
+	// class_exists('SMF\\BBCodeParser');
+	// class_exists('SMF\\Logging');
+	// class_exists('SMF\\PageIndex');
+	// class_exists('SMF\\Theme');
+	// class_exists('SMF\\Time');
+	// class_exists('SMF\\TimeZone');
+	// class_exists('SMF\\Topic');
+	// class_exists('SMF\\Url');
+	// class_exists('SMF\\User');
+	// class_exists('SMF\\Graphics\\Image');
+	// class_exists('SMF\\WebFetch\\WebFetchApi');
 }
 
 /***************************

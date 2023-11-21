@@ -14,6 +14,7 @@
 namespace SMF;
 
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use SMF\Actions\BoardIndex;
 use SMF\Actions\Display;
 use SMF\Actions\MessageIndex;
@@ -196,6 +197,7 @@ class Forum
 	 * Constructor
 	 */
 	public function __construct(
+		private ServerRequestInterface $request,
 		private ContainerInterface $container
 	) {
 		// If Config::$maintenance is set specifically to 2, then we're upgrading or something.

@@ -13,16 +13,15 @@
 
 namespace SMF;
 
-/**
+/*
  * An autoloader for certain classes.
  *
  * @param string $class The fully-qualified class name.
  */
-spl_autoload_register(function ($class)
-{
+spl_autoload_register(function ($class) {
 	static $hook_value = '';
 
-	static $class_map = array(
+	static $class_map = [
 		// Some special cases.
 		'Laminas\\ConfigAggregator\\' => 'laminas/laminas-config-aggregator/src/',
 		'Laminas\\Diactoros' => 'laminas/laminas-diactoros/src/',
@@ -35,38 +34,36 @@ spl_autoload_register(function ($class)
 		'ReCaptcha\\' => 'ReCaptcha/',
 		// In general, the SMF namespace maps to $sourcedir.
 		'SMF\\' => '',
-		'Webimpress\\SafeWriter\\' => 'webimpress/safe-writer/src/',
-	);
+	];
 
 	// Ensure $sourcedir is set to something valid.
-	if (class_exists('SMF\\Config', false) && isset(Config::$sourcedir))
+	if (class_exists('SMF\\Config', false) && isset(Config::$sourcedir)) {
 		$sourcedir = Config::$sourcedir;
+	}
 
-	if (empty($sourcedir) || !is_dir($sourcedir))
+	if (empty($sourcedir) || !is_dir($sourcedir)) {
 		$sourcedir = __DIR__;
+	}
 
 	// Do any third-party scripts want in on the fun?
-	if (class_exists('SMF\\Config', false) && $hook_value !== (Config::$modSettings['integrate_autoload'] ?? ''))
-	{
-		if (!class_exists('SMF\\IntegrationHook', false) && is_file($sourcedir . '/IntegrationHook.php'))
-		{
+	if (class_exists('SMF\\Config', false) && $hook_value !== (Config::$modSettings['integrate_autoload'] ?? '')) {
+		if (!class_exists('SMF\\IntegrationHook', false) && is_file($sourcedir . '/IntegrationHook.php')) {
 			require_once $sourcedir . '/IntegrationHook.php';
 		}
 
-		if (class_exists('SMF\\IntegrationHook', false))
-		{
+		if (class_exists('SMF\\IntegrationHook', false)) {
 			$hook_value = Config::$modSettings['integrate_autoload'];
-			IntegrationHook::call('integrate_autoload', array(&$class_map));
+			IntegrationHook::call('integrate_autoload', [&$class_map]);
 		}
 	}
 
-	foreach ($class_map as $prefix => $dirname)
-	{
+	foreach ($class_map as $prefix => $dirname) {
 		// Does the class use the namespace prefix?
 		$len = strlen($prefix);
 
-		if (strncmp($prefix, $class, $len) !== 0)
+		if (strncmp($prefix, $class, $len) !== 0) {
 			continue;
+		}
 
 		// Get the relative class name.
 		$relative_class = substr($class, $len);
@@ -77,13 +74,14 @@ spl_autoload_register(function ($class)
 		$filename = $dirname . strtr($relative_class, '\\', '/') . '.php';
 
 		// Failsafe: Never load a file named index.php.
-		if (basename($filename) === 'index.php')
+		if (basename($filename) === 'index.php') {
 			return;
+		}
 
 		// If the file exists, require it.
-		if (file_exists($filename = $sourcedir . '/' . $filename))
-		{
+		if (file_exists($filename = $sourcedir . '/' . $filename)) {
 			require $filename;
+
 			return;
 		}
 	}

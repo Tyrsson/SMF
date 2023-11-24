@@ -13,7 +13,7 @@
 
 namespace SMF\Actions\Admin;
 
-use SMF\Actions\ActionInterface;
+use SMF\Actions\Action;
 use SMF\Actions\MessageIndex;
 use SMF\Actions\Notify;
 use SMF\BackwardCompatibility;
@@ -35,7 +35,7 @@ use SMF\Utils;
 /**
  * This class, unpredictable as this might be, handles basic administration.
  */
-class ACP implements ActionInterface
+class ACP extends Action
 {
 	use BackwardCompatibility;
 

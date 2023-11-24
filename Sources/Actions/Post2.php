@@ -698,7 +698,7 @@ class Post2 extends Post
 	/**
 	 * Constructor. Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 	}

@@ -313,6 +313,11 @@ class Main implements ActionInterface
 		}
 	}
 
+	public function __invoke(): self
+	{
+		return new $this();
+	}
+
 	/***********************
 	 * Public static methods
 	 ***********************/
@@ -392,7 +397,7 @@ class Main implements ActionInterface
 	/**
 	 * Constructor. Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		// Don't run this twice... and don't conflict with the admin bar.
 		if (isset(Utils::$context['admin_area'])) {

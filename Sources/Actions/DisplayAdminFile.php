@@ -107,6 +107,10 @@ class DisplayAdminFile implements ActionInterface
 		Utils::obExit(false);
 	}
 
+	public function __invoke(): self
+	{
+		return new $this();
+	}
 	/***********************
 	 * Public static methods
 	 ***********************/
@@ -140,7 +144,7 @@ class DisplayAdminFile implements ActionInterface
 	/**
 	 * Constructor. Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 	}
 }

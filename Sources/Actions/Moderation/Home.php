@@ -148,6 +148,11 @@ class Home implements ActionInterface
 		Utils::$context['admin_prefs'] = !empty(Theme::$current->options['admin_preferences']) ? Utils::jsonDecode(Theme::$current->options['admin_preferences'], true) : [];
 	}
 
+	public function __invoke(): self
+	{
+		return new $this();
+	}
+
 	/***********************
 	 * Public static methods
 	 ***********************/
@@ -181,7 +186,7 @@ class Home implements ActionInterface
 	/**
 	 * Constructor. Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		Theme::loadTemplate('ModerationCenter');
 		Theme::loadJavaScriptFile('admin.js', ['minimize' => true], 'smf_admin');
@@ -580,6 +585,7 @@ class Home implements ActionInterface
 
 		if (empty($valid_blocks)) {
 			return;
+		}
 
 		foreach ($valid_blocks as $k => $func)
 		{

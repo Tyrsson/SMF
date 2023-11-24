@@ -392,6 +392,11 @@ class Post implements ActionInterface
 		IntegrationHook::call('integrate_post_end');
 	}
 
+	public function __invoke(): self
+	{
+		return new $this();
+	}
+
 	/***********************
 	 * Public static methods
 	 ***********************/
@@ -437,7 +442,7 @@ class Post implements ActionInterface
 	/**
 	 * Constructor. Protected to force instantiation via self::load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		// Add references to some properties to Utils::$context.
 		Utils::$context['becomes_approved'] = &$this->becomes_approved;

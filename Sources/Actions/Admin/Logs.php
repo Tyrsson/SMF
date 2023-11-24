@@ -13,7 +13,7 @@
 
 namespace SMF\Actions\Admin;
 
-use SMF\Actions\ActionInterface;
+use SMF\Actions\Action;
 use SMF\Actions\Moderation\Logs as Modlog;
 use SMF\BackwardCompatibility;
 use SMF\Config;
@@ -27,7 +27,7 @@ use SMF\Utils;
 /**
  * Dispatcher to show various kinds of logs.
  */
-class Logs implements ActionInterface
+class Logs extends Action
 {
 	use BackwardCompatibility;
 
@@ -312,11 +312,6 @@ class Logs implements ActionInterface
 		}
 
 		ACP::prepareDBSettingContext($config_vars);
-	}
-
-	public function __invoke()
-	{
-		return new $this();
 	}
 
 	/***********************

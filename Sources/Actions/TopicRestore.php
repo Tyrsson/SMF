@@ -16,6 +16,7 @@ namespace SMF\Actions;
 use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
+use SMF\ErrorHandler;
 use SMF\Logging;
 use SMF\Msg;
 use SMF\Topic;
@@ -593,7 +594,6 @@ class TopicRestore implements ActionInterface
 
 		Msg::updateLastMessages([$from_board, $target_board]);
 	}
-
 }
 
 // Export public static functions and properties to global namespace for backward compatibility.

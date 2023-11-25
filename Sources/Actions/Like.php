@@ -325,7 +325,7 @@ class Like extends Action
 		}
 
 		// Zerothly, they did indicate some kind of content to like, right?
-		preg_match('~^([a-z0-9\\-\\_]{1,6})~i', $this->type, $matches);
+		preg_match('~^([a-z0-9\-\_]{1,6})~i', $this->type, $matches);
 
 		$this->type = $matches[1] ?? '';
 
@@ -769,8 +769,8 @@ class Like extends Action
 
 			return;
 		}
-		// A like operation.
 
+		// A like operation.
 
 		// Not an AJAX request so send the user back to the previous
 		// location or the main page.
@@ -791,7 +791,6 @@ class Like extends Action
 			Utils::$context['sub_template'] = $this->subaction;
 			Utils::$context['data'] = $this->data;
 		}
-
 	}
 
 	/**

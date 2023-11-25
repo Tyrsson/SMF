@@ -229,7 +229,7 @@ class SearchResult extends \SMF\Msg
 						$keyword = Utils::htmlspecialcharsDecode($keyword);
 						$keyword = Utils::sanitizeEntities(Utils::entityFix(strtr($keyword, ['\\\'' => '\'', '&' => '&amp;'])));
 
-						if (preg_match('~[\'\\.,/@%&;:(){}\\[\\]_\\-+\\\\]$~', $keyword) != 0 || preg_match('~^[\'\\.,/@%&;:(){}\\[\\]_\\-+\\\\]~', $keyword) != 0) {
+						if (preg_match('~[\'\.,/@%&;:(){}\[\]_\-+\\\\]$~', $keyword) || preg_match('~^[\'\.,/@%&;:(){}\[\]_\-+\\\\]~', $keyword)) {
 							$force_partial_word = true;
 						}
 						$matchString .= strtr(preg_quote($keyword, '/'), ['\\*' => '.+?']) . '|';
@@ -239,9 +239,9 @@ class SearchResult extends \SMF\Msg
 					$this->body = Utils::htmlspecialcharsDecode(strtr($this->body, ['&nbsp;' => ' ', '<br>' => "\n", '&#91;' => '[', '&#93;' => ']', '&#58;' => ':', '&#64;' => '@']));
 
 					if (empty(Config::$modSettings['search_method']) || $force_partial_word) {
-						preg_match_all('/([^\\s\\W]{' . $charLimit . '}[\\s\\W]|[\\s\\W].{0,' . $charLimit . '}?|^)(' . $matchString . ')(.{0,' . $charLimit . '}[\\s\\W]|[^\\s\\W]{0,' . $charLimit . '})/is' . (Utils::$context['utf8'] ? 'u' : ''), $this->body, $matches);
+						preg_match_all('/([^\s\W]{' . $charLimit . '}[\s\W]|[\s\W].{0,' . $charLimit . '}?|^)(' . $matchString . ')(.{0,' . $charLimit . '}[\s\W]|[^\s\W]{0,' . $charLimit . '})/is' . (Utils::$context['utf8'] ? 'u' : ''), $this->body, $matches);
 					} else {
-						preg_match_all('/([^\\s\\W]{' . $charLimit . '}[\\s\\W]|[\\s\\W].{0,' . $charLimit . '}?[\\s\\W]|^)(' . $matchString . ')([\\s\\W].{0,' . $charLimit . '}[\\s\\W]|[\\s\\W][^\\s\\W]{0,' . $charLimit . '})/is' . (Utils::$context['utf8'] ? 'u' : ''), $this->body, $matches);
+						preg_match_all('/([^\s\W]{' . $charLimit . '}[\s\W]|[\s\W].{0,' . $charLimit . '}?[\s\W]|^)(' . $matchString . ')([\s\W].{0,' . $charLimit . '}[\s\W]|[\s\W][^\s\W]{0,' . $charLimit . '})/is' . (Utils::$context['utf8'] ? 'u' : ''), $this->body, $matches);
 					}
 
 					$this->body = '';
@@ -418,11 +418,11 @@ class SearchResult extends \SMF\Msg
 			'first_m.subject AS first_subject',
 			'first_m.icon AS first_icon',
 			'first_m.poster_time AS first_poster_time',
-			'first_mem.id_member AS first_member_id',
+			'COALESCE(first_mem.id_member, 0) AS first_member_id',
 			'COALESCE(first_mem.real_name, first_m.poster_name) AS first_member_name',
 			'last_m.id_msg AS last_msg',
 			'last_m.poster_time AS last_poster_time',
-			'last_mem.id_member AS last_member_id',
+			'COALESCE(last_mem.id_member, 0) AS last_member_id',
 			'COALESCE(last_mem.real_name, last_m.poster_name) AS last_member_name',
 			'last_m.icon AS last_icon',
 			'last_m.subject AS last_subject',

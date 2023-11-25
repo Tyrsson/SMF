@@ -10,6 +10,7 @@
  * @version 3.0 Alpha 1
  */
 
+use SMF\Actions\Admin\Permissions;
 use SMF\Config;
 use SMF\Lang;
 use SMF\Theme;

@@ -1006,7 +1006,7 @@ class Post implements ActionInterface
 		Utils::$context['notify'] = !empty($_REQUEST['notify']);
 		Utils::$context['use_smileys'] = !isset($_REQUEST['ns']);
 
-		Utils::$context['icon'] = isset($_REQUEST['icon']) ? preg_replace('~[\\./\\\\*\':"<>]~', '', $_REQUEST['icon']) : 'xx';
+		Utils::$context['icon'] = isset($_REQUEST['icon']) ? preg_replace('~[./\\\\*\':"<>]~', '', $_REQUEST['icon']) : 'xx';
 
 		// Set the destination action for submission.
 		Utils::$context['destination'] = 'post2;start=' . $_REQUEST['start'] . (isset($_REQUEST['msg']) ? ';msg=' . $_REQUEST['msg'] . ';' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] : '') . (isset($_REQUEST['poll']) ? ';poll' : '');
@@ -1244,15 +1244,15 @@ class Post implements ActionInterface
 
 			// But if it's in HTML world, turn them into htmlspecialchar's so they can be edited!
 			if (strpos($this->form_message, '[html]') !== false) {
-				$parts = preg_split('~(\\[/code\\]|\\[code(?:=[^\\]]+)?\\])~i', $this->form_message, -1, PREG_SPLIT_DELIM_CAPTURE);
+				$parts = preg_split('~(\[/code\]|\[code(?:=[^\]]+)?\])~i', $this->form_message, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 				for ($i = 0, $n = count($parts); $i < $n; $i++) {
 					// It goes 0 = outside, 1 = begin tag, 2 = inside, 3 = close tag, repeat.
 					if ($i % 4 == 0) {
 						$parts[$i] = preg_replace_callback(
-							'~\\[html\\](.+?)\\[/html\\]~is',
+							'~\[html\](.+?)\[/html\]~is',
 							function ($m) {
-								return '[html]' . preg_replace('~<br\\s?/?' . '>~i', '&lt;br /&gt;<br>', "{$m[1]}") . '[/html]';
+								return '[html]' . preg_replace('~<br\s?/?' . '>~i', '&lt;br /&gt;<br>', "{$m[1]}") . '[/html]';
 							},
 							$parts[$i],
 						);
@@ -1266,7 +1266,7 @@ class Post implements ActionInterface
 
 			// Remove any nested quotes, if necessary.
 			if (!empty(Config::$modSettings['removeNestedQuotes'])) {
-				$this->form_message = preg_replace(['~\\n?\\[quote.*?\\].+?\\[/quote\\]\\n?~is', '~^\\n~', '~\\[/quote\\]~'], '', $this->form_message);
+				$this->form_message = preg_replace(['~\n?\[quote.*?\].+?\[/quote\]\n?~is', '~^\n~', '~\[/quote\]~'], '', $this->form_message);
 			}
 
 			// Add a quote string on the front and end.
@@ -1516,7 +1516,6 @@ class Post implements ActionInterface
 					} elseif ($type == 'attachmentPostLimit' && Utils::$context['attachments']['total_size'] > 0) {
 						Utils::$context['attachment_restrictions'][$type] .= '<span class="attach_available"> (' . sprintf(Lang::$txt['attach_available'], round(max(Config::$modSettings['attachmentPostLimit'] - (Utils::$context['attachments']['total_size'] / 1024), 0), 2)) . ')</span>';
 					}
-
 				}
 			}
 		}

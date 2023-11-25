@@ -994,7 +994,7 @@ class Maintenance implements ActionInterface
 		Utils::$context['continue_countdown'] = 3;
 
 		// Only optimize the tables related to this smf install, not all the tables in the db
-		$real_prefix = preg_match('~^(`?)(.+?)\\1\\.(.*?)$~', Db::$db->prefix, $match) === 1 ? $match[3] : Db::$db->prefix;
+		$real_prefix = preg_match('~^(`?)(.+?)\1\.(.*?)$~', Db::$db->prefix, $match) === 1 ? $match[3] : Db::$db->prefix;
 
 		// Get a list of tables, as well as how many there are.
 		$temp_tables = Db::$db->list_tables(false, $real_prefix . '%');
@@ -2023,7 +2023,6 @@ class Maintenance implements ActionInterface
 								return $instance . Lang::$txt['hooks_field_function'] . ': ' . $data['real_function'] . '<br>' . Lang::$txt['hooks_field_included_file'] . ': ' . $data['included_file'];
 							}
 
-
 							return $instance . $data['real_function'];
 						},
 						'class' => 'word_break',
@@ -2058,7 +2057,6 @@ class Maintenance implements ActionInterface
 								return '<span class="main_icons ' . ($data['hook_exists'] ? 'posts' : 'error') . '" title="' . $data['img_text'] . '"></span>';
 							}
 
-
 							$change_status = ['before' => '', 'after' => ''];
 
 							// Can only enable/disable if it exists...
@@ -2068,7 +2066,6 @@ class Maintenance implements ActionInterface
 							}
 
 							return $change_status['before'] . '<span class="main_icons post_moderation_' . $data['status'] . '" title="' . $data['img_text'] . '"></span>' . $change_status['after'];
-
 						},
 						'class' => 'centertext',
 					],
@@ -2733,7 +2730,7 @@ class Maintenance implements ActionInterface
 	{
 		$source = file_get_contents($file);
 		// token_get_all() is too slow so use a nice little regex instead.
-		preg_match_all('/\\bnamespace\\s++((?P>label)(?:\\\\(?P>label))*+)\\s*+;|\\bclass\\s++((?P>label))[\\w\\s]*+{|\\bfunction\\s++((?P>label))\\s*+\\(.*\\)[:\\|\\w\\s]*+{(?(DEFINE)(?<label>[a-zA-Z_\\x80-\\xff][a-zA-Z0-9_\\x80-\\xff]*+))/i', $source, $matches, PREG_SET_ORDER);
+		preg_match_all('/\bnamespace\s++((?P>label)(?:\\\(?P>label))*+)\s*+;|\bclass\s++((?P>label))[\w\s]*+{|\bfunction\s++((?P>label))\s*+\(.*\)[:\|\w\s]*+{(?(DEFINE)(?<label>[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*+))/i', $source, $matches, PREG_SET_ORDER);
 
 		$functions = [];
 		$namespace = '';

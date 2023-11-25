@@ -830,7 +830,6 @@ class Main implements ActionInterface
 
 		$this->profile_areas['info']['areas']['viewwarning']['enabled'] = Config::$modSettings['warning_settings'][0] == 1 && Profile::$member->warning;
 
-
 		$this->profile_areas['edit_profile']['areas']['account']['enabled'] = User::$me->is_admin || (Profile::$member->group_id != 1 && !in_array(1, Profile::$member->additional_groups));
 
 		$this->profile_areas['edit_profile']['areas']['tfasetup']['enabled'] = !empty(Config::$modSettings['tfa_mode']);
@@ -842,7 +841,6 @@ class Main implements ActionInterface
 		$this->profile_areas['edit_profile']['areas']['lists']['enabled'] = !empty(Config::$modSettings['enable_buddylist']) && User::$me->is_owner;
 
 		$this->profile_areas['edit_profile']['areas']['groupmembership']['enabled'] = !empty(Config::$modSettings['show_group_membership']) && User::$me->is_owner;
-
 
 		$this->profile_areas['profile_action']['areas']['sendpm']['enabled'] = User::$me->allowedTo('profile_view');
 

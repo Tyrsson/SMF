@@ -284,7 +284,6 @@ class Post2 extends Post
 			if (Utils::htmlTrim(strip_tags(BBCodeParser::load()->parse($_POST['message'], false), implode('', Utils::$context['allowed_html_tags']))) === '' && (!User::$me->allowedTo('bbc_html') || strpos($_POST['message'], '[html]') === false)) {
 				$this->errors[] = 'no_message';
 			}
-
 		}
 
 		if (isset($_POST['calendar']) && !isset($_REQUEST['deleteevent']) && Utils::htmlTrim($_POST['evtitle']) === '') {
@@ -465,7 +464,7 @@ class Post2 extends Post
 			'id' => empty($_REQUEST['msg']) ? 0 : (int) $_REQUEST['msg'],
 			'subject' => $_POST['subject'],
 			'body' => $_POST['message'],
-			'icon' => preg_replace('~[\\./\\\\*:"\'<>]~', '', $_POST['icon']),
+			'icon' => preg_replace('~[./\\\\*:"\'<>]~', '', $_POST['icon']),
 			'smileys_enabled' => !isset($_POST['ns']),
 			'attachments' => empty($attachIDs) ? [] : $attachIDs,
 			'approved' => $this->becomes_approved,
@@ -542,7 +541,7 @@ class Post2 extends Post
 
 			// If you're not allowed to edit any and all events, you have to be the poster.
 			if (!User::$me->allowedTo('calendar_edit_any')) {
-				User::$me->isAllowedTo('calendar_edit_' . (!empty(User::$me->id) && self::getEventPoster($_REQUEST['eventid']) == User::$me->id ? 'own' : 'any'));
+				User::$me->isAllowedTo('calendar_edit_' . (!empty(User::$me->id) && Calendar::getEventPoster($_REQUEST['eventid']) == User::$me->id ? 'own' : 'any'));
 			}
 
 			// Delete it?
@@ -1049,7 +1048,6 @@ class Post2 extends Post
 			$searchAPI->postRemoved($_REQUEST['msg']);
 		}
 	}
-
 }
 
 // Export public static functions and properties to global namespace for backward compatibility.

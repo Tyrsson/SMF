@@ -365,7 +365,7 @@ class Register2 extends Register
 				if ($row['field_type'] == 'text' && !empty($row['mask']) && $row['mask'] != 'none') {
 					if ($row['mask'] == 'email' && (!filter_var($value, FILTER_VALIDATE_EMAIL) || strlen($value) > 255)) {
 						$custom_field_errors[] = ['custom_field_invalid_email', [$row['field_name']]];
-					} elseif ($row['mask'] == 'number' && preg_match('~[^\\d]~', $value)) {
+					} elseif ($row['mask'] == 'number' && preg_match('~[^\d]~', $value)) {
 						$custom_field_errors[] = ['custom_field_not_number', [$row['field_name']]];
 					} elseif (substr($row['mask'], 0, 5) == 'regex' && trim($value) != '' && preg_match(substr($row['mask'], 5), $value) === 0) {
 						$custom_field_errors[] = ['custom_field_inproper_format', [$row['field_name']]];
@@ -419,7 +419,7 @@ class Register2 extends Register
 
 		// Don't update if the default is the same.
 		if ($var != $pref) {
-			setNotifyPrefs($member_id, ['announcements' => (int) !empty($_POST['notify_announcements'])]);
+			Notify::setNotifyPrefs($member_id, ['announcements' => (int) !empty($_POST['notify_announcements'])]);
 		}
 
 		// We'll do custom fields after as then we get to use the helper function!
@@ -925,7 +925,6 @@ class Register2 extends Register
 	 */
 	protected function __construct()
 	{
-
 	}
 }
 

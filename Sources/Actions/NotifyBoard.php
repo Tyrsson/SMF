@@ -15,6 +15,7 @@ namespace SMF\Actions;
 
 use SMF\BackwardCompatibility;
 use SMF\Board;
+use SMF\Config;
 use SMF\ErrorHandler;
 use SMF\Lang;
 use SMF\Utils;
@@ -155,7 +156,6 @@ class NotifyBoard extends Notify implements ActionInterface
 	 *************************/
 
 	// code...
-
 }
 
 // Export public static functions and properties to global namespace for backward compatibility.

@@ -30,6 +30,7 @@ final class ConfigProvider
 				Actions\BoardIndex::class		=> Actions\BoardIndex::class,
 				Actions\Display::class			=> Actions\Display::class,
 				Actions\DisplayAdminFile::class => Actions\DisplayAdminFile::class,
+				Actions\Like::class				=> Actions\Like::class,
 				Actions\MessageIndex::class		=> Actions\MessageIndex::class,
 				Actions\Moderation\Home::class  => Actions\Moderation\Home::class,
 				Actions\Moderation\Main::class  => Actions\Moderation\Main::class,

@@ -20,6 +20,8 @@ use SMF\Actions\Display;
 use SMF\Actions\MessageIndex;
 use SMF\Db\DatabaseApi as Db;
 
+use function is_array;
+
 /**
  * The root Forum class. Used when browsing the forum normally.
  *
@@ -63,26 +65,26 @@ class Forum
 		'credits'         => Actions\Credits::class,
 		'deletemsg'       => Actions\MsgDelete::class,
 		'dlattach'        => Actions\AttachmentDownload::class,
-		'editpoll'        => ['', 'SMF\\Poll::edit'],
-		'editpoll2'       => ['', 'SMF\\Poll::edit2'],
+		'editpoll'        => [Poll::class, 'edit'],
+		'editpoll2'       => [Poll::class, 'edit2'],
 		'findmember'      => Actions\FindMember::class,
 		'groups'          => Actions\Groups::class,
 		'help'            => Actions\Help::class,
 		'helpadmin'       => Actions\HelpAdmin::class,
 		'jsmodify'        => Actions\JavaScriptModify::class,
-		'jsoption'        => ['', 'SMF\\Theme::setJavaScript'],
+		'jsoption'        => [Theme::class, 'setJavaScript'],
 		'likes'           => Actions\Like::class,
-		'lock'            => ['', 'SMF\\Topic::lock'],
-		'lockvoting'      => ['', 'SMF\\Poll::lock'],
+		'lock'            => [Topic::class, 'lock'],
+		'lockvoting'      => [Poll::class, 'lock'],
 		'login'           => Actions\Login::class,
 		'login2'          => Actions\Login2::class,
 		'logintfa'        => Actions\LoginTFA::class,
 		'logout'          => Actions\Logout::class,
-		'markasread'      => ['', 'SMF\\Board::MarkRead'],
+		'markasread'      => [Board::class, 'MarkRead'],
 		'mergetopics'     => Actions\TopicMerge::class,
 		'mlist'           => Actions\Memberlist::class,
 		'moderate'        => Actions\Moderation\Main::class,
-		'modifycat'       => ['', 'SMF\\Actions\\Admin\\Boards::modifyCat'],
+		'modifycat'       => [Actions\Admin\Boards::class, 'modifyCat'],
 		'movetopic'       => Actions\TopicMove::class,
 		'movetopic2'      => Actions\TopicMove2::class,
 		'notifyannouncements' => Actions\NotifyAnnouncements::class,
@@ -98,7 +100,7 @@ class Forum
 		'quickmod2'       => Actions\QuickModerationInTopic::class,
 		'recent'          => Actions\Recent::class,
 		'reminder'        => Actions\Reminder::class,
-		'removepoll'      => ['', 'SMF\\Poll::remove'],
+		'removepoll'      => [Poll::class, 'remove'],
 		'removetopic2'    => Actions\TopicRemove::class,
 		'reporttm'        => Actions\ReportToMod::class,
 		'requestmembers'  => Actions\RequestMembers::class,
@@ -112,16 +114,16 @@ class Forum
 		'suggest'         => Actions\AutoSuggest::class,
 		'splittopics'     => Actions\TopicSplit::class,
 		'stats'           => Actions\Stats::class,
-		'sticky'          => ['', 'SMF\\Topic::sticky'],
-		'theme'           => ['', 'SMF\\Theme::dispatch'],
+		'sticky'          => [Topic::class, 'sticky'],
+		'theme'           => [Theme::class, 'dispatch'],
 		'trackip'         => Actions\TrackIP::class,
-		'about:unknown'   => ['', 'SMF\\Actions\\Like::BookOfUnknown'],
+		'about:unknown'   => [Actions\Like::class, 'BookOfUnknown'],
 		'unread'          => Actions\Unread::class,
 		'unreadreplies'   => Actions\UnreadReplies::class,
 		'uploadAttach'    => Actions\AttachmentUpload::class,
 		'verificationcode' => Actions\VerificationCode::class,
 		'viewprofile'      => Actions\Profile\Main::class,
-		'vote'             => ['', 'SMF\\Poll::vote'],
+		'vote'             => [Poll::class, 'vote'],
 		'viewquery'        => Actions\ViewQuery::class,
 		'viewsmfile'       => Actions\DisplayAdminFile::class,
 		'who'              => Actions\Who::class,
@@ -441,16 +443,11 @@ class Forum
 			}
 		}
 
-		// Otherwise, it was set - so let's go to that action.
-		// if (!empty(self::$actions[$_REQUEST['action']][0]))
-		// 	require_once(Config::$sourcedir . '/' . self::$actions[$_REQUEST['action']][0]);
-
-		// // Do the right thing.
-		// return Utils::getCallable(self::$actions[$_REQUEST['action']][1]);
-		//$object = $container->get(self::$actions[$_REQUEST['action']]);
-		if ($this->container->has(self::$actions[$_REQUEST['action']])) {
-			$object = $this->container->get(self::$actions[$_REQUEST['action']]);
-			return $object->execute();
+		if (
+			! is_array(self::$actions[$_REQUEST['action']]) && $this->container->has(self::$actions[$_REQUEST['action']])) {
+			return $this->container->get(self::$actions[$_REQUEST['action']])->execute();
+		} elseif (is_array(self::$actions[$_REQUEST['action']]) && $this->container->has(self::$actions[$_REQUEST['action']][0])) {
+			return [$this->container->get(self::$actions[$_REQUEST['action']][0]), self::$actions[$_REQUEST['action']][1]]();
 		}
 	}
 }

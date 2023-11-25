@@ -27,7 +27,7 @@ use SMF\Utils;
 /**
  * Handles liking posts and displaying the list of who liked a post.
  */
-class Like implements ActionInterface
+class Like extends Action
 {
 	/*******************
 	 * Public properties
@@ -288,7 +288,7 @@ class Like implements ActionInterface
 	 * Sets the basic data needed for the rest of the process.
 	 * Protected to force instantiation via load().
 	 */
-	protected function __construct()
+	public function __construct()
 	{
 		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] === '_count') {
 			$_REQUEST['sa'] = 'count';

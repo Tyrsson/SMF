@@ -16,7 +16,6 @@ use SMF\Lang;
 use SMF\Theme;
 use SMF\Utils;
 use SMF\User;
-use SMF\Actions\Admin\Permissions;
 
 /**
  * This is the administration center home.

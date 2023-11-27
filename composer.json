@@ -12,16 +12,23 @@
         "simplemachines/build-tools": "dev-release-3.0"
     },
     "config": {
+        "sort-packages": true,
         "platform": {
             "php": "8.0.0"
         }
     },
-	"autoload": {
-		"classmap": ["./Sources"]
-	},
+    "autoload": {
+        "files": [
+            "./Sources/Middleware/functions/params.php"
+        ],
+        "classmap": ["./Sources"]
+    },
     "require": {
-        "laminas/laminas-servicemanager": "^3.20",
+        "php": ">=8.0 <=8.4",
+        "laminas/laminas-config-aggregator": "^1.13",
         "laminas/laminas-diactoros": "^3.2",
-        "laminas/laminas-config-aggregator": "^1.13"
+        "laminas/laminas-httphandlerrunner": "^2.5",
+        "laminas/laminas-servicemanager": "^3.20",
+        "laminas/laminas-stratigility": "^3.10"
     }
 }

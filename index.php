@@ -20,21 +20,9 @@
  * @version 3.0 Alpha 1
  */
 
-use Laminas\Diactoros\Response;
-use Laminas\Diactoros\ResponseFactory;
-use Laminas\Diactoros\ServerRequestFactory;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
-use Laminas\HttpHandlerRunner\RequestHandlerRunner;
-use Laminas\Stratigility\Middleware\NotFoundHandler;
-use Laminas\Stratigility\MiddlewarePipe;
-use Laminas\Stratigility\Middleware\RequestHandlerMiddleware;
-use SMF\Handlers\MessageIndexHandler;
-use SMF\Middleware\BoardContextMiddleware;
+
 use SMF\Container\Container;
 use SMF\Forum;
-
-use function Laminas\Stratigility\middleware;
-use function SMF\Middleware\params;
 
 /********************************************************
  * Initialize things that are common to all entry points.
@@ -150,47 +138,6 @@ if (SMF === 1)
 	if (! $container->has(Forum::class)) {
 		// throw exception
 	}
-
-	$app = new MiddlewarePipe();
-	// boardindex
-	$app->pipe(middleware(function ($req, $handler) {
-		if (! in_array($req->getUri()->getPath(), ['/', ''], true)) {
-			return $handler->handle($req);
-		}
-
-		$response = new Response();
-		$response->getBody()->write('Hello world!');
-
-		return $response;
-	}));
-
-	$app->pipe(params(['board'], new BoardContextMiddleware()));
-
-	$app->pipe(params(['topic'], new RequestHandlerMiddleware(new MessageIndexHandler())));
-
-	// 404 handler
-	$app->pipe(new NotFoundHandler(function () {
-		return new Response();
-	}));
-
-	$server = new RequestHandlerRunner(
-		$app,
-		new SapiEmitter(),
-		static function () {
-			return ServerRequestFactory::fromGlobals();
-		},
-		static function (\Throwable $e) {
-			$response = (new ResponseFactory())->createResponse(500);
-			$response->getBody()->write(sprintf(
-				'An error occurred: %s',
-				$e->getMessage
-			));
-			return $response;
-		}
-	);
-
-	$server->run();
-
 
 	$container->get(Forum::class)->execute();
 }

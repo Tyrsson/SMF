@@ -13,14 +13,24 @@
 
 namespace SMF;
 
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Laminas\HttpHandlerRunner\RequestHandlerRunner;
+use Laminas\Stratigility\MiddlewarePipe;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use SMF\Actions\BoardIndex;
 use SMF\Actions\Display;
 use SMF\Actions\MessageIndex;
 use SMF\Db\DatabaseApi as Db;
+use SMF\Middleware\FallbackMiddleware;
+use SMF\Middleware\TestMiddleware;
 
 use function is_array;
+use function Laminas\Stratigility\middleware;
+use function SMF\Middleware\params;
 
 /**
  * The root Forum class. Used when browsing the forum normally.
@@ -265,11 +275,38 @@ class Forum
 	 */
 	public function execute()
 	{
-		// What function shall we execute? (done like this for memory's sake.)
-		$this->main();
+		$app = new MiddlewarePipe();
+		// boardindex
+		$app->pipe(middleware(function ($req, $handler) {
+			if (! in_array($req->getUri()->getPath(), ['/', ''], true)) {
+				return $handler->handle($req);
+			}
+			$response = new Response();
+			$response->getBody()->write('Hello world!');
 
-		// Call obExit specially; we're coming from the main area ;).
-		Utils::obExit(null, null, true);
+			return $response;
+		}));
+
+		$app->pipe(params(['test'], new TestMiddleware()));
+		// pipe SMF as the fallback
+		$app->pipe(new FallbackMiddleware($this));
+
+		$server = new RequestHandlerRunner(
+			$app,
+			new SapiEmitter(),
+			static function () {
+				return ServerRequestFactory::fromGlobals();
+			},
+			static function (\Throwable $e) {
+				$response = (new ResponseFactory())->createResponse(500);
+				$response->getBody()->write(sprintf(
+					'An error occurred: %s',
+					$e->getMessage
+				));
+				return $response;
+			}
+		);
+		$server->run();
 	}
 
 	/***********************
@@ -307,7 +344,7 @@ class Forum
 	 *
 	 * @return array|string|void An array containing the file to include and name of function to call, the name of a function to call or dies with a fatal_lang_error if we couldn't find anything to do.
 	 */
-	protected function main()
+	public function main()
 	{
 		// Special case: session keep-alive, output a transparent pixel.
 		if (isset($_GET['action']) && $_GET['action'] == 'keepalive') {
@@ -334,9 +371,7 @@ class Forum
 		// Attachments don't require the entire theme to be loaded.
 		if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'dlattach' && empty(Config::$maintenance)) {
 			BrowserDetector::call();
-		}
-		// Load the current theme.  (note that ?theme=1 will also work, may be used for guest theming.)
-		else {
+		} else { // Load the current theme.  (note that ?theme=1 will also work, may be used for guest theming.)
 			Theme::load();
 		}
 
@@ -390,28 +425,13 @@ class Forum
 					if (!empty($call)) {
 						return $call;
 					}
+				} else { // No default action huh? then go to our good old BoardIndex.
+					return $this->container->get(BoardIndex::class)->execute();
 				}
-
-				// No default action huh? then go to our good old BoardIndex.
-				else
-				{
-					//return 'SMF\\Actions\\BoardIndex::call';
-					return ($this->container->get(BoardIndex::class))->execute();
-				}
-			}
-
-			// Topic is empty, and action is empty.... MessageIndex!
-			elseif (empty(Topic::$topic_id))
-			{
-				//return 'SMF\\Actions\\MessageIndex::call';
-				return ($this->container->get(MessageIndex::class))->execute();
-			}
-
-			// Board is not empty... topic is not empty... action is empty.. Display!
-			else
-			{
-				//return 'SMF\\Actions\\Display::call';
-				return ($this->container->get(Display::class))->execute();
+			} elseif (empty(Topic::$topic_id)) { // Topic is empty, and action is empty.... MessageIndex!
+				return $this->container->get(MessageIndex::class)->execute();
+			} else { // Board is not empty... topic is not empty... action is empty.. Display!
+				return $this->container->get(Display::class)->execute();
 			}
 		}
 
@@ -433,10 +453,7 @@ class Forum
 				if (!empty($call)) {
 					return $call;
 				}
-			}
-
-			// No fallback action, huh?
-			else {
+			} else { // No fallback action, huh?
 				ErrorHandler::fatalLang('not_found', false, [], 404);
 			}
 		}

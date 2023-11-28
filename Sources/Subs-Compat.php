@@ -2,9 +2,7 @@
 
 /**
  * This file provides compatibility functions and code for older versions of
- * PHP, such as the sha1() function, missing extensions, or 64-bit vs 32-bit
- * systems. It is only included for those older versions or when the respective
- * extension or function cannot be found.
+ * SMF and PHP, such as missing extensions or 64-bit vs 32-bit systems.
  *
  * Simple Machines Forum (SMF)
  *
@@ -136,14 +134,13 @@ if (!function_exists('smf_crc32')) {
 		'INTL_IDNA_VARIANT_UTS46' => 1,
 	];
 
-		foreach ($idna_constants as $name => $value)
-		{
-			if (!defined($name))
+		foreach ($idna_constants as $name => $value) {
+			if (!defined($name)) {
 				define($name, $value);
+			}
 		}
-})();
+	});
 
-if (!function_exists('idn_to_ascii')) {
 	/**
 	 * Compatibility function.
 	 *
@@ -178,9 +175,7 @@ if (!function_exists('idn_to_ascii')) {
 
 		return $Punycode->encode($domain);
 	}
-}
 
-if (!function_exists('idn_to_utf8')) {
 	/**
 	 * Compatibility function.
 	 *

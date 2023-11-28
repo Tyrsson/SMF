@@ -1775,6 +1775,7 @@ class Permissions implements ActionInterface
 			if (isset($perm_info['group_level'])) {
 				switch ($perm_info['group_level']) {
 					case self::GROUP_LEVEL_RESTRICT:
+					case self::GROUP_LEVEL_RESTRICT:
 						$group_levels[$perm_info['scope']]['restrict'][] = $permission;
 						// no break
 
@@ -1794,6 +1795,7 @@ class Permissions implements ActionInterface
 
 			if (isset($perm_info['board_level'])) {
 				switch ($perm_info['board_level']) {
+					case self::BOARD_LEVEL_STANDARD:
 					case self::BOARD_LEVEL_STANDARD:
 						$group_levels[$perm_info['scope']]['standard'][] = $permission;
 						// no break

@@ -20,13 +20,13 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\HttpHandlerRunner\RequestHandlerRunner;
 use Laminas\Stratigility\MiddlewarePipe;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use SMF\Actions\BoardIndex;
 use SMF\Actions\Display;
 use SMF\Actions\MessageIndex;
 use SMF\Db\DatabaseApi as Db;
 use SMF\Middleware\FallbackMiddleware;
 use SMF\Middleware\TestMiddleware;
+use Throwable;
 
 use function is_array;
 use function Laminas\Stratigility\middleware;
@@ -209,7 +209,6 @@ class Forum
 	 * Constructor
 	 */
 	public function __construct(
-		private ServerRequestInterface $request,
 		private ContainerInterface $container
 	) {
 		// If Config::$maintenance is set specifically to 2, then we're upgrading or something.
@@ -295,9 +294,15 @@ class Forum
 			$app,
 			new SapiEmitter(),
 			static function () {
-				return ServerRequestFactory::fromGlobals();
+				return ServerRequestFactory::fromGlobals(
+					$_SERVER,
+					$_GET,
+					$_POST,
+					$_COOKIE,
+					$_FILES
+				);
 			},
-			static function (\Throwable $e) {
+			static function (Throwable $e) {
 				$response = (new ResponseFactory())->createResponse(500);
 				$response->getBody()->write(sprintf(
 					'An error occurred: %s',

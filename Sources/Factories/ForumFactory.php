@@ -13,6 +13,6 @@ final class ForumFactory
 	public function __invoke(ContainerInterface $container): Forum
 	{
 
-		return new Forum($container->get(ServerRequestInterface::class), $container);
+		return new Forum($container);
 	}
 }

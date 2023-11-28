@@ -22,7 +22,6 @@ final class ConfigProvider
 			'factories'  => [
 				Forum::class				  => Factories\ForumFactory::class,
 				Board::class				  => Factories\BoardFactory::class,
-				ServerRequestInterface::class => Factories\RequestFactory::class,
 			],
 			'invokables' => [
 				Actions\Admin\ACP::class 		=> Actions\Admin\ACP::class,

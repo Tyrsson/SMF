@@ -38,7 +38,7 @@ use function SMF\test_one;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class BoardIndex
+class BoardIndex extends Action
 {
 	use BackwardCompatibility;
 
@@ -59,12 +59,6 @@ class BoardIndex
 	 * Internal static properties
 	 ****************************/
 
-	/**
-	 * @var object
-	 *
-	 * An instance of this class.
-	 */
-	protected static object $obj;
 
 	/****************
 	 * Public methods
@@ -644,11 +638,6 @@ class BoardIndex
 		Utils::$context['show_stats'] = User::$me->allowedTo('view_stats') && !empty(Config::$modSettings['trackStats']);
 		Utils::$context['show_buddies'] = !empty(User::$me->buddies);
 		Utils::$context['show_who'] = User::$me->allowedTo('who_view') && !empty(Config::$modSettings['who_enabled']);
-	}
-
-	public function __invoke()
-	{
-		return new $this();
 	}
 
 	/*************************

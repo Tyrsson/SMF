@@ -132,7 +132,7 @@ class Logs extends Action
 	 * An instance of this class.
 	 * This is used by the load() method to prevent mulitple instantiations.
 	 */
-	protected static object $obj;
+	// protected static object $obj;
 
 	/****************
 	 * Public methods

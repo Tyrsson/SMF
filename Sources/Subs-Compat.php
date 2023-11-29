@@ -113,33 +113,33 @@ if (!function_exists('smf_crc32')) {
 	}
 }
 
-/*****************
- * Polyfills, etc.
- *****************/
+	/*****************
+	 * Polyfills, etc.
+	 *****************/
 
-// This is wrapped in a closure to keep the global namespace clean.
-(function () {
-	/**
-	 * IDNA_* constants used as flags for the idn_to_* functions.
-	 */
-	$idna_constants = [
-		'IDNA_DEFAULT' => 0,
-		'IDNA_ALLOW_UNASSIGNED' => 1,
-		'IDNA_USE_STD3_RULES' => 2,
-		'IDNA_CHECK_BIDI' => 4,
-		'IDNA_CHECK_CONTEXTJ' => 8,
-		'IDNA_NONTRANSITIONAL_TO_ASCII' => 16,
-		'IDNA_NONTRANSITIONAL_TO_UNICODE' => 32,
-		'INTL_IDNA_VARIANT_2003' => 0,
-		'INTL_IDNA_VARIANT_UTS46' => 1,
-	];
+	// This is wrapped in a closure to keep the global namespace clean.
+	(function () {
+		/**
+		 * IDNA_* constants used as flags for the idn_to_* functions.
+		 */
+		$idna_constants = [
+			'IDNA_DEFAULT' => 0,
+			'IDNA_ALLOW_UNASSIGNED' => 1,
+			'IDNA_USE_STD3_RULES' => 2,
+			'IDNA_CHECK_BIDI' => 4,
+			'IDNA_CHECK_CONTEXTJ' => 8,
+			'IDNA_NONTRANSITIONAL_TO_ASCII' => 16,
+			'IDNA_NONTRANSITIONAL_TO_UNICODE' => 32,
+			'INTL_IDNA_VARIANT_2003' => 0,
+			'INTL_IDNA_VARIANT_UTS46' => 1,
+		];
 
-		foreach ($idna_constants as $name => $value) {
-			if (!defined($name)) {
-				define($name, $value);
+			foreach ($idna_constants as $name => $value) {
+				if (!defined($name)) {
+					define($name, $value);
+				}
 			}
-		}
-	});
+	})();
 
 	/**
 	 * Compatibility function.
@@ -157,6 +157,8 @@ if (!function_exists('smf_crc32')) {
 	 * @param array|null $idna_info Ignored in this compatibility function.
 	 * @return string|bool The domain name encoded in ASCII-compatible form, or false on failure.
 	 */
+
+if(!function_exists('idn_to_ascii')) {
 	function idn_to_ascii($domain, $flags = 0, $variant = 1, &$idna_info = null)
 	{
 		static $Punycode;
@@ -175,6 +177,7 @@ if (!function_exists('smf_crc32')) {
 
 		return $Punycode->encode($domain);
 	}
+}
 
 	/**
 	 * Compatibility function.
@@ -192,6 +195,8 @@ if (!function_exists('smf_crc32')) {
 	 * @param array|null $idna_info Ignored in this compatibility function.
 	 * @return string|bool The domain name in Unicode, encoded in UTF-8, or false on failure.
 	 */
+
+if (!function_exists('idn_to_utf8')) {
 	function idn_to_utf8($domain, $flags = 0, $variant = 1, &$idna_info = null)
 	{
 		static $Punycode;
@@ -206,5 +211,4 @@ if (!function_exists('smf_crc32')) {
 		return $Punycode->decode($domain);
 	}
 }
-
 ?>

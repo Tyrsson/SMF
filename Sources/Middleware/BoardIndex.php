@@ -11,8 +11,14 @@
  * @version 3.0 Alpha 1
  */
 
-namespace SMF\Actions;
+namespace SMF\Middleware;
 
+use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use SMF\Actions\Action;
 use SMF\BackwardCompatibility;
 use SMF\Board;
 use SMF\Cache\CacheApi;
@@ -27,6 +33,8 @@ use SMF\Time;
 use SMF\User;
 use SMF\Utils;
 
+use SMF\Security;
+
 /**
  * This class shows the board index.
  *
@@ -36,7 +44,7 @@ use SMF\Utils;
  * Although this class is not accessed using an ?action=... URL query, it
  * behaves like an action in every other way.
  */
-class BoardIndex extends Action
+class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerInterface
 {
 	use BackwardCompatibility;
 
@@ -56,11 +64,47 @@ class BoardIndex extends Action
 	/****************************
 	 * Internal static properties
 	 ****************************/
+	// protected static $obj;
 
+	public function handle(ServerRequestInterface $request): ResponseInterface
+	{
+	}
 
 	/****************
 	 * Public methods
 	 ****************/
+
+	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+	{
+		// We should set our security headers now.
+		Security::frameOptionsHeader();
+
+		// Set our CORS policy.
+		Security::corsPolicyHeader();
+
+		// Load the user's cookie (or set as guest) and load their settings.
+		User::load();
+
+		// Load the current board's information.
+		Board::load();
+
+		// Load the current user's permissions.
+		User::$me->loadPermissions();
+
+		// if (! in_array($request->getUri()->getPath(), ['/index.php', ''], true)) {
+		// 	return $handler->handle($request);
+		// }
+		$params = $request->getQueryParams();
+		if (isset($params['board']) || isset($params['action'])) {
+			return $handler->handle($request);
+		}
+		$response = new Response();
+
+		$this->execute();
+		Utils::obExit(null, null, true);
+		$response->getBody()->write(\ob_get_contents());
+		return $response;
+	}
 
 	/**
 	 * Shows the list of categories and boards, along with the info center.
@@ -246,7 +290,10 @@ class BoardIndex extends Action
 	/***********************
 	 * Public static methods
 	 ***********************/
-
+	public function __invoke()
+	{
+		return $this();
+	}
 	/**
 	 * Static wrapper for constructor.
 	 *
@@ -610,6 +657,7 @@ class BoardIndex extends Action
 	 */
 	public function __construct()
 	{
+		Theme::load();
 		Theme::loadTemplate('BoardIndex');
 		Utils::$context['template_layers'][] = 'boardindex_outer';
 

@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace SMF\Actions;
 
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
 abstract class Action implements ActionInterface
 {
-	public function __invoke(): self
+	protected static self $obj;
+	public function __invoke()
 	{
 		return new $this();
 	}

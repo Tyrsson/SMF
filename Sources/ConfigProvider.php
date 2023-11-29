@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SMF;
 
-use Psr\Http\Message\ServerRequestInterface;
 use SMF\Actions;
+use SMF\Middleware;
 
 final class ConfigProvider
 {
@@ -26,7 +26,7 @@ final class ConfigProvider
 			'invokables' => [
 				Actions\Admin\ACP::class 		=> Actions\Admin\ACP::class,
 				Actions\Admin\Logs::class		=> Actions\Admin\Logs::class,
-				Actions\BoardIndex::class		=> Actions\BoardIndex::class,
+				Middleware\BoardIndex::class	=> Middleware\BoardIndex::class,
 				Actions\Display::class			=> Actions\Display::class,
 				Actions\DisplayAdminFile::class => Actions\DisplayAdminFile::class,
 				Actions\Like::class				=> Actions\Like::class,

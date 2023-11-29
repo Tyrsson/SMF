@@ -19,11 +19,13 @@ use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\HttpHandlerRunner\RequestHandlerRunner;
 use Laminas\Stratigility\MiddlewarePipe;
+use Laminas\Stratigility\Middleware\RequestHandlerMiddleware;
 use Psr\Container\ContainerInterface;
-use SMF\Actions\BoardIndex;
+//use SMF\Actions\BoardIndex;
 use SMF\Actions\Display;
 use SMF\Actions\MessageIndex;
 use SMF\Db\DatabaseApi as Db;
+use SMF\Middleware\BoardIndex;
 use SMF\Middleware\FallbackMiddleware;
 use SMF\Middleware\TestMiddleware;
 use Throwable;
@@ -276,15 +278,9 @@ class Forum
 	{
 		$app = new MiddlewarePipe();
 		// boardindex
-		$app->pipe(middleware(function ($req, $handler) {
-			if (! in_array($req->getUri()->getPath(), ['/', ''], true)) {
-				return $handler->handle($req);
-			}
-			$response = new Response();
-			$response->getBody()->write('Hello world!');
-
-			return $response;
-		}));
+		$boardIndex = $this->container->get(BoardIndex::class);
+		//$handler = BoardIndex::class;
+		$app->pipe($this->container->get(BoardIndex::class));
 
 		$app->pipe(params(['test'], new TestMiddleware()));
 		// pipe SMF as the fallback
@@ -431,7 +427,7 @@ class Forum
 						return $call;
 					}
 				} else { // No default action huh? then go to our good old BoardIndex.
-					return $this->container->get(BoardIndex::class)->execute();
+					//return $this->container->get(BoardIndex::class)->execute();
 				}
 			} elseif (empty(Topic::$topic_id)) { // Topic is empty, and action is empty.... MessageIndex!
 				return $this->container->get(MessageIndex::class)->execute();

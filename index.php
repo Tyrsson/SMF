@@ -135,11 +135,12 @@ if (SMF === 1)
 {
 	// we gotz services?
 	$container = (require __DIR__ . '/config/container.php');
-	if (! $container->has(Forum::class)) {
-		// throw exception
-	}
+	// if (! $container->has(Forum::class)) {
+	// 	// throw exception
+	// }
 
 	$container->get(Forum::class)->execute();
+	//(new Forum($container))->execute();
 }
 
 ?>

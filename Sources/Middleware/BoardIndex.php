@@ -76,6 +76,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
+
 		// We should set our security headers now.
 		Security::frameOptionsHeader();
 
@@ -99,7 +100,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 			return $handler->handle($request);
 		}
 		$response = new Response();
-
+		Theme::loadTemplate('BoardIndex');
 		$this->execute();
 		Utils::obExit(null, null, true);
 		$response->getBody()->write(\ob_get_contents());
@@ -658,7 +659,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 	public function __construct()
 	{
 		Theme::load();
-		Theme::loadTemplate('BoardIndex');
+
 		Utils::$context['template_layers'][] = 'boardindex_outer';
 
 		Utils::$context['page_title'] = sprintf(Lang::$txt['forum_index'], Utils::$context['forum_name']);

@@ -20,13 +20,12 @@ final class ConfigProvider
 	{
 		return [
 			'factories'  => [
-				Forum::class				  => Factories\ForumFactory::class,
-				Board::class				  => Factories\BoardFactory::class,
+				Forum::class => Factories\ForumFactory::class,
+				Board::class => Factories\BoardFactory::class,
 			],
 			'invokables' => [
 				Actions\Admin\ACP::class 		=> Actions\Admin\ACP::class,
 				Actions\Admin\Logs::class		=> Actions\Admin\Logs::class,
-				Middleware\BoardIndex::class	=> Middleware\BoardIndex::class,
 				Actions\Display::class			=> Actions\Display::class,
 				Actions\DisplayAdminFile::class => Actions\DisplayAdminFile::class,
 				Actions\Like::class				=> Actions\Like::class,
@@ -38,6 +37,8 @@ final class ConfigProvider
 				Actions\Profile\Main::class		=> Actions\Profile\Main::class,
 				Actions\Profile\Popup::class	=> Actions\Profile\Popup::class,
 				Actions\QuoteFast::class		=> Actions\QuoteFast::class,
+				Middleware\BoardIndex::class	=> Middleware\BoardIndex::class,
+
 			],
 		];
 	}

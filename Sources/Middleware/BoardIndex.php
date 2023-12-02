@@ -13,7 +13,7 @@
 
 namespace SMF\Middleware;
 
-use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -96,14 +96,13 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		// 	return $handler->handle($request);
 		// }
 		$params = $request->getQueryParams();
-		if (isset($params['board']) || isset($params['action'])) {
+		if (isset($params['board']) || isset($params['action']) || isset($params['topic'])) {
 			return $handler->handle($request);
 		}
-		$response = new Response();
 		Theme::loadTemplate('BoardIndex');
 		$this->execute();
 		Utils::obExit(null, null, true);
-		$response->getBody()->write(\ob_get_contents());
+		$response = new HtmlResponse(\ob_get_contents());
 		return $response;
 	}
 

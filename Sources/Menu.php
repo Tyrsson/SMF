@@ -13,6 +13,8 @@
 
 namespace SMF;
 
+use ArrayAccess;
+
 /**
  * Represents a menu, such as the admin menu or profile menu.
  *
@@ -94,22 +96,9 @@ namespace SMF;
  *     bool   disable_hook_call:
  *                           If true, skips the integrate_{action}_areas hook.
  */
-class Menu implements \ArrayAccess
+class Menu implements ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'create' => 'createMenu',
-			'destroy' => 'destroyMenu',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -744,11 +733,6 @@ class Menu implements \ArrayAccess
 			$this->sections[$section_id]['url'] = $first_area['url'] ?? $this->base_url . ';area=' . array_key_first($section['areas']);
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Menu::exportStatic')) {
-	Menu::exportStatic();
 }
 
 ?>

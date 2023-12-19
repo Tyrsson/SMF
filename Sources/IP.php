@@ -14,31 +14,18 @@
 namespace SMF;
 
 use SMF\Cache\CacheApi;
+use Stringable;
+
+use const FILTER_FLAG_IPV4;
+use const FILTER_FLAG_IPV6;
+use const FILTER_VALIDATE_IP;
 
 /**
  * Represents an IP address and allows performing various operations on it.
  */
-class IP implements \Stringable
+class IP implements Stringable
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'ip2range' => 'ip2range',
-			'range2ip' => 'range2ip',
-			'isValidIP' => 'isValidIP',
-			'isValidIPv6' => 'isValidIPv6',
-			'hostFromIp' => 'host_from_ip',
-			'inet_ptod' => 'inet_ptod',
-			'inet_dtop' => 'inet_dtop',
-			'expandIPv6' => 'expandIPv6',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -87,6 +74,7 @@ class IP implements \Stringable
 	 * If the passed string is not a valid IP address, it will be set to ''.
 	 *
 	 * @param ?string $ip The IP address in either string or binary form.
+	 * @return $this to provide fluent interface
 	 */
 	public function __construct(?string $ip)
 	{
@@ -103,6 +91,7 @@ class IP implements \Stringable
 		else {
 			$this->ip = (string) @inet_ntop($ip);
 		}
+		return $this;
 	}
 
 	/**
@@ -116,7 +105,7 @@ class IP implements \Stringable
 	/**
 	 * Returns the binary form of the IP address.
 	 */
-	public function toBinary(): string
+	public function toBinary(): string|bool
 	{
 		return inet_pton($this->ip);
 	}
@@ -418,8 +407,8 @@ class IP implements \Stringable
 	 * Convert a range of IP addresses into a single string.
 	 * It's practically the reverse function of ip2range().
 	 *
-	 * @param array $low The low end of the range.
-	 * @param array $high The high end of the range.
+	 * @param string $low The low end of the range.
+	 * @param string $high The high end of the range.
 	 * @return string A string indicating the range.
 	 */
 	public static function range2ip($low, $high): string
@@ -442,7 +431,8 @@ class IP implements \Stringable
 	 * Backward compatibility wrapper for the isValid() method.
 	 *
 	 * @param string $ip An IP address in either string or binary form.
-	 * @return string Whether $ip is a valid IP address.
+	 * @return bool Whether $ip is a valid IP address.
+	 * @deprecated since 3.0
 	 */
 	public static function isValidIP(string $ip): string
 	{
@@ -458,6 +448,7 @@ class IP implements \Stringable
 	 *
 	 * @param string $ip An IPv6 address in either string or binary form.
 	 * @return string Whether $ip is a valid IPv6 address.
+	 * @deprecated since 3.0
 	 */
 	public static function isValidIPv6(string $ip): string
 	{
@@ -471,6 +462,7 @@ class IP implements \Stringable
 	 *
 	 * @param string $ip An IP address in either string or binary form.
 	 * @return string The host name.
+	 * @deprecated since 3.0
 	 */
 	public static function hostFromIp(string $ip): string
 	{
@@ -484,6 +476,7 @@ class IP implements \Stringable
 	 *
 	 * @param string $ip An IP address in either string or binary form.
 	 * @return string The host name.
+	 * @deprecated since 3.0
 	 */
 	public static function inet_ptod(string $ip): string
 	{
@@ -497,6 +490,7 @@ class IP implements \Stringable
 	 *
 	 * @param string $ip An IP address in either string or binary form.
 	 * @return string The host name.
+	 * @deprecated since 3.0
 	 */
 	public static function inet_dtop(string $ip): string
 	{
@@ -511,6 +505,7 @@ class IP implements \Stringable
 	 *    invalid. True for boolean, false for empty string. Default: true.
 	 * @return string|false The expanded IPv6 address, or false/an empty string
 	 *    if address was invalid.
+	 * @deprecated since 3.0
 	 */
 	public static function expandIPv6(string $ip, bool $return_bool_if_invalid = true): string|false
 	{
@@ -574,7 +569,7 @@ class IP implements \Stringable
 
 		// This is nslookup; available on Windows and Macs.
 		if (!isset($host) && (Utils::$context['server']['is_windows'] || Utils::$context['server']['is_mac'])) {
-			$test = (string) @shell_exec('nslookup -timeout=' . max(1, floor($timeout / 1000)) . ' ' . @escapeshellarg($ip));
+			$test = (string) @shell_exec('nslookup -timeout=' . max(1, floor($timeout / 1000)) . ' ' . @escapeshellarg($this->ip));
 
 			if (strpos($test, 'Non-existent domain') !== false) {
 				$host = '';
@@ -680,11 +675,6 @@ class IP implements \Stringable
 
 		return $query;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\IP::exportStatic')) {
-	IP::exportStatic();
 }
 
 ?>

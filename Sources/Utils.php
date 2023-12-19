@@ -13,6 +13,8 @@
 
 namespace SMF;
 
+use SMF\Db\DatabaseApi AS Db;
+
 /**
  * Holds some widely used stuff, like $context and $smcFunc.
  */
@@ -26,39 +28,6 @@ class Utils
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'sanitizeChars' => 'sanitize_chars',
-			'normalizeSpaces' => 'normalize_spaces',
-			'htmlspecialcharsRecursive' => 'htmlspecialchars__recursive',
-			'htmlspecialcharsDecode' => 'un_htmlspecialchars',
-			'htmlTrimRecursive' => 'htmltrim__recursive',
-			'shorten' => 'shorten_subject',
-			'text2words' => 'text2words',
-			'buildRegex' => 'build_regex',
-			'cleanXml' => 'cleanXml',
-			'JavaScriptEscape' => 'JavaScriptEscape',
-			'stripslashesRecursive' => 'stripslashes__recursive',
-			'urldecodeRecursive' => 'urldecode__recursive',
-			'escapestringRecursive' => 'escapestring__recursive',
-			'unescapestringRecursive' => 'unescapestring__recursive',
-			'truncateArray' => 'truncate_array',
-			'arrayLength' => 'array_length',
-			'jsonDecode' => 'smf_json_decode',
-			'safeSerialize' => 'safe_serialize',
-			'safeUnserialize' => 'safe_unserialize',
-			'getMimeType' => 'get_mime_type',
-			'checkMimeType' => 'check_mime_type',
-			'makeWritable' => 'smf_chmod',
-			'sendHttpStatus' => 'send_http_status',
-			'serverResponse' => 'smf_serverResponse',
-			'redirectexit' => 'redirectexit',
-			'obExit' => 'obExit',
-			'getCallable' => 'getCallable',
-			'call_helper' => 'call_helper',
-			'replaceEntities__callback' => 'replaceEntities__callback',
-			'fixchar__callback' => 'fixchar__callback',
-			'entity_fix__callback' => 'entity_fix__callback',
-		],
 		'prop_names' => [
 			'context' => 'context',
 			'smcFunc' => 'smcFunc',
@@ -1217,7 +1186,7 @@ class Utils
 			array_walk_recursive(
 				$temp,
 				function (&$value) use ($param_length) {
-					$value = truncate(strval($value), $param_length);
+					$value = self::truncate(strval($value), $param_length);
 				},
 			);
 
@@ -1398,7 +1367,7 @@ class Utils
 					$out = '';
 
 					foreach ($value as $k => $v) {
-						$out .= self::safe_serialize($k) . self::safe_serialize($v);
+						$out .= self::safeSerialize($k) . self::safeSerialize($v);
 					}
 
 					$out = 'a:' . count($value) . ':{' . $out . '}';
@@ -1511,7 +1480,7 @@ class Utils
 						$out = false;
 						break 2;
 
-						// In array, expecting end of array or a key.
+					// In array, expecting end of array or a key.
 					case 2:
 						if ($type == '}') {
 							// Array size is less than expected.
@@ -1549,7 +1518,7 @@ class Utils
 						$out = false;
 						break 2;
 
-						// Expecting array or value.
+					// Expecting array or value.
 					case 0:
 						if ($type == 'a') {
 							$data = [];
@@ -1583,11 +1552,9 @@ class Utils
 	}
 
 	/**
-	 * Wrapper for random_int() that transparently loads a compatibility library
-	 * if necessary.
+	 * Wrapper for random_int() that sets default values.
 	 *
-	 * @todo Compatibility library is no longer necessary since we don't support
-	 * PHP 5 any more.
+	 * Only exists for backward compatibility purposes.
 	 *
 	 * @param int $min Minumum value. Default: 0.
 	 * @param int $max Maximum value. Default: PHP_INT_MAX.
@@ -1595,30 +1562,19 @@ class Utils
 	 */
 	public static function randomInt(int $min = 0, int $max = PHP_INT_MAX): int
 	{
-		// Oh, wouldn't it be great if I *was* crazy? Then the world would be okay.
-		if (!is_callable('random_int')) {
-			require_once Config::$sourcedir . '/random_compat/random.php';
-		}
-
 		return random_int($min, $max);
 	}
 
 	/**
-	 * Wrapper for random_bytes() that transparently loads a compatibility
-	 * library if necessary.
+	 * Wrapper for random_bytes() that sets a default length.
 	 *
-	 * @todo Compatibility library is no longer necessary since we don't support
-	 * PHP 5 any more.
+	 * Only exists for backward compatibility purposes.
 	 *
 	 * @param int $length Number of bytes to return. Default: 64.
 	 * @return string A string of random bytes.
 	 */
 	public static function randomBytes(int $length = 64): string
 	{
-		if (!is_callable('random_bytes')) {
-			require_once Config::$sourcedir . '/random_compat/random.php';
-		}
-
 		// Make sure length is valid
 		$length = max(1, $length);
 
@@ -2221,7 +2177,7 @@ class Utils
 
 		// An array? should be a "callable" array IE array(object/class, valid_callable).
 		// A closure? should be a callable one.
-		if (is_array($input) || $input instanceof Closure) {
+		if (is_array($input) || $input instanceof \Closure) {
 			return is_callable($input) ? $input : false;
 		}
 
@@ -2400,7 +2356,7 @@ class Utils
 	 */
 	final protected static function fixUtf8mb4(string $string): string
 	{
-		if (class_exists('SMF\\Db\\DatabaseApi', false) && isset(Db\DatabaseApi::$db) && Db\DatabaseApi::$db->mb4) {
+		if (class_exists('SMF\\Db\\DatabaseApi', false) && isset(Db::$db) && Db::$db->mb4) {
 			return $string;
 		}
 

@@ -14,7 +14,6 @@
 namespace SMF\Actions\Profile;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -34,21 +33,6 @@ use SMF\Utils;
  */
 class Export implements ActionInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'export_profile_data',
-			'createDir' => 'create_export_dir',
-			'getFormats' => 'get_export_formats',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -328,8 +312,16 @@ class Export implements ActionInterface
 			Db::$db->insert(
 				'insert',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string', 'claimed_time' => 'int'],
-				['$sourcedir/tasks/ExportProfileData.php', 'SMF\\Tasks\\ExportProfileData', $data, 0],
+				[
+					'task_class' => 'string-255',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
+				[
+					'SMF\\Tasks\\ExportProfileData',
+					$data,
+					0,
+				],
 				[],
 			);
 
@@ -629,11 +621,6 @@ class Export implements ActionInterface
 		Utils::$context['export_datatypes'] = $this->datatypes;
 		Utils::$context['export_formats'] = self::$formats;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Export::exportStatic')) {
-	Export::exportStatic();
 }
 
 ?>

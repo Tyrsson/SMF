@@ -32,20 +32,6 @@ class ReportToMod implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ReportToModerator',
-			'ReportToModerator2' => 'ReportToModerator2',
-			'reportPost' => 'reportPost',
-			'reportUser' => 'reportUser',
-		],
-	];
-
 	/*****************
 	 * Class constants
 	 *****************/
@@ -344,6 +330,7 @@ class ReportToMod implements ActionInterface
 	/**
 	 * Backward compatibility wrapper for the submit sub-action.
 	 * In theory, no modifications should ever have called this, but...
+	 * @deprecated since 3.0
 	 */
 	public static function ReportToModerator2(): void
 	{
@@ -528,17 +515,25 @@ class ReportToMod implements ActionInterface
 			Db::$db->insert(
 				'insert',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
-				['$sourcedir/tasks/MsgReport_Notify.php', 'SMF\\Tasks\\MsgReport_Notify', Utils::jsonEncode([
-					'report_id' => $id_report,
-					'msg_id' => $msg,
-					'topic_id' => $message['id_topic'],
-					'board_id' => $message['id_board'],
-					'sender_id' => User::$me->id,
-					'sender_name' => User::$me->name,
-					'time' => time(),
-					'comment_id' => $id_comment,
-				]), 0],
+				[
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
+				[
+					'SMF\\Tasks\\MsgReport_Notify',
+					Utils::jsonEncode([
+						'report_id' => $id_report,
+						'msg_id' => $msg,
+						'topic_id' => $message['id_topic'],
+						'board_id' => $message['id_board'],
+						'sender_id' => User::$me->id,
+						'sender_name' => User::$me->name,
+						'time' => time(),
+						'comment_id' => $id_comment,
+					]),
+					0,
+				],
 				['id_task'],
 			);
 		}
@@ -657,16 +652,24 @@ class ReportToMod implements ActionInterface
 			Db::$db->insert(
 				'insert',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
-				['$sourcedir/tasks/MemberReport_Notify.php', 'SMF\\Tasks\\MemberReport_Notify', Utils::jsonEncode([
-					'report_id' => $id_report,
-					'user_id' => $user['id_member'],
-					'user_name' => $user_name,
-					'sender_id' => User::$me->id,
-					'sender_name' => User::$me->name,
-					'comment' => Utils::htmlspecialchars($this->comment),
-					'time' => time(),
-				]), 0],
+				[
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
+				[
+					'SMF\\Tasks\\MemberReport_Notify',
+					Utils::jsonEncode([
+						'report_id' => $id_report,
+						'user_id' => $user['id_member'],
+						'user_name' => $user_name,
+						'sender_id' => User::$me->id,
+						'sender_name' => User::$me->name,
+						'comment' => Utils::htmlspecialchars($this->comment),
+						'time' => time(),
+					]),
+					0,
+				],
 				['id_task'],
 			);
 		}
@@ -677,11 +680,6 @@ class ReportToMod implements ActionInterface
 		// Back to the profile we reported!
 		Utils::redirectexit('reportsent;action=profile;u=' . $id_member);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ReportToMod::exportStatic')) {
-	ReportToMod::exportStatic();
 }
 
 ?>

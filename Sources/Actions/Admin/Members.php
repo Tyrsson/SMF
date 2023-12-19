@@ -37,23 +37,6 @@ class Members implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ViewMembers',
-			'list_getMembers' => 'list_getMembers',
-			'list_getNumMembers' => 'list_getNumMembers',
-			'viewMemberlist' => 'ViewMemberlist',
-			'adminApprove' => 'AdminApprove',
-			'membersAwaitingActivation' => 'MembersAwaitingActivation',
-			'searchMembers' => 'SearchMembers',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -1387,6 +1370,7 @@ class Members implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the all sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function viewMemberlist(): void
 	{
@@ -1397,6 +1381,7 @@ class Members implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the approve sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function adminApprove(): void
 	{
@@ -1407,6 +1392,7 @@ class Members implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the browse sub-action.
+	 * deprecated since 3.0
 	 */
 	public static function membersAwaitingActivation(): void
 	{
@@ -1417,6 +1403,7 @@ class Members implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the search sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function searchMembers(): void
 	{
@@ -1690,11 +1677,6 @@ class Members implements ActionInterface
 			}
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Members::exportStatic')) {
-	Members::exportStatic();
 }
 
 ?>

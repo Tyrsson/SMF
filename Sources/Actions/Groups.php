@@ -38,24 +38,6 @@ class Groups implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'Groups',
-			'list_getMembergroups' => 'list_getMembergroups',
-			'listMembergroupMembers_Href' => 'listMembergroupMembers_Href',
-			'list_getGroupRequestCount' => 'list_getGroupRequestCount',
-			'list_getGroupRequests' => 'list_getGroupRequests',
-			'GroupList' => 'GroupList',
-			'MembergroupMembers' => 'MembergroupMembers',
-			'GroupRequests' => 'GroupRequests',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -554,13 +536,11 @@ class Groups implements ActionInterface
 					'insert',
 					'{db_prefix}background_tasks',
 					[
-						'task_file' => 'string-255',
 						'task_class' => 'string-255',
 						'task_data' => 'string',
 						'claimed_time' => 'int',
 					],
 					[
-						'$sourcedir/tasks/GroupAct_Notify.php',
 						'SMF\\Tasks\\GroupAct_Notify',
 						$data,
 						0,
@@ -882,7 +862,7 @@ class Groups implements ActionInterface
 	 * @param int $items_per_page The number of items per page.
 	 * @param string $sort An SQL sort expression (column/direction).
 	 * @param string $where Data for the WHERE clause.
-	 * @param string $where_parameters Parameter values to be inserted into the WHERE clause.
+	 * @param array $where_parameters Parameter values to be inserted into the WHERE clause.
 	 * @return array An array of group requests.
 	 * Each group request has:
 	 * 		'id'
@@ -950,6 +930,7 @@ class Groups implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for index sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function GroupList(): void
 	{
@@ -960,6 +941,7 @@ class Groups implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for members sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function MembergroupMembers(): void
 	{
@@ -970,6 +952,7 @@ class Groups implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for requests sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function GroupRequests(): void
 	{
@@ -993,11 +976,6 @@ class Groups implements ActionInterface
 			$this->subaction = $_GET['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Groups::exportStatic')) {
-	Groups::exportStatic();
 }
 
 ?>

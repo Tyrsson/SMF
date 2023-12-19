@@ -13,10 +13,10 @@
 
 namespace SMF\PersonalMessage;
 
+use ArrayAccess;
 use SMF\Actions\Notify;
 use SMF\Actions\PersonalMessage as PMAction;
 use SMF\ArrayAccessHelper;
-use SMF\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -39,31 +39,9 @@ use SMF\Verifier;
 /**
  * Represents a single personal message.
  */
-class PM implements \ArrayAccess
+class PM implements ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'old' => 'old',
-			'compose' => 'compose',
-			'compose2' => 'compose2',
-			'send' => 'sendpm',
-			'delete' => 'deleteMessages',
-			'markRead' => 'markMessages',
-			'getLatest' => 'getLatest',
-			'getRecent' => 'getRecent',
-			'countSent' => 'countSent',
-			'reportErrors' => 'messagePostError',
-			'isAccessible' => 'isAccessiblePM',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -827,9 +805,11 @@ class PM implements \ArrayAccess
 	/**
 	 * Validates a composed personal message and then passes it to PM::send()
 	 * if it is valid. If errors were found, or if the user requested a preview,
-	 * will instead send the user back to the composition page.
+	 * will return false.
+	 *
+	 * @return bool Whether the PM could be sent.
 	 */
-	public static function compose2(): void
+	public static function compose2(): bool
 	{
 		User::$me->isAllowedTo('pm_send');
 
@@ -1007,7 +987,7 @@ class PM implements \ArrayAccess
 		if (!empty($post_errors) && !$is_recipient_change && !isset($_REQUEST['preview']) && !isset($_REQUEST['xml'])) {
 			self::reportErrors($post_errors, $namedRecipientList, $recipientList);
 
-			return;
+			return false;
 		}
 
 		// Want to take a second glance before you send?
@@ -1032,7 +1012,7 @@ class PM implements \ArrayAccess
 			// Pretend they messed up but don't ignore if they really did :P.
 			self::reportErrors($post_errors, $namedRecipientList, $recipientList);
 
-			return;
+			return false;
 		}
 
 		// Adding a recipient cause javascript ain't working?
@@ -1048,7 +1028,7 @@ class PM implements \ArrayAccess
 
 			self::reportErrors([], $namedRecipientList, $recipientList);
 
-			return;
+			return false;
 		}
 
 		// Want to save this as a draft and think about it some more?
@@ -1058,7 +1038,7 @@ class PM implements \ArrayAccess
 
 			self::reportErrors($post_errors, $namedRecipientList, $recipientList);
 
-			return;
+			return false;
 		}
 
 		// Before we send the PM, let's make sure we don't have an abuse of numbers.
@@ -1070,7 +1050,7 @@ class PM implements \ArrayAccess
 
 			self::reportErrors($post_errors, $namedRecipientList, $recipientList);
 
-			return;
+			return false;
 		}
 
 		// Protect from message spamming.
@@ -1111,21 +1091,15 @@ class PM implements \ArrayAccess
 				'bcc' => array_intersect($recipientList['bcc'], Utils::$context['send_log']['failed']),
 			]);
 
-			return;
+			return false;
 		}
 
-		// Message sent successfully?
-		if (!empty(Utils::$context['send_log']) && empty(Utils::$context['send_log']['failed'])) {
-			$this->current_label_redirect = $this->current_label_redirect . ';done=sent';
-
-			// If we had a PM draft for this one, then its time to remove it since it was just sent
-			if (Utils::$context['drafts_save'] && !empty($_POST['id_draft'])) {
-				DraftPM::delete($_POST['id_draft']);
-			}
+		// If we had a PM draft for this one, then its time to remove it since it was just sent
+		if (Utils::$context['drafts_save'] && !empty($_POST['id_draft'])) {
+			DraftPM::delete($_POST['id_draft']);
 		}
 
-		// Go back to the where they sent from, if possible...
-		Utils::redirectexit($this->current_label_redirect);
+		return true;
 	}
 
 	/**
@@ -2243,11 +2217,6 @@ class PM implements \ArrayAccess
 		}
 		Db::$db->free_result(self::$messages_request);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\PM::exportStatic')) {
-	PM::exportStatic();
 }
 
 ?>

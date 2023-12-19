@@ -16,7 +16,6 @@ namespace SMF\Actions\Admin;
 use SMF\Actions\Action;
 use SMF\Actions\MessageIndex;
 use SMF\Actions\Notify;
-use SMF\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -37,27 +36,6 @@ use SMF\Utils;
  */
 class ACP extends Action
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'AdminMain',
-			'prepareDBSettingContext' => 'prepareDBSettingContext',
-			'saveSettings' => 'saveSettings',
-			'saveDBSettings' => 'saveDBSettings',
-			'getServerVersions' => 'getServerVersions',
-			'getFileVersions' => 'getFileVersions',
-			'updateAdminPreferences' => 'updateAdminPreferences',
-			'emailAdmins' => 'emailAdmins',
-			'adminLogin' => 'adminLogin',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -1153,8 +1131,8 @@ class ACP extends Action
 				switch ($type) {
 					case 'multiple':
 						$config_multis[$var] = $def['type'];
-
 						// no break
+
 					case 'double':
 						$config_nums[] = $var;
 						break;
@@ -1434,7 +1412,7 @@ class ACP extends Action
 	 * @param array $checkFor An array of what to check versions for - can contain one or more of 'gd', 'imagemagick', 'db_server', 'phpa', 'memcache', 'php' or 'server'
 	 * @return array An array of versions (keys are same as what was in $checkFor, values are the versions)
 	 */
-	public static function getServerVersions($checkFor)
+	public static function getServerVersions(array $checkFor)
 	{
 		Lang::load('Admin');
 		Lang::load('ManageSettings');
@@ -1448,16 +1426,11 @@ class ACP extends Action
 		}
 
 		// Why not have a look at ImageMagick? If it's installed, we should show version information for it too.
-		if (in_array('imagemagick', $checkFor) && (class_exists('Imagick') || function_exists('MagickGetVersionString'))) {
-			if (class_exists('Imagick')) {
-				$temp = new \Imagick();
-				$temp2 = $temp->getVersion();
-				$im_version = $temp2['versionString'];
-				$extension_version = 'Imagick ' . phpversion('Imagick');
-			} else {
-				$im_version = MagickGetVersionString();
-				$extension_version = 'MagickWand ' . phpversion('MagickWand');
-			}
+		if (in_array('imagemagick', $checkFor) && class_exists('Imagick')) {
+			$temp = new \Imagick();
+			$temp2 = $temp->getVersion();
+			$im_version = $temp2['versionString'];
+			$extension_version = 'Imagick ' . phpversion('Imagick');
 
 			// We already know it's ImageMagick and the website isn't needed...
 			$im_version = str_replace(['ImageMagick ', ' https://www.imagemagick.org'], '', $im_version);
@@ -2026,11 +1999,6 @@ class ACP extends Action
 
 		return $query_string;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ACP::exportStatic')) {
-	ACP::exportStatic();
 }
 
 ?>

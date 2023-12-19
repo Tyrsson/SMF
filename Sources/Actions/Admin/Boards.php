@@ -38,24 +38,6 @@ class Boards implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageBoards',
-			'editBoardSettings' => 'EditBoardSettings',
-		],
-	];
-
-	/*****************
-	 * Class constants
-	 *****************/
-
-	// code...
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -972,6 +954,7 @@ class Boards implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function editBoardSettings($return_config = false)
 	{
@@ -1023,11 +1006,6 @@ class Boards implements ActionInterface
 	 *************************/
 
 	// code...
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Boards::exportStatic')) {
-	Boards::exportStatic();
 }
 
 ?>

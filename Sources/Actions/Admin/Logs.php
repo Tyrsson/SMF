@@ -31,17 +31,6 @@ class Logs extends Action
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'adminLogs' => 'AdminLogs',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -405,6 +394,7 @@ class Logs extends Action
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function adminLogs($return_config = false)
 	{
@@ -440,11 +430,6 @@ class Logs extends Action
 
 		$this->subaction = isset($_REQUEST['sa'], self::$subactions[$_REQUEST['sa']])   && empty(self::$subactions[$_REQUEST['sa']]['disabled']) ? $_REQUEST['sa'] : 'errorlog';
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Logs::exportStatic')) {
-	Logs::exportStatic();
 }
 
 ?>

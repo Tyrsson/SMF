@@ -34,21 +34,6 @@ class Memberlist implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'Memberlist',
-			'MLAll' => 'MLAll',
-			'MLSearch' => 'MLSearch',
-			'printRows' => 'printMemberListRows',
-			'getCustFields' => 'getCustFieldsMList',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -704,6 +689,7 @@ class Memberlist implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the all sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function MLAll(): void
 	{
@@ -714,6 +700,7 @@ class Memberlist implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the search sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function MLSearch(): void
 	{
@@ -879,11 +866,6 @@ class Memberlist implements ActionInterface
 			$this->subaction = $_GET['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Memberlist::exportStatic')) {
-	Memberlist::exportStatic();
 }
 
 ?>

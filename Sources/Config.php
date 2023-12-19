@@ -768,7 +768,7 @@ class Config
 				 * Path to the tasks directory.
 				 */
 				END,
-			'default' => '$sourcedir . \'/tasks\'',
+			'default' => '$sourcedir . \'/Tasks\'',
 			'raw_default' => true,
 			'type' => 'string',
 		],
@@ -780,8 +780,8 @@ class Config
 					$boarddir = dirname(__FILE__);
 				if (!is_dir(realpath($sourcedir)) && is_dir($boarddir . '/Sources'))
 					$sourcedir = $boarddir . '/Sources';
-				if (!is_dir(realpath($tasksdir)) && is_dir($sourcedir . '/tasks'))
-					$tasksdir = $sourcedir . '/tasks';
+				if (!is_dir(realpath($tasksdir)) && is_dir($sourcedir . '/Tasks'))
+					$tasksdir = $sourcedir . '/Tasks';
 				if (!is_dir(realpath($packagesdir)) && is_dir($boarddir . '/Packages'))
 					$packagesdir = $boarddir . '/Packages';
 				if (!is_dir(realpath($cachedir)) && is_dir($boarddir . '/cache'))
@@ -945,8 +945,8 @@ class Config
 			self::$sourcedir = self::$boarddir . '/Sources';
 		}
 
-		if ((empty(self::$tasksdir) || !is_dir(realpath(self::$tasksdir))) && is_dir(self::$sourcedir . '/tasks')) {
-			self::$tasksdir = self::$sourcedir . '/tasks';
+		if ((empty(self::$tasksdir) || !is_dir(realpath(self::$tasksdir))) && is_dir(self::$sourcedir . '/Tasks')) {
+			self::$tasksdir = self::$sourcedir . '/Tasks';
 		}
 
 		if ((empty(self::$packagesdir) || !is_dir(realpath(self::$packagesdir))) && is_dir(self::$boarddir . '/Packages')) {
@@ -1309,10 +1309,6 @@ class Config
 	public static function getAuthSecret(): string
 	{
 		if (empty(self::$auth_secret)) {
-			if (!is_callable('random_bytes')) {
-				require_once self::$sourcedir . '/random_compat/random.php';
-			}
-
 			self::$auth_secret = bin2hex(random_bytes(32));
 
 			// It is important to store this in Settings.php, not the database.
@@ -2346,7 +2342,7 @@ class Config
 		$settingsText = preg_replace_callback(
 			'~\bdefine\s*\(\s*(["\'])(\w+)\1~',
 			function ($matches) {
-				return 'define(\'' . md5(mt_rand()) . '\'';
+				return 'define(\'' . bin2hex(random_bytes(16)) . '\'';
 			},
 			$settingsText,
 		);
@@ -2354,13 +2350,13 @@ class Config
 		// Handle eval errors gracefully in all PHP versions.
 		try {
 			if ($settingsText !== '' && @eval($settingsText) === false) {
-				throw new ErrorException('eval error');
+				throw new \ErrorException('eval error');
 			}
 
 			unset($mtime, $settingsFile, $settingsText);
 			$defined_vars = get_defined_vars();
-		} catch (Throwable $e) {
-		} catch (ErrorException $e) {
+		} catch (\Throwable $e) {
+		} catch (\ErrorException $e) {
 		}
 
 		if (isset($e)) {
@@ -2898,12 +2894,12 @@ class Config
 		switch ($last) {
 			case 'g':
 				$num *= 1024;
-
 				// no break
+
 			case 'm':
 				$num *= 1024;
-
 				// no break
+
 			case 'k':
 				$num *= 1024;
 		}
@@ -2931,7 +2927,7 @@ class Config
 	 */
 	public static function generateSeed(): void
 	{
-		self::updateModSettings(['rand_seed' => Utils::randomInt(0, 2 ** 31 - 1)]);
+		self::updateModSettings(['rand_seed' => random_int(0, 2 ** 31 - 1)]);
 	}
 
 	/**

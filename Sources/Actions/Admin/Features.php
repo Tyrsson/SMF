@@ -39,28 +39,6 @@ class Features implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ModifyFeatureSettings',
-			'list_getProfileFields' => 'list_getProfileFields',
-			'list_getProfileFieldSize' => 'list_getProfileFieldSize',
-			'modifyBasicSettings' => 'ModifyBasicSettings',
-			'modifyBBCSettings' => 'ModifyBBCSettings',
-			'modifyLayoutSettings' => 'ModifyLayoutSettings',
-			'modifySignatureSettings' => 'ModifySignatureSettings',
-			'showCustomProfiles' => 'ShowCustomProfiles',
-			'editCustomProfiles' => 'EditCustomProfiles',
-			'modifyLikesSettings' => 'ModifyLikesSettings',
-			'modifyMentionsSettings' => 'ModifyMentionsSettings',
-			'modifyAlertsSettings' => 'ModifyAlertsSettings',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -1176,7 +1154,7 @@ class Features implements ActionInterface
 				$col_name = Utils::truncate($col_name, 6);
 
 				// If there is nothing to the name, then let's make out own.
-				$col_name = $initial_col_name = 'cust_' . (!empty($col_name) ? $col_name : bin2hex(Utils::randomBytes(3)));
+				$col_name = $initial_col_name = 'cust_' . (!empty($col_name) ? $col_name : bin2hex(random_bytes(3)));
 
 				// Make sure this is unique.
 				$current_fields = [];
@@ -1200,7 +1178,7 @@ class Features implements ActionInterface
 					}
 					// Still not a unique column name? Use a random one, then.
 					else {
-						$col_name = substr('cust_' . bin2hex(Utils::randomBytes(4)), 0, 12);
+						$col_name = substr('cust_' . bin2hex(random_bytes(4)), 0, 12);
 					}
 
 					// In this extremely unlikely event, bail out.
@@ -1926,6 +1904,7 @@ class Features implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the profile sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function showCustomProfiles(): void
 	{
@@ -1936,6 +1915,7 @@ class Features implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the profileedit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editCustomProfiles(): void
 	{
@@ -1980,6 +1960,7 @@ class Features implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the alerts sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyAlertsSettings(): void
 	{
@@ -2094,11 +2075,6 @@ class Features implements ActionInterface
 
 		return (int) $order_count;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Features::exportStatic')) {
-	Features::exportStatic();
 }
 
 ?>

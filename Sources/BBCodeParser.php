@@ -51,22 +51,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class BBCodeParser
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'getSigTags' => 'get_signature_allowed_bbc_tags',
-			'highlightPhpCode' => 'highlight_php_code',
-			'sanitizeMSCutPaste' => 'sanitizeMSCutPaste',
-			'backcompatParseBbc' => 'parse_bbc',
-			'backcompatParseSmileys' => 'parseSmileys',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -1143,7 +1127,7 @@ class BBCodeParser
 	 *
 	 * @param string|bool $message The string to parse.
 	 * @param bool $smileys Whether to parse smileys. Default: true.
-	 * @param string $cache_id The cache ID.
+	 * @param string|int $cache_id The cache ID.
 	 *    If $cache_id is left empty, an ID will be generated automatically.
 	 *    Manually specifiying a ID is helpful in cases when an integration hook
 	 *    wants to identify particular strings to act upon, but is otherwise
@@ -1151,7 +1135,7 @@ class BBCodeParser
 	 * @param array $parse_tags If set, only parses these tags rather than all of them.
 	 * @return string The parsed string.
 	 */
-	public function parse(string $message, bool $smileys = true, string $cache_id = '', array $parse_tags = []): string
+	public function parse(string $message, bool $smileys = true, string|int $cache_id = '', array $parse_tags = []): string
 	{
 		// Don't waste cycles
 		if (strval($message) === '') {
@@ -1531,7 +1515,7 @@ class BBCodeParser
 							$replacement .= '[font=' . strtr($style_value, ["'" => '']) . ']';
 							break;
 
-							// This is a hack for images with dimensions embedded.
+						// This is a hack for images with dimensions embedded.
 						case 'width':
 						case 'height':
 							if (preg_match('~[1-9]\d*~i', $style_value, $dimension) === 1) {
@@ -4827,11 +4811,6 @@ class BBCodeParser
 			self::$integrate_bbc_codes_done = true;
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\BBCodeParser::exportStatic')) {
-	BBCodeParser::exportStatic();
 }
 
 ?>

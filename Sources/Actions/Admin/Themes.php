@@ -52,25 +52,6 @@ class Themes implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ThemesMain',
-			'themeAdmin' => 'ThemeAdmin',
-			'themeList' => 'ThemeList',
-			'setThemeOptions' => 'SetThemeOptions',
-			'removeTheme' => 'RemoveTheme',
-			'enableTheme' => 'EnableTheme',
-			'themeInstall' => 'ThemeInstall',
-			'editTheme' => 'EditTheme',
-			'copyTemplate' => 'CopyTemplate',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -1366,6 +1347,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the admin sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function themeAdmin(): void
 	{
@@ -1376,6 +1358,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the list sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function themeList(): void
 	{
@@ -1386,6 +1369,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the options sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function setThemeOptions(): void
 	{
@@ -1396,6 +1380,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the remove sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function removeTheme(): void
 	{
@@ -1406,6 +1391,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the enable sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function enableTheme(): void
 	{
@@ -1416,6 +1402,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the install sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function themeInstall(): void
 	{
@@ -1426,6 +1413,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the edit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editTheme(): void
 	{
@@ -1436,6 +1424,7 @@ class Themes implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the copy sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function copyTemplate(): void
 	{
@@ -2355,11 +2344,6 @@ class Themes implements ActionInterface
 
 		return array_merge($list1, $list2);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Themes::exportStatic')) {
-	Themes::exportStatic();
 }
 
 ?>

@@ -20,23 +20,7 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Alert implements \ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'fetch' => 'fetch_alerts',
-			'count' => 'alert_count',
-			'mark' => 'alert_mark',
-			'delete' => 'alert_delete',
-			'purge' => 'alert_purge',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -783,7 +767,7 @@ class Alert implements \ArrayAccess
 			$params['ids'] = $ids;
 		}
 
-		foreach (self::queryData($selects, $params, $joins, $where, $order, $limit) as $row) {
+		foreach (self::queryData($selects, $params, $joins, $where, $order, $group, $limit) as $row) {
 			$row['id_alert'] = (int) $row['id_alert'];
 
 			$members[] = (int) $row['id_member'];
@@ -1622,11 +1606,6 @@ class Alert implements \ArrayAccess
 		}
 		Db::$db->free_result($request);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Alert::exportStatic')) {
-	Alert::exportStatic();
 }
 
 ?>

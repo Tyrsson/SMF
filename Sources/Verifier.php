@@ -13,6 +13,7 @@
 
 namespace SMF;
 
+use ArrayAccess;
 use SMF\Cache\CacheApi;
 use SMF\Db\DatabaseApi as Db;
 
@@ -21,21 +22,9 @@ use SMF\Db\DatabaseApi as Db;
  *
  * Supports old-fashioned CAPTCHA, reCAPTCHA, and verification questions.
  */
-class Verifier implements \ArrayAccess
+class Verifier implements ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'create' => 'create_control_verification',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -215,7 +204,7 @@ class Verifier implements \ArrayAccess
 			$this->max_errors = self::$loaded[$this->id]->max_errors;
 		} else {
 			$this->show_visual = !empty($options['override_visual']) || (!empty(Config::$modSettings['visual_verification_type']) && !isset($options['override_visual']));
-			$this->image_href = Config::$scripturl . '?action=verificationcode;vid=' . $this->id . ';rand=' . bin2hex(Utils::randomBytes(16));
+			$this->image_href = Config::$scripturl . '?action=verificationcode;vid=' . $this->id . ';rand=' . bin2hex(random_bytes(16));
 			$this->text_value = '';
 			$this->number_questions = $options['override_qs'] ?? (!empty(Config::$modSettings['qa_verification_number']) ? Config::$modSettings['qa_verification_number'] : 0);
 			$this->questions = [];
@@ -555,9 +544,9 @@ class Verifier implements \ArrayAccess
 
 			$second_terms = ['hash', 'cipher', 'code', 'key', 'unlock', 'bit', 'value'];
 
-			$start = Utils::randomInt(0, 27);
+			$start = random_int(0, 27);
 
-			$hash = bin2hex(Utils::randomBytes(2));
+			$hash = bin2hex(random_bytes(2));
 
 			$_SESSION[$this->id . '_vv']['empty_field'] = $terms[array_rand($terms)] . '-' . $second_terms[array_rand($second_terms)] . '-' . $hash;
 		}
@@ -636,11 +625,6 @@ class Verifier implements \ArrayAccess
 			$_SESSION[$this->id . '_vv']['q'][] = $q;
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Verifier::exportStatic')) {
-	Verifier::exportStatic();
 }
 
 ?>

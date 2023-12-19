@@ -37,23 +37,6 @@ use SMF\Utils;
 class Registration implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'RegCenter',
-			'adminRegister' => 'AdminRegister',
-			'editAgreement' => 'EditAgreement',
-			'editPrivacyPolicy' => 'EditPrivacyPolicy',
-			'setReserved' => 'SetReserved',
-			'modifyRegistrationSettings' => 'ModifyRegistrationSettings',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -542,6 +525,7 @@ class Registration implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the register sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function adminRegister(): void
 	{
@@ -552,6 +536,7 @@ class Registration implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the agreement sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editAgreement(): void
 	{
@@ -562,6 +547,7 @@ class Registration implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the policy sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editPrivacyPolicy(): void
 	{
@@ -572,6 +558,7 @@ class Registration implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the reservednames sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function setReserved(): void
 	{
@@ -585,6 +572,7 @@ class Registration implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyRegistrationSettings($return_config = false)
 	{
@@ -645,11 +633,6 @@ class Registration implements ActionInterface
 		// @todo Is this context variable necessary?
 		Utils::$context['sub_action'] = $this->subaction;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Registration::exportStatic')) {
-	Registration::exportStatic();
 }
 
 ?>

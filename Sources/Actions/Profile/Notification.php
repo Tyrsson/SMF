@@ -38,25 +38,6 @@ class Notification implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'notification',
-			'list_getTopicNotificationCount' => 'list_getTopicNotificationCount',
-			'list_getTopicNotifications' => 'list_getTopicNotifications',
-			'list_getBoardNotifications' => 'list_getBoardNotifications',
-			'alert_configuration' => 'alert_configuration',
-			'alert_markread' => 'alert_markread',
-			'alert_notifications_topics' => 'alert_notifications_topics',
-			'alert_notifications_boards' => 'alert_notifications_boards',
-			'makeNotificationChanges' => 'makeNotificationChanges',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -616,7 +597,7 @@ class Notification implements ActionInterface
 			User::$me->checkSession();
 			SecurityToken::validate(str_replace('%u', Profile::$member->id, 'profile-nt%u'), 'post');
 
-			$thid->changeNotifications();
+			$this->changeNotifications();
 			Utils::$context['profile_updated'] = Lang::$txt['profile_updated_own'];
 		}
 
@@ -1035,6 +1016,7 @@ class Notification implements ActionInterface
 	 *
 	 * @param int $memID The ID of the member.
 	 * @param bool $defaultSettings If true, we are loading default options.
+	 * @deprecated since 3.0
 	 */
 	public static function alert_configuration($memID, $defaultSettings = false): void
 	{
@@ -1048,6 +1030,7 @@ class Notification implements ActionInterface
 	 * Backward compatibility wrapper for the markRead sub-action.
 	 *
 	 * @param int $memID The ID of the member.
+	 * @deprecated since 3.0
 	 */
 	public static function alert_markread($memID): void
 	{
@@ -1061,6 +1044,7 @@ class Notification implements ActionInterface
 	 * Backward compatibility wrapper for the topics sub-action.
 	 *
 	 * @param int $memID The ID of the member.
+	 * @deprecated since 3.0
 	 */
 	public static function alert_notifications_topics($memID): void
 	{
@@ -1074,6 +1058,7 @@ class Notification implements ActionInterface
 	 * Backward compatibility wrapper for the boards sub-action.
 	 *
 	 * @param int $memID The ID of the member.
+	 * @deprecated since 3.0
 	 */
 	public static function alert_notifications_boards($memID): void
 	{
@@ -1187,11 +1172,6 @@ class Notification implements ActionInterface
 			Notify::deleteNotifyPrefs(Profile::$member->id, $prefs);
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Notification::exportStatic')) {
-	Notification::exportStatic();
 }
 
 ?>

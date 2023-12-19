@@ -35,17 +35,6 @@ class Profile extends User implements \ArrayAccess
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'loadCustomFieldDefinitions' => 'loadCustomFieldDefinitions',
-			'validateSignature' => 'validateSignature',
-			'backcompat_profileLoadGroups' => 'profileLoadGroups',
-			'backcompat_loadProfileFields' => 'loadProfileFields',
-			'backcompat_loadCustomFields' => 'loadCustomFields',
-			'backcompat_loadThemeOptions' => 'loadThemeOptions',
-			'backcompat_setupProfileContext' => 'setupProfileContext',
-			'backcompat_makeCustomFieldChanges' => 'makeCustomFieldChanges',
-			'backcompat_makeThemeChanges' => 'makeThemeChanges',
-		],
 		'prop_names' => [
 			'profile_fields' => 'profile_fields',
 			'profile_vars' => 'profile_vars',
@@ -1689,19 +1678,19 @@ class Profile extends User implements \ArrayAccess
 		$additional_groups = array_unique($additional_groups);
 
 		// Do we need to protect some groups?
-		Group::getUnassignable();
+		$unassignable = Group::getUnassignable();
 
 		// The account page allows you to change your id_group - but not to a protected group!
-		if (!empty(Group::$unassignable) && in_array($value, Group::$unassignable) && !in_array($value, $this->groups)) {
+		if (!empty($unassignable) && in_array($value, $unassignable) && !in_array($value, $this->groups)) {
 			$value = $this->data['id_group'];
 		}
 
 		// Find the additional membergroups (if any).
 		// Never add group 0 or any protected groups that the user isn't already in.
-		$additional_groups = array_diff(array_filter(array_map('intval', $additional_groups)), array_diff(Group::$unassignable, $this->groups));
+		$additional_groups = array_diff(array_filter(array_map('intval', $additional_groups)), array_diff($unassignable, $this->groups));
 
 		// Put the protected groups back in there if you don't have permission to take them away.
-		$additional_groups = array_unique(array_merge($additional_groups, array_intersect($this->additional_groups, Group::$unassignable)));
+		$additional_groups = array_unique(array_merge($additional_groups, array_intersect($this->additional_groups, $unassignable)));
 
 		// Don't include the primary group in the additional groups.
 		$additional_groups = array_diff($additional_groups, [$value]);
@@ -2076,6 +2065,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param int $id ID number of the member whose profile is being viewed.
 	 * @return true Always returns true
+	 * @deprecated
 	 */
 	public static function backcompat_profileLoadGroups(?int $id = null)
 	{
@@ -2093,6 +2083,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param bool $force_reload Whether to reload the data.
 	 * @param int $id The ID of the member.
+	 * @deprecated
 	 */
 	public static function backcompat_loadProfileFields($force_reload = false, ?int $id = null): void
 	{
@@ -2108,6 +2099,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param int $id The ID of the member.
 	 * @param string $area Which area to load fields for.
+	 * @deprecated
 	 */
 	public static function backcompat_loadCustomFields(int $id, string $area = 'summary'): void
 	{
@@ -2123,6 +2115,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param int $id The ID of the member.
 	 * @param bool $defaultSettings If true, we are loading default options.
+	 * @deprecated
 	 */
 	public static function backcompat_loadThemeOptions(int $id, bool $defaultSettings = false)
 	{
@@ -2139,6 +2132,7 @@ class Profile extends User implements \ArrayAccess
 	 * @param array $fields The profile fields to display. Each item should
 	 *    correspond to an item in the Profile::$member->standard_fields array.
 	 * @param int $id The ID of the member.
+	 * @deprecated
 	 */
 	public static function backcompat_setupProfileContext(array $fields, int $id): void
 	{
@@ -2158,6 +2152,7 @@ class Profile extends User implements \ArrayAccess
 	 * @param bool $sanitize = true Whether or not to sanitize the data.
 	 * @param bool $return_errors Whether or not to return any error information.
 	 * @return void|array Returns nothing or returns an array of error info if $return_errors is true.
+	 * @deprecated
 	 */
 	public static function backcompat_makeCustomFieldChanges($id, $area, $sanitize = true, $return_errors = false)
 	{
@@ -2170,7 +2165,7 @@ class Profile extends User implements \ArrayAccess
 		self::$member->save();
 
 		if (!empty($return_errors)) {
-			return $this->cf_save_errors;
+			return self::$member->cf_save_errors;
 		}
 	}
 	/**
@@ -2179,6 +2174,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param int $id The ID of the user
 	 * @param int $id_theme The ID of the theme
+	 * @deprecated
 	 */
 	public static function backcompat_makeThemeChanges($id, $id_theme)
 	{
@@ -3061,7 +3057,7 @@ class Profile extends User implements \ArrayAccess
 		}
 
 		// Generate a random password.
-		$new_password = implode('-', str_split(substr(preg_replace('/\W/', '', base64_encode(Utils::randomBytes(18))), 0, 18), 6));
+		$new_password = implode('-', str_split(substr(preg_replace('/\W/', '', base64_encode(random_bytes(18))), 0, 18), 6));
 		$new_password_sha1 = Security::hashPassword($username ?? $this->username, $new_password);
 
 		// Do some checks on the username if needed.
@@ -3084,7 +3080,7 @@ class Profile extends User implements \ArrayAccess
 		$emaildata = Mail::loadEmailTemplate('change_password', $replacements, $this->language);
 
 		// Send them the email informing them of the change - then we're done!
-		Mail::send($email, $emaildata['subject'], $emaildata['body'], null, 'chgpass' . $this->id, $emaildata['is_html'], 0);
+		Mail::send($this->email, $emaildata['subject'], $emaildata['body'], null, 'chgpass' . $this->id, $emaildata['is_html'], 0);
 	}
 
 	/*************************
@@ -3110,10 +3106,5 @@ class Profile extends User implements \ArrayAccess
 if (is_callable(__NAMESPACE__ . '\\Profile::exportStatic')) {
 	Profile::exportStatic();
 }
-
-// Old mods might include this file to get access to functions that have been moved.
-class_exists('\\SMF\\Actions\\Profile\\Main');
-class_exists('\\SMF\\Actions\\Profile\\Popup');
-class_exists('\\SMF\\Actions\\Profile\\AlertsPopup');
 
 ?>

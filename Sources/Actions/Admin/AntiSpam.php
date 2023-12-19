@@ -32,17 +32,6 @@ class AntiSpam implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'modifyAntispamSettings' => 'ModifyAntispamSettings',
-		],
-	];
-
 	/****************************
 	 * Internal static properties
 	 ****************************/
@@ -70,7 +59,7 @@ class AntiSpam implements ActionInterface
 		User::$me->isAllowedTo('admin_forum');
 
 		// Generate a sample registration image.
-		Utils::$context['verification_image_href'] = Config::$scripturl . '?action=verificationcode;rand=' . md5(mt_rand());
+		Utils::$context['verification_image_href'] = Config::$scripturl . '?action=verificationcode;rand=' . bin2hex(random_bytes(16));
 
 		// Firstly, figure out what languages we're dealing with, and do a little processing for the form's benefit.
 		Lang::get();
@@ -466,6 +455,7 @@ class AntiSpam implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyAntispamSettings($return_config = false)
 	{
@@ -487,11 +477,6 @@ class AntiSpam implements ActionInterface
 	protected function __construct()
 	{
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\AntiSpam::exportStatic')) {
-	AntiSpam::exportStatic();
 }
 
 ?>

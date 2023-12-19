@@ -13,29 +13,15 @@
 
 namespace SMF;
 
+use ArrayAccess;
+use Datetime;
+
 /**
  * Extends \DateTime with some extra features for SMF.
  */
-class Time extends \DateTime implements \ArrayAccess
+class Time extends DateTime implements ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'create' => 'create',
-			'strftime' => 'smf_strftime',
-			'gmstrftime' => 'smf_gmstrftime',
-			'getDateOrTimeFormat' => 'get_date_or_time_format',
-			'timeformat' => 'timeformat',
-			'forumTime' => 'forum_time',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -301,7 +287,7 @@ class Time extends \DateTime implements \ArrayAccess
 				}
 				break;
 
-				// Read only.
+			// Read only.
 			case 'tz_abbrev':
 				break;
 
@@ -592,7 +578,7 @@ class Time extends \DateTime implements \ArrayAccess
 						$placeholders[str_replace(self::FORMAT_EQUIVALENTS[$parts[$i]], 'PM', $placeholder)] = Utils::strtoupper(Lang::$txt['time_pm']);
 						break;
 
-						// Lower case.
+					// Lower case.
 					case 'P':
 						$placeholders[str_replace(self::FORMAT_EQUIVALENTS[$parts[$i]], 'am', $placeholder)] = Utils::strtolower(Lang::$txt['time_am']);
 						$placeholders[str_replace(self::FORMAT_EQUIVALENTS[$parts[$i]], 'pm', $placeholder)] = Utils::strtolower(Lang::$txt['time_pm']);
@@ -654,33 +640,33 @@ class Time extends \DateTime implements \ArrayAccess
 							$replacement = sprintf('%03d', (int) $matches[1] + 1);
 							break;
 
-							// %C
+						// %C
 						case "\xEE\x84\xA2":
 							$replacement = substr(sprintf('%04d', $matches[1]), 0, 2);
 							break;
 
-							// %U and %W
+						// %U and %W
 						case "\xEE\x84\xA3":
 							list($day_of_year, $day_of_week, $first_day) = explode('_', $matches[1]);
 							$replacement = sprintf('%02d', floor(((int) $day_of_year - (int) $day_of_week + (int) $first_day) / 7) + 1);
 							break;
 
-							// %G
+						// %G
 						case "\xEE\x84\xA4":
 							$replacement = sprintf('%04d', $matches[1]);
 							break;
 
-							// %g
+						// %g
 						case "\xEE\x84\xA5":
 							$replacement = substr(sprintf('%04d', $matches[1]), -2);
 							break;
 
-							// %e and %l
+						// %e and %l
 						case "\xEE\x84\xA6":
 							$replacement = sprintf('%2d', $matches[1]);
 							break;
 
-							// Shouldn't happen, but just in case...
+						// Shouldn't happen, but just in case...
 						default:
 							$replacement = $matches[1];
 							break;
@@ -1245,11 +1231,6 @@ class Time extends \DateTime implements \ArrayAccess
 	{
 		return (bool) preg_match('/' . self::REGEX_STRFTIME . '/', $format);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Time::exportStatic')) {
-	Time::exportStatic();
 }
 
 ?>

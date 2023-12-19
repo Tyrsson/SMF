@@ -35,19 +35,6 @@ class IssueWarning implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'list_getUserWarnings' => 'list_getUserWarnings',
-			'list_getUserWarningCount' => 'list_getUserWarningCount',
-			'issueWarning' => 'issueWarning',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -424,6 +411,7 @@ class IssueWarning implements ActionInterface
 	 * Backward compatibility wrapper.
 	 *
 	 * @param int $memID The ID of the user.
+	 * @deprecated since 3.0
 	 */
 	public static function issueWarning(int $memID): void
 	{
@@ -605,11 +593,6 @@ class IssueWarning implements ActionInterface
 			'body_preview' => $warning_body,
 		];
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\IssueWarning::exportStatic')) {
-	IssueWarning::exportStatic();
 }
 
 ?>

@@ -37,36 +37,6 @@ class SearchEngines implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'SearchEngines',
-			'consolidateSpiderStats' => 'consolidateSpiderStats',
-			'list_getSpiders' => 'list_getSpiders',
-			'list_getNumSpiders' => 'list_getNumSpiders',
-			'list_getSpiderLogs' => 'list_getSpiderLogs',
-			'list_getNumSpiderLogs' => 'list_getNumSpiderLogs',
-			'list_getSpiderStats' => 'list_getSpiderStats',
-			'list_getNumSpiderStats' => 'list_getNumSpiderStats',
-			'recacheSpiderNames' => 'recacheSpiderNames',
-			'spiderStats' => 'SpiderStats',
-			'spiderLogs' => 'SpiderLogs',
-			'viewSpiders' => 'ViewSpiders',
-			'manageSearchEngineSettings' => 'ManageSearchEngineSettings',
-			'editSpider' => 'EditSpider',
-		],
-	];
-
-	/*****************
-	 * Class constants
-	 *****************/
-
-	// code...
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -1120,6 +1090,7 @@ class SearchEngines implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the stats sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function spiderStats(): void
 	{
@@ -1130,6 +1101,7 @@ class SearchEngines implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the logs sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function spiderLogs(): void
 	{
@@ -1140,6 +1112,7 @@ class SearchEngines implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the spiders sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function viewSpiders(): void
 	{
@@ -1153,6 +1126,7 @@ class SearchEngines implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function manageSearchEngineSettings($return_config = false)
 	{
@@ -1167,6 +1141,7 @@ class SearchEngines implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the editspiders sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editSpider(): void
 	{
@@ -1213,11 +1188,6 @@ class SearchEngines implements ActionInterface
 
 		Utils::$context['sub_action'] = &$this->subaction;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\SearchEngines::exportStatic')) {
-	SearchEngines::exportStatic();
 }
 
 ?>

@@ -36,19 +36,6 @@ class Announce implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'AnnounceTopic',
-			'selectGroup' => 'AnnouncementSelectMembergroup',
-			'announcementSend' => 'AnnouncementSend',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -319,6 +306,7 @@ class Announce implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the selectgroup sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function selectGroup(): void
 	{
@@ -363,11 +351,6 @@ class Announce implements ActionInterface
 			$this->subaction = $_REQUEST['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Announce::exportStatic')) {
-	Announce::exportStatic();
 }
 
 ?>

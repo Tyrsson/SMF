@@ -29,19 +29,6 @@ use SMF\Utils;
  */
 class GroupMembership implements ActionInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'groupMembership',
-			'groupMembership2' => 'groupMembership2',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -226,7 +213,7 @@ class GroupMembership implements ActionInterface
 
 				return;
 
-				// Leaving/joining a group.
+			// Leaving/joining a group.
 			case 'free':
 				// Are they leaving?
 				if (Profile::$member->group_id == $new_group_id) {
@@ -249,7 +236,7 @@ class GroupMembership implements ActionInterface
 
 				break;
 
-				// Finally, we must be setting the primary.
+			// Finally, we must be setting the primary.
 			default:
 				if (Profile::$member->group_id != 0) {
 					$new_additional_groups[] = Profile::$member->group_id;
@@ -303,6 +290,7 @@ class GroupMembership implements ActionInterface
 	 */
 	public static function groupMembership2(int $memID): string
 	{
+		// todo: fix return type
 		$u = $_REQUEST['u'] ?? null;
 		$_REQUEST['u'] = $memID;
 
@@ -470,13 +458,11 @@ class GroupMembership implements ActionInterface
 			'insert',
 			'{db_prefix}background_tasks',
 			[
-				'task_file' => 'string-255',
 				'task_class' => 'string-255',
 				'task_data' => 'string',
 				'claimed_time' => 'int',
 			],
 			[
-				'$sourcedir/tasks/GroupReq_Notify.php',
 				'SMF\\Tasks\\GroupReq_Notify',
 				$data,
 				0,
@@ -484,11 +470,6 @@ class GroupMembership implements ActionInterface
 			[],
 		);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\GroupMembership::exportStatic')) {
-	GroupMembership::exportStatic();
 }
 
 ?>

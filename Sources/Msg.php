@@ -13,8 +13,8 @@
 
 namespace SMF;
 
+use ArrayAccess;
 use SMF\Actions\Moderation\ReportedContent;
-use SMF\Actions\Notify;
 use SMF\Db\DatabaseApi as Db;
 use SMF\Search\SearchApi;
 
@@ -25,34 +25,9 @@ use SMF\Search\SearchApi;
  * including sending emails, pms, blocking spam, preparsing posts, spell
  * checking, and the post box.
  */
-class Msg implements \ArrayAccess
+class Msg implements ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'preparsecode' => 'preparsecode',
-			'un_preparsecode' => 'un_preparsecode',
-			'fixTags' => 'fixTags',
-			'fixTag' => 'fixTag',
-			'spellCheck' => 'SpellCheck',
-			'create' => 'createPost',
-			'modify' => 'modifyPost',
-			'approve' => 'approvePosts',
-			'clearApprovalAlerts' => 'clearApprovalAlerts',
-			'updateLastMessages' => 'updateLastMessages',
-			'remove' => 'removeMessage',
-			'spell_init' => 'spell_init',
-			'spell_check' => 'spell_check',
-			'spell_suggest' => 'spell_suggest',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -1053,7 +1028,7 @@ class Msg implements \ArrayAccess
 	 *
 	 * @param string &$message The message
 	 * @param string $myTag The tag
-	 * @param string $protocols The protocols
+	 * @param array $protocols The protocols
 	 * @param bool $embeddedUrl Whether it *can* be set to something
 	 * @param bool $hasEqualSign Whether it *is* set to something
 	 * @param bool $hasExtra Whether it can have extra cruft after the begin tag.
@@ -1165,7 +1140,7 @@ class Msg implements \ArrayAccess
 		Theme::loadTemplate('Post');
 
 		// Create a pspell or enchant dictionary resource
-		$dict = spell_init();
+		$dict = self::spell_init();
 
 		if (!isset($_POST['spellstring']) || !$dict) {
 			die;
@@ -1187,7 +1162,7 @@ class Msg implements \ArrayAccess
 			$check_word = explode('|', $alphas[$i]);
 
 			// If the word is a known word, or spelled right...
-			if (in_array(Utils::strtolower($check_word[0]), $known_words) || spell_check($dict, $check_word[0]) || !isset($check_word[2])) {
+			if (in_array(Utils::strtolower($check_word[0]), $known_words) || self::spell_check($dict, $check_word[0]) || !isset($check_word[2])) {
 				continue;
 			}
 
@@ -1199,7 +1174,7 @@ class Msg implements \ArrayAccess
 				new misp("' . strtr($check_word[0], ['\\' => '\\\\', '"' => '\\"', '<' => '', '&gt;' => '']) . '", ' . (int) $check_word[1] . ', ' . (int) $check_word[2] . ', [';
 
 			// If there are suggestions, add them in...
-			$suggestions = spell_suggest($dict, $check_word[0]);
+			$suggestions = self::spell_suggest($dict, $check_word[0]);
 
 			if (!empty($suggestions)) {
 				// But first check they aren't going to be censored - no naughty words!
@@ -1231,8 +1206,7 @@ class Msg implements \ArrayAccess
 
 		// Free resources for enchant...
 		if (isset(Utils::$context['enchant_broker'])) {
-			enchant_broker_free_dict($dict);
-			enchant_broker_free(Utils::$context['enchant_broker']);
+			unset($dict, Utils::$context['enchant_broker']);
 		}
 	}
 
@@ -1549,14 +1523,19 @@ class Msg implements \ArrayAccess
 			Db::$db->insert(
 				'',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
 				[
-					'$sourcedir/tasks/ApprovePost_Notify.php', 'SMF\\Tasks\\ApprovePost_Notify', Utils::jsonEncode([
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int'],
+				[
+					'SMF\\Tasks\\ApprovePost_Notify',
+					Utils::jsonEncode([
 						'msgOptions' => $msgOptions,
 						'topicOptions' => $topicOptions,
 						'posterOptions' => $posterOptions,
 						'type' => $new_topic ? 'topic' : 'post',
-					]), 0,
+					]),
+					0,
 				],
 				['id_task'],
 			);
@@ -1597,13 +1576,19 @@ class Msg implements \ArrayAccess
 			Db::$db->insert(
 				'',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
 				[
-					'$sourcedir/tasks/ApproveReply_Notify.php', 'SMF\\Tasks\\ApproveReply_Notify', Utils::jsonEncode([
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
+				[
+					'SMF\\Tasks\\ApproveReply_Notify',
+					Utils::jsonEncode([
 						'msgOptions' => $msgOptions,
 						'topicOptions' => $topicOptions,
 						'posterOptions' => $posterOptions,
-					]), 0,
+					]),
+					0,
 				],
 				['id_task'],
 			);
@@ -1656,13 +1641,21 @@ class Msg implements \ArrayAccess
 			Db::$db->insert(
 				'',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
-				['$sourcedir/tasks/CreatePost_Notify.php', 'SMF\\Tasks\\CreatePost_Notify', Utils::jsonEncode([
-					'msgOptions' => $msgOptions,
-					'topicOptions' => $topicOptions,
-					'posterOptions' => $posterOptions,
-					'type' => $new_topic ? 'topic' : 'reply',
-				]), 0],
+				[
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
+				[
+					'SMF\\Tasks\\CreatePost_Notify',
+					Utils::jsonEncode([
+						'msgOptions' => $msgOptions,
+						'topicOptions' => $topicOptions,
+						'posterOptions' => $posterOptions,
+						'type' => $new_topic ? 'topic' : 'reply',
+					]),
+					0,
+				],
 				['id_task'],
 			);
 		}
@@ -1872,13 +1865,21 @@ class Msg implements \ArrayAccess
 			Db::$db->insert(
 				'',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
-				['$sourcedir/tasks/CreatePost_Notify.php', 'SMF\\Tasks\\CreatePost_Notify', Utils::jsonEncode([
-					'msgOptions' => $msgOptions,
-					'topicOptions' => $topicOptions,
-					'posterOptions' => $posterOptions,
-					'type' => 'edit',
-				]), 0],
+				[
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
+				[
+					'SMF\\Tasks\\CreatePost_Notify',
+					Utils::jsonEncode([
+						'msgOptions' => $msgOptions,
+						'topicOptions' => $topicOptions,
+						'posterOptions' => $posterOptions,
+						'type' => 'edit',
+					]),
+					0,
+				],
 				['id_task'],
 			);
 		}
@@ -2117,7 +2118,6 @@ class Msg implements \ArrayAccess
 
 			foreach (array_merge($notification_topics, $notification_posts) as $topic) {
 				$task_rows[] = [
-					'$sourcedir/tasks/CreatePost_Notify.php',
 					'SMF\\Tasks\\CreatePost_Notify',
 					Utils::jsonEncode([
 						'msgOptions' => [
@@ -2144,7 +2144,6 @@ class Msg implements \ArrayAccess
 					'',
 					'{db_prefix}background_tasks',
 					[
-						'task_file' => 'string',
 						'task_class' => 'string',
 						'task_data' => 'string',
 						'claimed_time' => 'int',
@@ -2272,10 +2271,11 @@ class Msg implements \ArrayAccess
 			$setboards = [$setboards];
 		}
 
+		// Find the latest message on this board (highest id_msg.)
+		$lastMsg = [];
+
 		// If we don't know the id_msg we need to find it.
 		if (!$id_msg) {
-			// Find the latest message on this board (highest id_msg.)
-			$lastMsg = [];
 
 			$request = Db::$db->query(
 				'',
@@ -2896,7 +2896,7 @@ class Msg implements \ArrayAccess
 			}
 
 			// Free up any resources used...
-			@enchant_broker_free(Utils::$context['enchant_broker']);
+			unset(Utils::$context['enchant_broker']);
 		}
 
 		// Fall through to pspell if enchant didn't work
@@ -2936,7 +2936,7 @@ class Msg implements \ArrayAccess
 	 *
 	 * Determines whether or not the specified word is spelled correctly
 	 *
-	 * @param resource $dict An enchant or pspell dictionary resource set up by {@link spell_init()}
+	 * @param \PSpell\Dictionary $dict An enchant or pspell dictionary resource set up by {@link spell_init()}
 	 * @param string $word A word to check the spelling of
 	 * @return bool Whether or not the specified word is spelled properly
 	 */
@@ -2963,7 +2963,7 @@ class Msg implements \ArrayAccess
 	 *
 	 * Returns an array of suggested replacements for the specified word
 	 *
-	 * @param resource $dict An enchant or pspell dictionary resource
+	 * @param \PSpell\Dictionary $dict An enchant or pspell dictionary resource
 	 * @param string $word A misspelled word
 	 * @return array An array of suggested replacements for the misspelled word
 	 */
@@ -3037,11 +3037,6 @@ class Msg implements \ArrayAccess
 		}
 		Db::$db->free_result(self::$messages_request);
 	}
-}
-
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Msg::exportStatic')) {
-	Msg::exportStatic();
 }
 
 ?>

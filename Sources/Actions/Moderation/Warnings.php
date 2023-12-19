@@ -36,24 +36,6 @@ class Warnings implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ViewWarnings',
-			'list_getWarningCount' => 'list_getWarningCount',
-			'list_getWarnings' => 'list_getWarnings',
-			'list_getWarningTemplateCount' => 'list_getWarningTemplateCount',
-			'list_getWarningTemplates' => 'list_getWarningTemplates',
-			'ViewWarningLog' => 'ViewWarningLog',
-			'ViewWarningTemplates' => 'ViewWarningTemplates',
-			'ModifyWarningTemplate' => 'ModifyWarningTemplate',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -747,6 +729,7 @@ class Warnings implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the log sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function ViewWarningLog(): void
 	{
@@ -757,6 +740,7 @@ class Warnings implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the templates sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function ViewWarningTemplates(): void
 	{
@@ -767,6 +751,7 @@ class Warnings implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the templateedit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function ModifyWarningTemplate(): void
 	{
@@ -817,11 +802,6 @@ class Warnings implements ActionInterface
 	 *************************/
 
 	// code...
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Warnings::exportStatic')) {
-	Warnings::exportStatic();
 }
 
 ?>

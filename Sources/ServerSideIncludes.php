@@ -27,61 +27,10 @@ use SMF\Db\DatabaseApi as Db;
  */
 class ServerSideIncludes
 {
-	use BackwardCompatibility;
 
 	/******************************
 	 * Properties for internal use.
 	 ******************************/
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'shutdown' => 'ssi_shutdown',
-			'version' => 'ssi_version',
-			'fullVersion' => 'ssi_full_version',
-			'softwareYear' => 'ssi_software_year',
-			'copyright' => 'ssi_copyright',
-			'welcome' => 'ssi_welcome',
-			'menubar' => 'ssi_menubar',
-			'logout' => 'ssi_logout',
-			'recentPosts' => 'ssi_recentPosts',
-			'fetchPosts' => 'ssi_fetchPosts',
-			'queryPosts' => 'ssi_queryPosts',
-			'recentTopics' => 'ssi_recentTopics',
-			'topPoster' => 'ssi_topPoster',
-			'topBoards' => 'ssi_topBoards',
-			'topTopics' => 'ssi_topTopics',
-			'topTopicsReplies' => 'ssi_topTopicsReplies',
-			'topTopicsViews' => 'ssi_topTopicsViews',
-			'latestMember' => 'ssi_latestMember',
-			'randomMember' => 'ssi_randomMember',
-			'fetchMember' => 'ssi_fetchMember',
-			'fetchGroupMembers' => 'ssi_fetchGroupMembers',
-			'queryMembers' => 'ssi_queryMembers',
-			'boardStats' => 'ssi_boardStats',
-			'whosOnline' => 'ssi_whosOnline',
-			'logOnline' => 'ssi_logOnline',
-			'login' => 'ssi_login',
-			'topPoll' => 'ssi_topPoll',
-			'recentPoll' => 'ssi_recentPoll',
-			'showPoll' => 'ssi_showPoll',
-			'pollVote' => 'ssi_pollVote',
-			'quickSearch' => 'ssi_quickSearch',
-			'news' => 'ssi_news',
-			'todaysBirthdays' => 'ssi_todaysBirthdays',
-			'todaysHolidays' => 'ssi_todaysHolidays',
-			'todaysEvents' => 'ssi_todaysEvents',
-			'todaysCalendar' => 'ssi_todaysCalendar',
-			'boardNews' => 'ssi_boardNews',
-			'recentEvents' => 'ssi_recentEvents',
-			'checkPassword' => 'ssi_checkPassword',
-			'recentAttachments' => 'ssi_recentAttachments',
-		],
-	];
 
 	/**
 	 * @var int
@@ -1894,7 +1843,7 @@ class ServerSideIncludes
 			return $return['calendar_birthdays'];
 		}
 
-		foreach ($return['calendar_birthdays'] as $member) {
+		foreach ((array) $return['calendar_birthdays'] as $member) {
 			echo '
 				<a href="', Config::$scripturl, '?action=profile;u=', $member['id'], '"><span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '</a>' . (!$member['is_last'] ? ', ' : '');
 		}
@@ -2372,7 +2321,7 @@ class ServerSideIncludes
 				$row['id_board'] = $row['id_topic'] = $row['id_first_msg'] = 0;
 			}
 
-			$allday = (empty($row['start_time']) || empty($row['end_time']) || empty($row['timezone']) || !in_array($row['timezone'], timezone_identifiers_list(DateTimeZone::ALL_WITH_BC))) ? true : false;
+			$allday = (empty($row['start_time']) || empty($row['end_time']) || empty($row['timezone']) || !in_array($row['timezone'], timezone_identifiers_list(\DateTimeZone::ALL_WITH_BC))) ? true : false;
 
 			$return[$date][] = [
 				'id' => $row['id_event'],
@@ -2604,6 +2553,21 @@ class ServerSideIncludes
 	 */
 	public function __construct()
 	{
+		// SSI isn't meant to be used from within the forum,
+		// but apparently someone is doing so anyway...
+		if (defined('SMF') && SMF !== 'SSI') {
+			if (!self::$setup_done) {
+				IntegrationHook::call('integrate_SSI');
+			}
+
+			self::$setup_done = true;
+		}
+
+		// Don't do the setup steps more than once.
+		if (self::$setup_done) {
+			return;
+		}
+
 		foreach ($this->ssi_globals as $var) {
 			if (isset($GLOBALS[$var])) {
 				if ($var === 'ssi_on_error_method') {
@@ -2652,7 +2616,7 @@ class ServerSideIncludes
 			die('No direct access...');
 		}
 
-		if (isset($_REQUEST['ssi_layers'], $this->layers) && (@get_magic_quotes_gpc() ? stripslashes($_REQUEST['ssi_layers']) : $_REQUEST['ssi_layers']) == $this->layers) {
+		if (isset($_REQUEST['ssi_layers'], $this->layers) && $_REQUEST['ssi_layers'] == $this->layers) {
 			die('No direct access...');
 		}
 
@@ -2682,8 +2646,9 @@ class ServerSideIncludes
 			}
 
 			if (!isset($_SESSION['session_value'])) {
-				$_SESSION['session_var'] = substr(md5(Utils::randomInt() . session_id() . Utils::randomInt()), 0, rand(7, 12));
-				$_SESSION['session_value'] = md5(session_id() . Utils::randomInt());
+				// Ensure session_var always starts with a letter.
+				$_SESSION['session_var'] = dechex(random_int(0xA000000000, 0xFFFFFFFFFF));
+				$_SESSION['session_value'] = bin2hex(random_bytes(16));
 			}
 			User::$sc = $_SESSION['session_value'];
 		}
@@ -2717,7 +2682,7 @@ class ServerSideIncludes
 
 		// Do we allow guests in here?
 		if (empty($this->guest_access) && empty(Config::$modSettings['allow_guestAccess']) && User::$me->is_guest && basename($_SERVER['PHP_SELF']) != 'SSI.php') {
-			User::kickIfGuest();
+			User::$me->kickIfGuest();
 			Utils::obExit(null, true);
 		}
 
@@ -2774,11 +2739,6 @@ class ServerSideIncludes
 
 		return true;
 	}
-}
-
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ServerSideIncludes::exportStatic')) {
-	ServerSideIncludes::exportStatic();
 }
 
 ?>

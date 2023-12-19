@@ -34,19 +34,6 @@ class BuddyIgnoreLists implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'editBuddyIgnoreLists',
-			'editBuddies' => 'editBuddies',
-			'editIgnoreList' => 'editIgnoreList',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -515,6 +502,7 @@ class BuddyIgnoreLists implements ActionInterface
 	 * Backward compatibility wrapper for the buddies sub-action.
 	 *
 	 * @param int $memID The ID of the member
+	 * @deprecated since 3.0
 	 */
 	public static function editBuddies($memID): void
 	{
@@ -528,6 +516,7 @@ class BuddyIgnoreLists implements ActionInterface
 	 * Backward compatibility wrapper for the buddies sub-action.
 	 *
 	 * @param int $memID The ID of the member
+	 * @deprecated since 3.0
 	 */
 	public static function editIgnoreList($memID): void
 	{
@@ -554,11 +543,6 @@ class BuddyIgnoreLists implements ActionInterface
 			$this->subaction = $_REQUEST['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\BuddyIgnoreLists::exportStatic')) {
-	BuddyIgnoreLists::exportStatic();
 }
 
 ?>

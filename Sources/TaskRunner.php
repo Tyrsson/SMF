@@ -38,18 +38,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class TaskRunner
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'calculateNextTrigger' => 'CalculateNextTrigger',
-		],
-	];
 
 	/***********
 	 * Constants
@@ -316,12 +304,12 @@ class TaskRunner
 
 		while ($row = Db::$db->fetch_assoc($request)) {
 			// What kind of task are we handling?
-			// Note: keep the next_time value unchanged, because running the
-			// task manually shouldn't interfere with the normal schedule.
 			if (!empty($row['callable'])) {
-				$task_details = $this->getScheduledTaskDetails($row['id_task'], $row['next_time'], $row['callable'], true);
+				$task_details = $this->getScheduledTaskDetails($row['id_task'], $row['callable'], true);
 			} elseif (!empty($row['task'])) {
-				$task_details = $this->getScheduledTaskDetails($row['id_task'], $row['next_time'], $row['task']);
+				$task_details = $this->getScheduledTaskDetails($row['id_task'], $row['task']);
+			} else {
+				continue;
 			}
 
 			// Does the class exist?
@@ -852,11 +840,6 @@ class TaskRunner
 
 		return $next_time;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\TaskRunner::exportStatic')) {
-	TaskRunner::exportStatic();
 }
 
 ?>

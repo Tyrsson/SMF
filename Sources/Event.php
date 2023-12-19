@@ -25,21 +25,7 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Event implements \ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'create' => 'insertEvent',
-			'modify' => 'modifyEvent',
-			'remove' => 'removeEvent',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -70,14 +56,14 @@ class Event implements \ArrayAccess
 	public int $type = self::TYPE_EVENT_SIMPLE;
 
 	/**
-	 * @var object
+	 * @var SMF\Time
 	 *
 	 * An SMF\Time object representing the start of the event.
 	 */
 	public object $start;
 
 	/**
-	 * @var object
+	 * @var SMF\Time
 	 *
 	 * An SMF\Time object representing the end of the event.
 	 */
@@ -433,7 +419,7 @@ class Event implements \ArrayAccess
 
 			// Hm. That's weird. Well, just prepend it to the list and let the user deal with it.
 			if (!$found) {
-				$all_timezones = [$this->timezone => '[UTC' . $this->start->format($d, 'P') . '] - ' . $this->timezone] + $all_timezones;
+				$all_timezones = [$this->timezone => '[UTC' . $this->start->format('P') . '] - ' . $this->timezone] + $all_timezones;
 			}
 		}
 	}
@@ -546,8 +532,8 @@ class Event implements \ArrayAccess
 				case 'start_second':
 				case 'end_second':
 					$this->{$start_end}->second = $value;
-
 					// no break
+
 				case 'start_timestamp':
 				case 'end_timestamp':
 					$this->{$start_end}->timestamp = $value;
@@ -576,7 +562,7 @@ class Event implements \ArrayAccess
 					$value = $this->setNumDays($value);
 					break;
 
-					// These computed properties are read-only.
+				// These computed properties are read-only.
 				case 'tz_abbrev':
 				case 'new':
 				case 'is_selected':
@@ -1014,13 +1000,11 @@ class Event implements \ArrayAccess
 				'insert',
 				'{db_prefix}background_tasks',
 				[
-					'task_file' => 'string',
 					'task_class' => 'string',
 					'task_data' => 'string',
 					'claimed_time' => 'int',
 				],
 				[
-					'$sourcedir/tasks/EventNew_Notify.php',
 					'SMF\\Tasks\\EventNew_Notify',
 					Utils::jsonEncode([
 						'event_title' => $event->title,
@@ -1104,7 +1088,7 @@ class Event implements \ArrayAccess
 			return 0;
 		}
 
-		return date_interval_format(date_diff($this->start, $this->end), '%a') + ($end->format('H') < $start->format('H') ? 2 : 1);
+		return date_interval_format(date_diff($this->start, $this->end), '%a') + ($this->end->format('H') < $this->start->format('H') ? 2 : 1);
 	}
 
 	/**
@@ -1385,7 +1369,7 @@ class Event implements \ArrayAccess
 			if (isset($datetime_string)) {
 				$datetime_string_parsed = date_parse(str_replace(',', '', Calendar::convertDateToEnglish($datetime_string)));
 
-				if (empty($datetime_string_parsed['error_count']) && empty($datetime_string_parsed['warning_count'])) {
+				if (is_array($datetime_string_parsed) && empty($datetime_string_parsed['error_count']) && empty($datetime_string_parsed['warning_count'])) {
 					$datetime_string_parsed = array_filter(
 						$datetime_string_parsed,
 						function ($key) {
@@ -1451,11 +1435,6 @@ class Event implements \ArrayAccess
 
 		return $input;
 	}
-}
-
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Event::exportStatic')) {
-	Event::exportStatic();
 }
 
 ?>

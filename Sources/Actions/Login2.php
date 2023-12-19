@@ -13,7 +13,6 @@
 
 namespace SMF\Actions;
 
-use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\Cookie;
 use SMF\Db\DatabaseApi as Db;
@@ -31,20 +30,6 @@ use SMF\Utils;
  */
 class Login2 implements ActionInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'Login2',
-			'checkAjax' => 'checkAjax',
-			'validatePasswordFlood' => 'validatePasswordFlood',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -146,7 +131,7 @@ class Login2 implements ActionInterface
 			trigger_error(Lang::$txt['login_no_session_cookie'], E_USER_ERROR);
 		}
 
-		User::$me->password_salt = bin2hex(Utils::randomBytes(16));
+		User::$me->password_salt = bin2hex(random_bytes(16));
 		User::updateMemberData(User::$me->id, ['password_salt' => User::$me->password_salt]);
 
 		// Preserve the 2FA cookie?
@@ -318,7 +303,7 @@ class Login2 implements ActionInterface
 
 		// Correct password, but they've got no salt. Fix it!
 		if (strlen(User::$profiles[User::$my_id]['password_salt']) < 32) {
-			User::$profiles[User::$my_id]['password_salt'] = bin2hex(Utils::randomBytes(16));
+			User::$profiles[User::$my_id]['password_salt'] = bin2hex(random_bytes(16));
 
 			User::updateMemberData(User::$profiles[User::$my_id]['id_member'], ['password_salt' => User::$profiles[User::$my_id]['password_salt']]);
 		}
@@ -618,7 +603,7 @@ class Login2 implements ActionInterface
 		// Whichever encryption it was using, let's make it use SMF's now ;).
 		if (in_array(User::$profiles[User::$my_id]['passwd'], $other_passwords)) {
 			User::$profiles[User::$my_id]['passwd'] = Security::hashPassword(User::$profiles[User::$my_id]['member_name'], Utils::htmlspecialcharsDecode($_POST['passwrd']));
-			User::$profiles[User::$my_id]['password_salt'] = bin2hex(Utils::randomBytes(16));
+			User::$profiles[User::$my_id]['password_salt'] = bin2hex(random_bytes(16));
 
 			// Update the password and set up the hash.
 			User::updateMemberData(User::$profiles[User::$my_id]['id_member'], ['passwd' => User::$profiles[User::$my_id]['passwd'], 'password_salt' => User::$profiles[User::$my_id]['password_salt'], 'passwd_flood' => '']);
@@ -834,11 +819,6 @@ class Login2 implements ActionInterface
 			Utils::redirectexit('action=logout;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'], Utils::$context['server']['needs_login_fix']);
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Login2::exportStatic')) {
-	Login2::exportStatic();
 }
 
 ?>

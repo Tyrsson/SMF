@@ -38,25 +38,6 @@ class Languages implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageLanguages',
-			'list_getLanguagesList' => 'list_getLanguagesList',
-			'list_getNumLanguages' => 'list_getNumLanguages',
-			'list_getLanguages' => 'list_getLanguages',
-			'modifyLanguages' => 'ModifyLanguages',
-			'addLanguage' => 'AddLanguage',
-			'modifyLanguageSettings' => 'ModifyLanguageSettings',
-			'downloadLanguage' => 'DownloadLanguage',
-			'modifyLanguage' => 'ModifyLanguage',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -1633,6 +1614,7 @@ class Languages implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the edit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyLanguages(): void
 	{
@@ -1643,6 +1625,7 @@ class Languages implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the add sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function addLanguage(): void
 	{
@@ -1656,6 +1639,7 @@ class Languages implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyLanguageSettings($return_config = false)
 	{
@@ -1670,6 +1654,7 @@ class Languages implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the download sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function downloadLanguage(): void
 	{
@@ -1680,6 +1665,7 @@ class Languages implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the editlang sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyLanguage(): void
 	{
@@ -1926,11 +1912,6 @@ class Languages implements ActionInterface
 
 		return $new_string;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Languages::exportStatic')) {
-	Languages::exportStatic();
 }
 
 ?>

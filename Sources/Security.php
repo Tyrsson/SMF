@@ -20,27 +20,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Security
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'hashPassword' => 'hash_password',
-			'hashVerifyPassword' => 'hash_verify_password',
-			'hashBenchmark' => 'hash_benchmark',
-			'checkConfirm' => 'checkConfirm',
-			'checkSubmitOnce' => 'checkSubmitOnce',
-			'spamProtection' => 'spamProtection',
-			'secureDirectory' => 'secureDirectory',
-			'frameOptionsHeader' => 'frameOptionsHeader',
-			'corsPolicyHeader' => 'corsPolicyHeader',
-			'kickGuest' => 'KickGuest',
-		],
-	];
 
 	/***********************
 	 * Public static methods
@@ -108,7 +87,7 @@ class Security
 			return true;
 		}
 
-		$token = bin2hex(Utils::randomBytes(16));
+		$token = bin2hex(random_bytes(16));
 
 		$_SESSION['confirm_' . $action] = hash_hmac('md5', $_SERVER['HTTP_USER_AGENT'], $token);
 
@@ -165,7 +144,7 @@ class Security
 			Utils::$context['form_sequence_number'] = 0;
 
 			while (empty(Utils::$context['form_sequence_number']) || in_array(Utils::$context['form_sequence_number'], $_SESSION['forms'])) {
-				Utils::$context['form_sequence_number'] = Utils::randomInt(1, 16000000);
+				Utils::$context['form_sequence_number'] = random_int(1, 16000000);
 			}
 		}
 		// Don't check, just free the stack number.
@@ -551,14 +530,5 @@ class Security
 		User::$me->kickIfGuest(null, false);
 	}
 }
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Security::exportStatic')) {
-	Security::exportStatic();
-}
-
-// Some functions have moved.
-class_exists('SMF\\SecurityToken');
-class_exists('SMF\\User');
 
 ?>

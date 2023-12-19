@@ -23,20 +23,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Draft
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'delete' => 'DeleteDraft',
-			'showInEditor' => 'ShowDrafts',
-			'showInProfile' => 'showProfileDrafts',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -248,8 +234,8 @@ class Draft
 		Utils::$context['icon'] = !empty($this->icon) ? $this->icon : 'xx';
 		Utils::$context['message'] = !empty($this->body) ? str_replace('<br>', "\n", Utils::htmlspecialcharsDecode(stripslashes($this->body))) : '';
 		Utils::$context['subject'] = !empty($this->subject) ? stripslashes($this->subject) : '';
-		Utils::$context['board'] = !empty($this->id_board) ? $this->id_board : '';
-		Utils::$context['id_draft'] = !empty($this->id_draft) ? $this->id_draft : 0;
+		Utils::$context['board'] = !empty($this->board) ? $this->board : '';
+		Utils::$context['id_draft'] = !empty($this->id) ? $this->id : 0;
 	}
 
 	/**
@@ -818,11 +804,6 @@ class Draft
 
 		Utils::obExit(false);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Draft::exportStatic')) {
-	Draft::exportStatic();
 }
 
 ?>

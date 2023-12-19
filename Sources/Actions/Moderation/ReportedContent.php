@@ -40,24 +40,6 @@ class ReportedContent implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ReportedContent',
-			'recountOpenReports' => 'recountOpenReports',
-			'showReports' => 'ShowReports',
-			'showClosedReports' => 'ShowClosedReports',
-			'reportDetails' => 'ReportDetails',
-			'handleReport' => 'HandleReport',
-			'handleComment' => 'HandleComment',
-			'editComment' => 'EditComment',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -660,6 +642,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the show sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function showReports(): void
 	{
@@ -670,6 +653,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the closed sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function showClosedReports(): void
 	{
@@ -680,6 +664,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the details sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function reportDetails(): void
 	{
@@ -690,6 +675,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the handle sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function handleReport(): void
 	{
@@ -700,6 +686,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the handlecomment sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function handleComment(): void
 	{
@@ -710,6 +697,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the editcomment sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editComment(): void
 	{
@@ -1353,8 +1341,16 @@ class ReportedContent implements ActionInterface
 			Db::$db->insert(
 				'insert',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
-				['$sourcedir/tasks/' . $prefix . 'ReportReply-Notify.php', 'SMF\\Tasks\\' . $prefix . 'ReportReply_Notify', Utils::jsonEncode($data), 0],
+				[
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
+				[
+					'SMF\\Tasks\\' . $prefix . 'ReportReply_Notify',
+					Utils::jsonEncode($data),
+					0,
+				],
 				['id_task'],
 			);
 		}
@@ -1466,11 +1462,6 @@ class ReportedContent implements ActionInterface
 			];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ReportedContent::exportStatic')) {
-	ReportedContent::exportStatic();
 }
 
 ?>

@@ -25,34 +25,7 @@ use SMF\Graphics\Image;
  */
 class Attachment implements \ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'automanageCheckDirectory' => 'automanage_attachments_check_directory',
-			'automanageCreateDirectory' => 'automanage_attachments_create_directory',
-			'automanageBySpace' => 'automanage_attachments_by_space',
-			'process' => 'processAttachments',
-			'check' => 'attachmentChecks',
-			'create' => 'createAttachment',
-			'assign' => 'assignAttachments',
-			'approve' => 'ApproveAttachments',
-			'remove' => 'removeAttachments',
-			'parseAttachBBC' => 'parseAttachBBC',
-			'getAttachMsgInfo' => 'getAttachMsgInfo',
-			'loadAttachmentContext' => 'loadAttachmentContext',
-			'prepareByMsg' => 'prepareAttachsByMsg',
-			'createHash' => 'createHash',
-			'getFilePath' => 'getFilePath',
-			'getAttachmentFilename' => 'getAttachmentFilename',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -717,14 +690,14 @@ class Attachment implements \ArrayAccess
 			}
 		}
 
-		if (!$doit) {
+		if (empty($doit)) {
 			return;
 		}
 
 		$year = date('Y');
 		$month = date('m');
 
-		$rand = md5(mt_rand());
+		$rand = bin2hex(random_bytes(1));
 		$rand1 = $rand[1];
 		$rand = $rand[0];
 
@@ -939,7 +912,7 @@ class Attachment implements \ArrayAccess
 	{
 		// Make sure we're uploading to the right place.
 		if (!empty(Config::$modSettings['automanage_attachments'])) {
-			automanage_attachments_check_directory();
+			self::automanageCheckDirectory();
 		}
 
 		if (!is_array(Config::$modSettings['attachmentUploadDir'])) {
@@ -1064,7 +1037,7 @@ class Attachment implements \ArrayAccess
 			}
 
 			// Try to move and rename the file before doing any more checks on it.
-			$attachID = 'post_tmp_' . User::$me->id . '_' . md5(mt_rand());
+			$attachID = 'post_tmp_' . User::$me->id . '_' . bin2hex(random_bytes(16));
 			$destName = Utils::$context['attach_dir'] . '/' . $attachID;
 
 			if (empty($errors)) {
@@ -1112,7 +1085,7 @@ class Attachment implements \ArrayAccess
 			}
 		}
 		// Mod authors, finally a hook to hang an alternate attachment upload system upon
-		// Upload to the current attachment folder with the file name $attachID or 'post_tmp_' . User::$me->id . '_' . md5(mt_rand())
+		// Upload to the current attachment folder with the file name $attachID or 'post_tmp_' . User::$me->id . '_' . bin2hex(random_bytes(16))
 		// Populate $_SESSION['temp_attachments'][$attachID] with the following:
 		//   name => The file name
 		//   tmp_name => Path to the temp file (Utils::$context['attach_dir'] . '/' . $attachID).
@@ -1316,6 +1289,7 @@ class Attachment implements \ArrayAccess
 	{
 		// If this is an image we need to set a few additional parameters.
 		$image = new Image($attachmentOptions['tmp_name']);
+		$is_image = !empty($image);
 
 		// Source is empty for non-images.
 		if (!empty($image->source)) {
@@ -1356,7 +1330,7 @@ class Attachment implements \ArrayAccess
 			$attachmentOptions['fileext'] = isset($name_info['extension']) && strlen($name_info['extension']) <= 8 ? $name_info['extension'] : '';
 		}
 
-		$attachmentOptions['name'] = ($name_info['filename'] ?? bin2hex(Utils::randomBytes(4))) . (strlen($attachmentOptions['fileext']) > 0 ? '.' . $attachmentOptions['fileext'] : '');
+		$attachmentOptions['name'] = ($name_info['filename'] ?? bin2hex(random_bytes(4))) . (strlen($attachmentOptions['fileext']) > 0 ? '.' . $attachmentOptions['fileext'] : '');
 
 		// Get the hash if no hash has been given yet.
 		if (empty($attachmentOptions['file_hash'])) {
@@ -1454,19 +1428,13 @@ class Attachment implements \ArrayAccess
 				'insert',
 				'{db_prefix}background_tasks',
 				[
-					'task_file' => 'string',
 					'task_class' => 'string',
 					'task_data' => 'string',
 					'claimed_time' => 'int',
 				],
 				[
-					'$sourcedir/tasks/CreateAttachment_Notify.php',
 					'SMF\\Tasks\\CreateAttachment_Notify',
-					Utils::jsonEncode(
-						[
-							'id' => $attachmentOptions['id'],
-						],
-					),
+					Utils::jsonEncode(['id' => $attachmentOptions['id']]),
 					0,
 				],
 				[
@@ -1475,7 +1443,7 @@ class Attachment implements \ArrayAccess
 			);
 		}
 
-		if (!$this->is_image || empty(Config::$modSettings['attachmentThumbnails']) || (empty($attachmentOptions['width']) && empty($attachmentOptions['height']))) {
+		if (empty($is_image) || empty(Config::$modSettings['attachmentThumbnails']) || (empty($attachmentOptions['width']) && empty($attachmentOptions['height']))) {
 			return true;
 		}
 
@@ -2234,8 +2202,8 @@ class Attachment implements \ArrayAccess
 				// This can happen if an uploaded SVG is missing some key data.
 				foreach (['real_width', 'real_height'] as $key) {
 					if (!isset($attachmentData[$i][$key]) || $attachmentData[$i][$key] === INF) {
-						loadLanguage('Admin');
-						$attachmentData[$i][$key] = ' (' . $txt['unknown'] . ') ';
+						Lang::load('Admin');
+						$attachmentData[$i][$key] = ' (' . Lang::$txt['unknown'] . ') ';
 					}
 				}
 			}
@@ -2315,7 +2283,7 @@ class Attachment implements \ArrayAccess
 		} elseif (strlen($input) > 0) {
 			$hash = hash_hmac('sha1', $input, Config::$image_proxy_secret);
 		} else {
-			$hash = bin2hex(Utils::randomBytes(20));
+			$hash = bin2hex(random_bytes(20));
 		}
 
 		return $hash;
@@ -2527,11 +2495,6 @@ class Attachment implements \ArrayAccess
 		}
 		Db::$db->free_result($request);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Attachment::exportStatic')) {
-	Attachment::exportStatic();
 }
 
 ?>

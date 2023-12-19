@@ -14,7 +14,6 @@
 namespace SMF\Actions;
 
 use SMF\Attachment;
-use SMF\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Board;
 use SMF\BrowserDetector;
@@ -58,20 +57,6 @@ use SMF\Utils;
  */
 class Feed implements ActionInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ShowXmlFeed',
-			'build' => 'buildXmlFeed',
-			'cdataParse' => 'cdata_parse',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -494,7 +479,7 @@ class Feed implements ActionInterface
 
 		// Get the associative array representing the xml.
 		if (!empty(CacheApi::$enable) && (!User::$me->is_guest || CacheApi::$enable >= 3)) {
-			$this->data = CacheApi::get('xmlfeed-' . $this->format . ':' . (User::$me->is_guest ? '' : User::$me->id . '-') . $cachekey, 240);
+			$this->data = CacheApi::get('xmlfeed-' . $this->format . ':' . (User::$me->is_guest ? '' : User::$me->id . '-') . $cachekey, 240) ?? [];
 		}
 
 		if (empty($this->data)) {
@@ -1140,6 +1125,7 @@ class Feed implements ActionInterface
 
 		$done = false;
 		$loops = 0;
+		$current_board = isset(Board::$info) ? Board::$info->id : 0;
 
 		while (!$done) {
 			$optimize_msg = implode(' AND ', $this->optimize_msg);
@@ -1158,7 +1144,7 @@ class Feed implements ActionInterface
 				LIMIT {int:limit}',
 				[
 					'limit' => $this->limit,
-					'current_board' => Board::$info->id,
+					'current_board' => $current_board,
 					'is_approved' => 1,
 					'optimize_msg' => $optimize_msg,
 				],
@@ -1209,7 +1195,7 @@ class Feed implements ActionInterface
 			LIMIT {int:limit}',
 			[
 				'limit' => $this->limit,
-				'current_board' => Board::$info->id,
+				'current_board' => $current_board,
 				'message_list' => $messages,
 			],
 		);
@@ -3156,11 +3142,6 @@ class Feed implements ActionInterface
 
 		return $val;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Feed::exportStatic')) {
-	Feed::exportStatic();
 }
 
 ?>

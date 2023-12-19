@@ -21,26 +21,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Mail
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'send' => 'sendmail',
-			'addToQueue' => 'AddMailQueue',
-			'reduceQueue' => 'reduceQueue',
-			'mimespecialchars' => 'mimespecialchars',
-			'sendSmtp' => 'smtp_mail',
-			'serverParse' => 'serverParse',
-			'sendNotifications' => 'sendNotifications',
-			'adminNotify' => 'adminNotify',
-			'loadEmailTemplate' => 'loadEmailTemplate',
-		],
-	];
 
 	/***********************
 	 * Public static methods
@@ -225,7 +205,7 @@ class Mail
 							return false;
 						}
 
-						throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+						throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 					},
 				);
 
@@ -234,7 +214,7 @@ class Mail
 						ErrorHandler::log(sprintf(Lang::$txt['mail_send_unable'], $to));
 						$mail_result = false;
 					}
-				} catch (ErrorException $e) {
+				} catch (\ErrorException $e) {
 					ErrorHandler::log($e->getMessage(), 'general', $e->getFile(), $e->getLine());
 					ErrorHandler::log(sprintf(Lang::$txt['mail_send_unable'], $to));
 					$mail_result = false;
@@ -1038,7 +1018,8 @@ class Mail
 
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$task_rows[] = [
-				'$sourcedir/tasks/CreatePost_Notify.php', 'SMF\\Tasks\\CreatePost_Notify', Utils::jsonEncode([
+				'SMF\\Tasks\\CreatePost_Notify',
+				Utils::jsonEncode([
 					'msgOptions' => [
 						'id' => $row['id_msg'],
 						'subject' => $row['subject'],
@@ -1055,7 +1036,8 @@ class Mail
 					],
 					'type' => $type,
 					'members_only' => $members_only,
-				]), 0,
+				]),
+				0,
 			];
 		}
 		Db::$db->free_result($result);
@@ -1064,7 +1046,11 @@ class Mail
 			Db::$db->insert(
 				'',
 				'{db_prefix}background_tasks',
-				['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
+				[
+					'task_class' => 'string',
+					'task_data' => 'string',
+					'claimed_time' => 'int',
+				],
 				$task_rows,
 				['id_task'],
 			);
@@ -1105,13 +1091,21 @@ class Mail
 		Db::$db->insert(
 			'insert',
 			'{db_prefix}background_tasks',
-			['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
-			['$sourcedir/tasks/Register_Notify.php', 'SMF\\Tasks\\Register_Notify', Utils::jsonEncode([
-				'new_member_id' => $memberID,
-				'new_member_name' => $member_name,
-				'notify_type' => $type,
-				'time' => time(),
-			]), 0],
+			[
+				'task_class' => 'string',
+				'task_data' => 'string',
+				'claimed_time' => 'int',
+			],
+			[
+				'SMF\\Tasks\\Register_Notify',
+				Utils::jsonEncode([
+					'new_member_id' => $memberID,
+					'new_member_name' => $member_name,
+					'notify_type' => $type,
+					'time' => time(),
+				]),
+				0,
+			],
 			['id_task'],
 		);
 	}
@@ -1203,11 +1197,6 @@ class Mail
 
 		return $use_ref ? $ref : $matches[0];
 	}
-}
-
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Mail::exportStatic')) {
-	Mail::exportStatic();
 }
 
 ?>

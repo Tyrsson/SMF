@@ -13,7 +13,6 @@
 
 namespace SMF\Actions;
 
-use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\Cookie;
 use SMF\Db\DatabaseApi as Db;
@@ -28,18 +27,6 @@ use SMF\Utils;
  */
 class Logout extends Login2
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'Logout',
-		],
-	];
 
 	/****************************
 	 * Internal static properties
@@ -129,7 +116,7 @@ class Logout extends Login2
 		Cookie::setLoginCookie(-3600, 0);
 
 		// And some other housekeeping while we're at it.
-		$salt = bin2hex(Utils::randomBytes(16));
+		$salt = bin2hex(random_bytes(16));
 
 		if (!empty(User::$me->id)) {
 			User::updateMemberData(User::$me->id, ['password_salt' => $salt]);
@@ -198,11 +185,6 @@ class Logout extends Login2
 	protected function __construct()
 	{
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Logout::exportStatic')) {
-	Logout::exportStatic();
 }
 
 ?>

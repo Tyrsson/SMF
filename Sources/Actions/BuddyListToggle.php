@@ -13,7 +13,6 @@
 
 namespace SMF\Actions;
 
-use SMF\BackwardCompatibility;
 use SMF\Cache\CacheApi;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -28,18 +27,6 @@ use SMF\Utils;
  */
 class BuddyListToggle implements ActionInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'BuddyListToggle',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -95,13 +82,21 @@ class BuddyListToggle implements ActionInterface
 				Db::$db->insert(
 					'insert',
 					'{db_prefix}background_tasks',
-					['task_file' => 'string', 'task_class' => 'string', 'task_data' => 'string', 'claimed_time' => 'int'],
-					['$sourcedir/tasks/Buddy_Notify.php', 'SMF\\Tasks\\Buddy_Notify', Utils::jsonEncode([
-						'receiver_id' => $this->userReceiver,
-						'id_member' => User::$me->id,
-						'member_name' => User::$me->username,
-						'time' => time(),
-					]), 0],
+					[
+						'task_class' => 'string',
+						'task_data' => 'string',
+						'claimed_time' => 'int',
+					],
+					[
+						'SMF\\Tasks\\Buddy_Notify',
+						Utils::jsonEncode([
+							'receiver_id' => $this->userReceiver,
+							'id_member' => User::$me->id,
+							'member_name' => User::$me->username,
+							'time' => time(),
+						]),
+						0,
+					],
 					['id_task'],
 				);
 
@@ -154,11 +149,6 @@ class BuddyListToggle implements ActionInterface
 	{
 		$this->userReceiver = (int) !empty($_REQUEST['u']) ? $_REQUEST['u'] : 0;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\BuddyListToggle::exportStatic')) {
-	BuddyListToggle::exportStatic();
 }
 
 ?>

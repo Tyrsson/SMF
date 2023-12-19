@@ -36,24 +36,6 @@ class Tasks implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageScheduledTasks',
-			'list_getScheduledTasks' => 'list_getScheduledTasks',
-			'list_getTaskLogEntries' => 'list_getTaskLogEntries',
-			'list_getNumTaskLogEntries' => 'list_getNumTaskLogEntries',
-			'scheduledTasks' => 'ScheduledTasks',
-			'editTask' => 'EditTask',
-			'taskLog' => 'TaskLog',
-			'taskSettings' => 'TaskSettings',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -682,6 +664,7 @@ class Tasks implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the tasks sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function scheduledTasks(): void
 	{
@@ -692,6 +675,7 @@ class Tasks implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the taskedit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editTask(): void
 	{
@@ -702,6 +686,7 @@ class Tasks implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the tasklog sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function taskLog(): void
 	{
@@ -715,6 +700,7 @@ class Tasks implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function taskSettings($return_config = false)
 	{
@@ -768,11 +754,6 @@ class Tasks implements ActionInterface
 			$this->subaction = $_REQUEST['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Tasks::exportStatic')) {
-	Tasks::exportStatic();
 }
 
 ?>

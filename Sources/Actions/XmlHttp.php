@@ -36,20 +36,6 @@ class XmlHttp implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'XMLhttpMain',
-			'GetJumpTo' => 'GetJumpTo',
-			'ListMessageIcons' => 'ListMessageIcons',
-			'RetrievePreview' => 'RetrievePreview',
-		],
-	];
-
 	/*******************
 	 * Public properties
 	 *******************/
@@ -411,6 +397,7 @@ class XmlHttp implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the jumpto sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function GetJumpTo(): void
 	{
@@ -421,6 +408,7 @@ class XmlHttp implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the messageicons sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function ListMessageIcons(): void
 	{
@@ -431,6 +419,7 @@ class XmlHttp implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the previews sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function RetrievePreview(): void
 	{
@@ -457,11 +446,6 @@ class XmlHttp implements ActionInterface
 			$this->subaction = $_REQUEST['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\XmlHttp::exportStatic')) {
-	XmlHttp::exportStatic();
 }
 
 ?>

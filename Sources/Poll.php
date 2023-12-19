@@ -13,6 +13,7 @@
 
 namespace SMF;
 
+use ArrayAccess;
 use SMF\Db\DatabaseApi as Db;
 
 /**
@@ -20,26 +21,9 @@ use SMF\Db\DatabaseApi as Db;
  *
  * Contains methods for doing just about everything regarding polls.
  */
-class Poll implements \ArrayAccess
+class Poll implements ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'checkRemovePermission' => 'checkRemovePermission',
-			'vote' => 'Vote',
-			'lock' => 'LockVoting',
-			'edit' => 'EditPoll',
-			'edit2' => 'EditPoll2',
-			'remove' => 'RemovePoll',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -1044,7 +1028,7 @@ class Poll implements \ArrayAccess
 			$_COOKIE['guest_poll_vote'] = empty($_COOKIE['guest_poll_vote']) ? '' : $_COOKIE['guest_poll_vote'];
 
 			// ;id,timestamp,[vote,vote...]; etc
-			$_COOKIE['guest_poll_vote'] .= ';' . $row['id_poll'] . ',' . time() . ',' . implode(',', $choices);
+			$_COOKIE['guest_poll_vote'] .= ';' . $poll->id . ',' . time() . ',' . implode(',', $choices);
 
 			$cookie = new Cookie('guest_poll_vote', $_COOKIE['guest_poll_vote'], time() + 2500000);
 			$cookie->set();
@@ -1111,12 +1095,12 @@ class Poll implements \ArrayAccess
 
 				break;
 
-				// Was locked by a regular user, so unlock it.
+			// Was locked by a regular user, so unlock it.
 			case 1:
 				$poll->voting_locked = 0;
 				break;
 
-				// Not locked, so lock it.
+			// Not locked, so lock it.
 			default:
 				// Remember whether this was locked by moderator or a regular user.
 				$poll->voting_locked = User::$me->allowedTo('moderate_board') ? 2 : 1;
@@ -1654,7 +1638,7 @@ class Poll implements \ArrayAccess
 				}
 
 				// Has the poll been reset since guest voted?
-				if ($pollinfo->reset_poll > $guestvoted[1]) {
+				if ($this->reset_poll > $guestvoted[1]) {
 					// Remove the poll info from the cookie to allow guest to vote again
 					unset($guestinfo[$i]);
 
@@ -1667,9 +1651,9 @@ class Poll implements \ArrayAccess
 					// What did they vote for?
 					unset($guestvoted[0], $guestvoted[1]);
 
-					foreach ($pollinfo->choices as $choice => $details) {
-						$choice->voted_this = in_array($choice, $guestvoted);
-						$pollinfo->has_voted |= $choice->voted_this;
+					foreach ($this->choices as $choice => $details) {
+						$details->voted_this = in_array($choice, $guestvoted);
+						$this->has_voted |= $details->voted_this;
 					}
 				}
 				unset($guestinfo, $guestvoted, $i);
@@ -1759,7 +1743,7 @@ class Poll implements \ArrayAccess
 	/**
 	 * Gets the ID of the most recent poll.
 	 *
-	 * @param array &$options The query options passed to the constructor.
+	 * @param int &$options The query options passed to the constructor.
 	 * @return int ID of the most recent poll.
 	 */
 	protected function getMostRecent(&$options): int
@@ -1793,7 +1777,7 @@ class Poll implements \ArrayAccess
 	/**
 	 * Gets the ID of the poll with the most voting activity.
 	 *
-	 * @param array &$options The query options passed to the constructor.
+	 * @param int &$options The query options passed to the constructor.
 	 * @return int ID of the most active poll.
 	 */
 	protected function getMostActive(&$options): int
@@ -1907,11 +1891,6 @@ class Poll implements \ArrayAccess
 		$_POST['question'] = preg_replace('~&amp;#(\d{4,5}|[2-9]\d{2,4}|1[2-9]\d);~', '&#$1;', $_POST['question']);
 		$_POST['options'] = Utils::htmlspecialcharsRecursive($_POST['options']);
 	}
-}
-
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Poll::exportStatic')) {
-	Poll::exportStatic();
 }
 
 ?>

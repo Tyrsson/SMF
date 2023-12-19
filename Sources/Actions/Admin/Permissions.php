@@ -37,34 +37,6 @@ class Permissions implements ActionInterface
 {
 	use BackwardCompatibility;
 
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ModifyPermissions',
-			'getPermissions' => 'getPermissions',
-			'setPermissionLevel' => 'setPermissionLevel',
-			'init_inline_permissions' => 'init_inline_permissions',
-			'theme_inline_permissions' => 'theme_inline_permissions',
-			'save_inline_permissions' => 'save_inline_permissions',
-			'loadPermissionProfiles' => 'loadPermissionProfiles',
-			'updateChildPermissions' => 'updateChildPermissions',
-			'loadIllegalPermissions' => 'loadIllegalPermissions',
-			'buildHidden' => 'buildHidden',
-			'permissionIndex' => 'PermissionIndex',
-			'permissionByBoard' => 'PermissionByBoard',
-			'modifyMembergroup' => 'ModifyMembergroup',
-			'modifyMembergroup2' => 'ModifyMembergroup2',
-			'setQuickGroups' => 'SetQuickGroups',
-			'modifyPostModeration' => 'ModifyPostModeration',
-			'editPermissionProfiles' => 'EditPermissionProfiles',
-			'generalPermissionSettings' => 'GeneralPermissionSettings',
-		],
-	];
-
 	/*****************
 	 * Class constants
 	 *****************/
@@ -2408,6 +2380,7 @@ class Permissions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the index sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function permissionIndex(): void
 	{
@@ -2418,6 +2391,7 @@ class Permissions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the board sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function permissionByBoard(): void
 	{
@@ -2428,6 +2402,7 @@ class Permissions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the modify sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyMembergroup(): void
 	{
@@ -2438,6 +2413,7 @@ class Permissions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the modify2 sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyMembergroup2(): void
 	{
@@ -2448,6 +2424,7 @@ class Permissions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the quick sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function setQuickGroups(): void
 	{
@@ -2458,6 +2435,7 @@ class Permissions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the postmod sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyPostModeration(): void
 	{
@@ -2468,6 +2446,7 @@ class Permissions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the profiles sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editPermissionProfiles(): void
 	{
@@ -2481,6 +2460,7 @@ class Permissions implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function generalPermissionSettings($return_config = false)
 	{
@@ -2869,7 +2849,7 @@ class Permissions implements ActionInterface
 				Utils::$context['group']['name'] = Lang::$txt['membergroups_members'];
 				break;
 
-				// Can't set permissions for admins.
+			// Can't set permissions for admins.
 			case 1:
 				Utils::redirectexit('action=admin;area=permissions');
 				break;
@@ -3699,11 +3679,6 @@ class Permissions implements ActionInterface
 		// We don't need this anymore.
 		unset(Utils::$context['non_guest_permissions']);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Permissions::exportStatic')) {
-	Permissions::exportStatic();
 }
 
 ?>

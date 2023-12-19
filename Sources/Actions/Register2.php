@@ -13,9 +13,6 @@
 
 namespace SMF\Actions;
 
-use SMF\BackwardCompatibility;
-
-use SMF\Mail;
 use SMF\Config;
 use SMF\Cookie;
 use SMF\Db\DatabaseApi as Db;
@@ -41,19 +38,6 @@ use SMF\Verifier;
  */
 class Register2 extends Register
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'Register2',
-			'registerMember' => 'registerMember',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -659,7 +643,7 @@ class Register2 extends Register
 			'member_name' => $reg_options['username'],
 			'email_address' => $reg_options['email'],
 			'passwd' => Security::hashPassword($reg_options['username'], $reg_options['password']),
-			'password_salt' => bin2hex(Utils::randomBytes(16)),
+			'password_salt' => bin2hex(random_bytes(16)),
 			'posts' => 0,
 			'date_registered' => time(),
 			'member_ip' => $reg_options['interface'] == 'admin' ? '127.0.0.1' : User::$me->ip,
@@ -926,11 +910,6 @@ class Register2 extends Register
 	protected function __construct()
 	{
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Register2::exportStatic')) {
-	Register2::exportStatic();
 }
 
 ?>

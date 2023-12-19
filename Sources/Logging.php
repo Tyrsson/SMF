@@ -25,25 +25,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Logging
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'writeLog' => 'writeLog',
-			'logAction' => 'logAction',
-			'logActions' => 'logActions',
-			'updateStats' => 'updateStats',
-			'trackStats' => 'trackStats',
-			'trackStatsUsersOnline' => 'trackStatsUsersOnline',
-			'getMembersOnlineStats' => 'getMembersOnlineStats',
-			'displayDebug' => 'displayDebug',
-		],
-	];
 
 	/***********************
 	 * Public static methods
@@ -77,7 +58,7 @@ class Logging
 	 */
 	public static function logAction($action, array $extra = [], $log_type = 'moderate'): int
 	{
-		return logActions([[
+		return self::logActions([[
 			'action' => $action,
 			'log_type' => $log_type,
 			'extra' => $extra,
@@ -936,11 +917,6 @@ class Logging
 		<a href="' . Config::$scripturl . '?action=viewquery;sa=hide">', Lang::$txt['debug_' . (empty($_SESSION['view_queries']) ? 'show' : 'hide') . '_queries'], '</a>
 	</div></body></html>';
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Logging::exportStatic')) {
-	Logging::exportStatic();
 }
 
 ?>

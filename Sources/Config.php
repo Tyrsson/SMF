@@ -31,7 +31,7 @@ class Config
 	 *
 	 * Master switch to enable backward compatibility behaviours.
 	 */
-	public static bool $backward_compatibility = false;
+	public static bool $backward_compatibility = true;
 
 	# ######### Maintenance ##########
 	/**

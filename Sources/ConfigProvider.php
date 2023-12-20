@@ -13,6 +13,7 @@ final class ConfigProvider
 	{
 		return [
 			'dependencies' => $this->getDependencies(),
+			'templates'    => $this->getTemplates(),
 		];
 	}
 
@@ -22,6 +23,7 @@ final class ConfigProvider
 			'factories'  => [
 				Forum::class => Factories\ForumFactory::class,
 				Board::class => Factories\BoardFactory::class,
+				Middleware\BoardIndex::class => Middleware\Factories\BoardIndexFactory::class,
 			],
 			'invokables' => [
 				Actions\Admin\ACP::class 		=> Actions\Admin\ACP::class,
@@ -37,8 +39,15 @@ final class ConfigProvider
 				Actions\Profile\Main::class		=> Actions\Profile\Main::class,
 				Actions\Profile\Popup::class	=> Actions\Profile\Popup::class,
 				Actions\QuoteFast::class		=> Actions\QuoteFast::class,
-				Middleware\BoardIndex::class	=> Middleware\BoardIndex::class,
 
+			],
+		];
+	}
+	public function getTemplates(): array
+	{
+		return [
+			'paths' => [
+				'layout' => [__DIR__ . '/../../Themes/demo/layout'],
 			],
 		];
 	}

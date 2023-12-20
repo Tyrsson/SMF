@@ -14,12 +14,12 @@
 namespace SMF\Middleware;
 
 use Laminas\Diactoros\Response\HtmlResponse;
+use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use SMF\Actions\Action;
-use SMF\BackwardCompatibility;
 use SMF\Board;
 use SMF\Cache\CacheApi;
 use SMF\Category;
@@ -46,20 +46,6 @@ use SMF\Security;
  */
 class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static array $backcompat = [
-		'func_names' => [
-			'load' => 'BoardIndex',
-			'call' => 'call',
-			'get' => 'getBoardIndex',
-		],
-	];
 
 	/****************************
 	 * Internal static properties
@@ -99,9 +85,9 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		if (isset($params['board']) || isset($params['action']) || isset($params['topic'])) {
 			return $handler->handle($request);
 		}
-		Theme::loadTemplate('BoardIndex');
+		//Theme::loadTemplate('BoardIndex');
 		$this->execute();
-		Utils::obExit(null, null, true);
+		//Utils::obExit(null, null, true);
 		$response = new HtmlResponse(\ob_get_contents());
 		return $response;
 	}
@@ -290,10 +276,6 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 	/***********************
 	 * Public static methods
 	 ***********************/
-	public function __invoke()
-	{
-		return $this();
-	}
 	/**
 	 * Static wrapper for constructor.
 	 *
@@ -655,8 +637,9 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 	 *
 	 * Protected to force instantiation via self::load().
 	 */
-	public function __construct()
-	{
+	public function __construct(
+		private TemplateRendererInterface $template
+	) {
 		Theme::load();
 
 		Utils::$context['template_layers'][] = 'boardindex_outer';
@@ -807,11 +790,6 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 
 		return $last_post;
 	}
-}
-
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\BoardIndex::exportStatic')) {
-	BoardIndex::exportStatic();
 }
 
 ?>

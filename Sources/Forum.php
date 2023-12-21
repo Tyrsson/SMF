@@ -13,14 +13,17 @@
 
 namespace SMF;
 
-use Laminas\Diactoros\Response;
-use Laminas\Diactoros\ResponseFactory;
-use Laminas\Diactoros\ServerRequestFactory;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
-use Laminas\HttpHandlerRunner\RequestHandlerRunner;
-use Laminas\Stratigility\MiddlewarePipe;
-use Laminas\Stratigility\Middleware\RequestHandlerMiddleware;
+use Laminas\HttpHandlerRunner\RequestHandlerRunnerInterface;
+use Laminas\Stratigility\MiddlewarePipeInterface;
+use Mezzio\Application;
+use Mezzio\MiddlewareFactory;
+use Mezzio\Router\Route;
+use Mezzio\Router\RouteCollectorInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 //use SMF\Actions\BoardIndex;
 use SMF\Actions\Display;
 use SMF\Actions\MessageIndex;
@@ -31,7 +34,6 @@ use SMF\Middleware\TestMiddleware;
 use Throwable;
 
 use function is_array;
-use function Laminas\Stratigility\middleware;
 use function SMF\Middleware\params;
 
 /**
@@ -47,7 +49,7 @@ use function SMF\Middleware\params;
  * Then, you can access the FunctionToCall() function from Source-File.php with
  * the URL index.php?action=action-in-url. Relatively simple, no?
  */
-class Forum
+class Forum extends Application
 {
 	/**************************
 	 * Public static properties
@@ -211,8 +213,13 @@ class Forum
 	 * Constructor
 	 */
 	public function __construct(
-		private ContainerInterface $container
+		private ContainerInterface $container,
+		private MiddlewareFactory $factory,
+        private MiddlewarePipeInterface $pipeline,
+        private RouteCollectorInterface $routes,
+        private RequestHandlerRunnerInterface $runner
 	) {
+		parent::__construct($factory, $pipeline, $routes, $runner);
 		// If Config::$maintenance is set specifically to 2, then we're upgrading or something.
 		if (!empty(Config::$maintenance) &&  2 === Config::$maintenance) {
 			ErrorHandler::displayMaintenanceMessage();
@@ -267,6 +274,22 @@ class Forum
 		IntegrationHook::call('integrate_guest_actions', [&self::$guest_access_actions]);
 	}
 
+	public function pipe($middlewareOrParams = [], $middleware = null): void
+	{
+		$middleware = $middleware ?? $middlewareOrParams;
+		$params = $middleware !== $middlewareOrParams ? $middlewareOrParams: [];
+		$middleware = $middlewareOrParams !== []
+			? params($params, $this->factory->prepare($middleware))
+			: $this->factory->prepare($middleware);
+
+		$this->pipeline->pipe($middleware);
+	}
+
+	public function paramRoute(array $params, $middleware, ?array $methods = null, ?string $name = null): Route
+	{
+
+	}
+
 	/**
 	 * This is the one that gets stuff done.
 	 *
@@ -276,38 +299,38 @@ class Forum
 	 */
 	public function execute()
 	{
-		$app = new MiddlewarePipe();
-		// boardindex
-		$boardIndex = $this->container->get(BoardIndex::class);
-		//$handler = BoardIndex::class;
-		$app->pipe($this->container->get(BoardIndex::class));
+		// $app = new MiddlewarePipe();
+		// // boardindex
+		// $boardIndex = $this->container->get(BoardIndex::class);
+		// //$handler = BoardIndex::class;
+		// $app->pipe($this->container->get(BoardIndex::class));
 
-		$app->pipe(params(['test'], new TestMiddleware()));
-		// pipe SMF as the fallback
-		$app->pipe(new FallbackMiddleware($this));
+		// $app->pipe(params(['test'], new TestMiddleware()));
+		// // pipe SMF as the fallback
+		// $app->pipe(new FallbackMiddleware($this));
 
-		$server = new RequestHandlerRunner(
-			$app,
-			new SapiEmitter(),
-			static function () {
-				return ServerRequestFactory::fromGlobals(
-					$_SERVER,
-					$_GET,
-					$_POST,
-					$_COOKIE,
-					$_FILES
-				);
-			},
-			static function (Throwable $e) {
-				$response = (new ResponseFactory())->createResponse(500);
-				$response->getBody()->write(sprintf(
-					'An error occurred: %s',
-					$e->getMessage
-				));
-				return $response;
-			}
-		);
-		$server->run();
+		// $server = new RequestHandlerRunner(
+		// 	$app,
+		// 	new SapiEmitter(),
+		// 	static function () {
+		// 		return ServerRequestFactory::fromGlobals(
+		// 			$_SERVER,
+		// 			$_GET,
+		// 			$_POST,
+		// 			$_COOKIE,
+		// 			$_FILES
+		// 		);
+		// 	},
+		// 	static function (Throwable $e) {
+		// 		$response = (new ResponseFactory())->createResponse(500);
+		// 		$response->getBody()->write(sprintf(
+		// 			'An error occurred: %s',
+		// 			$e->getMessage
+		// 		));
+		// 		return $response;
+		// 	}
+		// );
+		// $server->run();
 	}
 
 	/***********************

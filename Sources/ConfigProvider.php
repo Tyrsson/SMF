@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SMF;
 
-use SMF\Actions;
-use SMF\Middleware;
+use Mezzio\Router\RouterInterface;
+
 
 final class ConfigProvider
 {
@@ -20,10 +20,27 @@ final class ConfigProvider
 	public function getDependencies(): array
 	{
 		return [
+			'aliases' => [
+				RouterInterface::class => Router\ParamRouter::class
+			],
 			'factories'  => [
+				//SMF
 				Forum::class => Factories\ForumFactory::class,
 				Board::class => Factories\BoardFactory::class,
 				Middleware\BoardIndex::class => Middleware\Factories\BoardIndexFactory::class,
+				// Libs
+				EmitterInterface::class        => Factories\EmitterFactory::class,
+				ErrorHandler::class            => Factories\ErrorHandlerFactory::class,
+				Handler\NotFoundHandler::class => Factories\NotFoundHandlerFactory::class,
+				MiddlewareContainer::class     => Factories\MiddlewareContainerFactory::class,
+				MiddlewareFactory::class       => Factories\MiddlewareFactoryFactory::class,
+				// Change the following in development to the WhoopsErrorResponseGeneratorFactory:
+				Middleware\ErrorResponseGenerator::class            => Factories\ErrorResponseGeneratorFactory::class,
+				RequestHandlerRunner::class                         => Factories\RequestHandlerRunnerFactory::class,
+				ResponseInterface::class                            => Factories\ResponseFactoryFactory::class,
+				Response\ServerRequestErrorResponseGenerator::class => Factories\ServerRequestErrorResponseGeneratorFactory::class,
+				ServerRequestInterface::class                       => Factories\ServerRequestFactoryFactory::class,
+				StreamInterface::class                              => Factories\StreamFactoryFactory::class,
 			],
 			'invokables' => [
 				Actions\Admin\ACP::class 		=> Actions\Admin\ACP::class,
@@ -39,7 +56,7 @@ final class ConfigProvider
 				Actions\Profile\Main::class		=> Actions\Profile\Main::class,
 				Actions\Profile\Popup::class	=> Actions\Profile\Popup::class,
 				Actions\QuoteFast::class		=> Actions\QuoteFast::class,
-
+				Router\ParamRouter::class		=> Router\ParamRouter::class,
 			],
 		];
 	}

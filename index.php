@@ -151,12 +151,11 @@ if (SMF === 1)
 {
 	// we gotz services?
 	$container = (require __DIR__ . '/config/container.php');
-	// if (! $container->has(Forum::class)) {
-	// 	// throw exception
-	// }
 
-	$container->get(Forum::class)->execute();
-	//(new Forum($container))->execute();
+	$forum = $container->get(Forum::class);
+	$factory = $container->get(\Mezzio\MiddlewareFactory::class);
+	(require __DIR__ . '/config/pipeline.php')($forum, $factory, $container);
+	$forum->run();
 }
 
 ?>

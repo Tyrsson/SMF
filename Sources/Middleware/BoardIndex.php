@@ -85,9 +85,9 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		if (isset($params['board']) || isset($params['action']) || isset($params['topic'])) {
 			return $handler->handle($request);
 		}
-		//Theme::loadTemplate('BoardIndex');
+		Theme::loadTemplate('BoardIndex');
 		$this->execute();
-		//Utils::obExit(null, null, true);
+		Utils::obExit(null, null, true);
 		$response = new HtmlResponse(\ob_get_contents());
 		return $response;
 	}

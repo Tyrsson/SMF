@@ -21,28 +21,33 @@ final class QueryStringMiddlewareDecorator implements MiddlewareInterface
 
     /** @var array $params for which to execute for.  */
     private array $params;
+	private $isHandler = false;
 
-    public function __construct(array $params, MiddlewareInterface $middleware)
-    {
-        // todo: normalize these values
-        $this->params = \array_flip($params);
-        $this->middleware = $middleware;
-    }
+	public function __construct(array $params, MiddlewareInterface $middleware)
+	{
+		if ($params !== [] && $params !== null) {
+			$this->isHandler = true;
+		}
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        //$path = $request->getUri()->getPath() ?: '/';
-        $params = \array_intersect_key($request->getQueryParams(), $this->params);
+		$this->middleware = $middleware;
+	}
 
-        // if we do not have the same param count, then were in the wrong place.
-        if (\array_keys($params) !== \array_keys($this->params)) {
-            return $handler->handle($request);
-        }
+	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+	{
+		if ($this->isHandler) {
 
-        // Process our middleware.
-        return $this->middleware->process(
-            $request,
-            $handler
-        );
-    }
+			$params = \array_intersect_key($request->getUri()->getQuery(), \array_flip($this->params));
+
+			// if we do not have the same param count, then were in the wrong place.
+			if ($params !== [] && \array_keys($params) !== \array_keys($this->params)) {
+				return $handler->handle($request);
+			}
+		}
+
+		// Process our middleware.
+		return $this->middleware->process(
+			$request,
+			$handler
+		);
+	}
 }

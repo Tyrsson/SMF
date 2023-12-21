@@ -21,7 +21,12 @@
         "files": [
             "./Sources/Middleware/functions/params.php"
         ],
-        "classmap": ["./Sources"]
+        "psr-4": {
+			"SMF\\": "./Sources/",
+			"ReCaptcha\\": "./Sources/ReCaptcha/",
+			"MatthiasMullie\\PathConverter\\": "./Sourcesminify/path-converter/src/",
+			"MatthiasMullie\\Minify\\": "./Sources/minify/src/"
+		}
     },
     "require": {
         "php": ">=8.0 <=8.4",

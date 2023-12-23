@@ -13,7 +13,7 @@
 
 namespace SMF;
 
-use SMF\Db\DatabaseApi AS Db;
+use SMF\Db\DatabaseApi as Db;
 
 /**
  * Holds some widely used stuff, like $context and $smcFunc.
@@ -1321,8 +1321,10 @@ class Utils
 	public static function safeSerialize(mixed $value): string
 	{
 		// Make sure we use the byte count for strings even when strlen() is overloaded by mb_strlen()
-		if (function_exists('mb_internal_encoding')
-			&& (((int) ini_get('mbstring.func_overload')) & 2)) {
+		if (
+			function_exists('mb_internal_encoding')
+			&& (((int) ini_get('mbstring.func_overload')) & 2)
+		) {
 			$mb_int_enc = mb_internal_encoding();
 			mb_internal_encoding('ASCII');
 		}
@@ -1398,8 +1400,10 @@ class Utils
 	public static function safeUnserialize(string $str): mixed
 	{
 		// Make sure we use the byte count for strings even when strlen() is overloaded by mb_strlen()
-		if (function_exists('mb_internal_encoding')
-			&& (((int) ini_get('mbstring.func_overload')) & 0x02)) {
+		if (
+			function_exists('mb_internal_encoding')
+			&& (((int) ini_get('mbstring.func_overload')) & 0x02)
+		) {
 			$mb_int_enc = mb_internal_encoding();
 			mb_internal_encoding('ASCII');
 		}
@@ -1459,7 +1463,7 @@ class Utils
 				}
 
 				switch ($state) {
-					// In array, expecting value or another array.
+						// In array, expecting value or another array.
 					case 3:
 						if ($type == 'a') {
 							$stack[] = &$list;
@@ -1480,7 +1484,7 @@ class Utils
 						$out = false;
 						break 2;
 
-					// In array, expecting end of array or a key.
+						// In array, expecting end of array or a key.
 					case 2:
 						if ($type == '}') {
 							// Array size is less than expected.
@@ -1518,7 +1522,7 @@ class Utils
 						$out = false;
 						break 2;
 
-					// Expecting array or value.
+						// Expecting array or value.
 					case 0:
 						if ($type == 'a') {
 							$data = [];
@@ -2432,5 +2436,3 @@ class Utils
 if (is_callable(__NAMESPACE__ . '\\Utils::exportStatic')) {
 	Utils::exportStatic();
 }
-
-?>

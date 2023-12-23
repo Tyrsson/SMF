@@ -9,7 +9,6 @@ $aggregator = new ConfigAggregator([
 	\Mezzio\ConfigProvider::class,
 	\Mezzio\Router\ConfigProvider::class,
 	\Mezzio\Helper\ConfigProvider::class,
-	\Mezzio\LaminasView\ConfigProvider::class,
 	\Laminas\Diactoros\ConfigProvider::class,
 	\Laminas\HttpHandlerRunner\ConfigProvider::class,
     \SMF\ConfigProvider::class,

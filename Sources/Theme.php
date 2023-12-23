@@ -13,11 +13,13 @@
 
 namespace SMF;
 
+use Mezzio\Template\TemplateRendererInterface;
 use SMF\Actions\Agreement;
 use SMF\Actions\Notify;
 use SMF\Cache\CacheApi;
 use SMF\Db\DatabaseApi as Db;
 use SMF\WebFetch\WebFetchApi;
+use SMF\Utils;
 
 /**
  * Represents a loaded theme. Also provides many theme-related static methods.
@@ -32,7 +34,7 @@ use SMF\WebFetch\WebFetchApi;
  * The data previously available via the deprecated global $options array is
  * now available via SMF\Theme::$current->options.
  */
-class Theme
+class Theme implements TemplateRendererInterface
 {
 
 	/*******************
@@ -178,6 +180,52 @@ class Theme
 		'theme_url',
 		'name',
 	];
+
+	/**
+	 * Interface methods
+	 */
+
+	/**
+	 *
+	 * @inheritDoc
+	 */
+	public function render(string $name, $params = []): string
+	{
+		$params['renderFor']?->execute();
+		ob_start();
+		self::loadTemplate($name, $params['style_sheets'] ?? null);
+		self::template_header();
+		self::loadSubTemplate(Utils::$context['sub_template'] ?? 'main');
+		self::template_footer();
+		if (!isset($_REQUEST['xml'])) {
+			Logging::displayDebug();
+		}
+		return \ob_get_clean();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function addPath(string $path, ?string $namespace = null): void
+	{
+
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getPaths(): array
+	{
+		return [];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function addDefaultParam(string $templateName, string $param, mixed $value): void
+	{
+
+	}
 
 	/***********************
 	 * Public static methods
@@ -2255,7 +2303,7 @@ class Theme
 	 * @param int $id The ID of the theme to load.
 	 * @param int $member The ID of the member whose theme preferences we want.
 	 */
-	protected function __construct($id = 0, $member = -1)
+	public function __construct($id = 0, $member = -1)
 	{
 		$this->id = $id;
 
@@ -2357,6 +2405,7 @@ class Theme
 		if ($this->settings['theme_dir'] != $this->settings['default_theme_dir']) {
 			$this->settings['template_dirs'][] = $this->settings['default_theme_dir'];
 		}
+		return $this;
 	}
 
 	/**

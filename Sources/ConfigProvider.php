@@ -6,14 +6,12 @@ namespace SMF;
 
 use Mezzio\Router\RouterInterface;
 
-
 final class ConfigProvider
 {
 	public function __invoke(): array
 	{
 		return [
-			'dependencies' => $this->getDependencies(),
-			'templates'    => $this->getTemplates(),
+			'dependencies' => $this->getDependencies()
 		];
 	}
 
@@ -27,6 +25,7 @@ final class ConfigProvider
 				//SMF
 				Forum::class => Factories\ForumFactory::class,
 				Board::class => Factories\BoardFactory::class,
+				Theme::class => Factories\ThemeFactory::class,
 				Middleware\BoardIndex::class => Middleware\Factories\BoardIndexFactory::class,
 				// Libs
 				EmitterInterface::class        => Factories\EmitterFactory::class,
@@ -57,14 +56,6 @@ final class ConfigProvider
 				Actions\Profile\Popup::class	=> Actions\Profile\Popup::class,
 				Actions\QuoteFast::class		=> Actions\QuoteFast::class,
 				Router\ParamRouter::class		=> Router\ParamRouter::class,
-			],
-		];
-	}
-	public function getTemplates(): array
-	{
-		return [
-			'paths' => [
-				'layout' => [__DIR__ . '/../../Themes/demo/layout'],
 			],
 		];
 	}

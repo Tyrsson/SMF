@@ -81,15 +81,16 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		// if (! in_array($request->getUri()->getPath(), ['/index.php', ''], true)) {
 		// 	return $handler->handle($request);
 		// }
-		$params = $request->getQueryParams();
+		$params = $request->getUri()->getQuery();
 		if (isset($params['board']) || isset($params['action']) || isset($params['topic'])) {
 			return $handler->handle($request);
 		}
-		Theme::loadTemplate('BoardIndex');
-		$this->execute();
-		Utils::obExit(null, null, true);
-		$response = new HtmlResponse(\ob_get_contents());
-		return $response;
+		//Theme::loadTemplate('BoardIndex');
+		// $this->execute();
+		// Utils::obExit(from_index: true);
+		$params = ['renderFor' => $this, 'style_sheets' => 'index.css'];
+		return new HtmlResponse($this->theme->render('BoardIndex', $params));
+		//return $response;
 	}
 
 	/**
@@ -113,7 +114,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		// Retrieve the latest posts if the theme settings require it.
 		if (!empty(Theme::$current->settings['number_recent_posts'])) {
 			if (Theme::$current->settings['number_recent_posts'] > 1) {
-				Utils::$context['latest_posts'] = CacheApi::quickGet('boardindex-latest_posts:' . md5(User::$me->query_wanna_see_board . User::$me->language), '', [$this, 'cache_getLastPosts'], [Theme::$current->settings['number_recent_posts']]);
+				Utils::$context['latest_posts'] = CacheApi::quickGet('boardindex-latest_posts:' . md5(User::$me->query_wanna_see_board . User::$me->language), '', [$this, 'cache_getLastPosts'], [$this->theme::$current->settings['number_recent_posts']]);
 			}
 
 			if (!empty(Utils::$context['latest_posts']) || !empty(Utils::$context['latest_post'])) {
@@ -151,7 +152,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		}
 
 		// And stats.
-		if (Theme::$current->settings['show_stats_index']) {
+		if ($this->theme::$current->settings['show_stats_index']) {
 			Utils::$context['info_center'][] = [
 				'tpl' => 'stats',
 				'txt' => 'forum_stats',
@@ -176,7 +177,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		}
 
 		// Are we showing all membergroups on the board index?
-		if (!empty(Theme::$current->settings['show_group_key'])) {
+		if (!empty($this->theme::$current->settings['show_group_key'])) {
 			Utils::$context['membergroups'] = CacheApi::quickGet('membergroup_list', 'Group.php', 'SMF\\Group::getCachedList', []);
 		}
 
@@ -312,7 +313,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 	 * @param array $board_index_options An array of boardindex options.
 	 * @return array An array of information for displaying the boardindex.
 	 */
-	public static function get($board_index_options): array
+	public function get($board_index_options): array
 	{
 		// These should always be set.
 		$board_index_options['include_categories'] = $board_index_options['include_categories'] ?? false;
@@ -404,7 +405,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 			$joins[] = 'LEFT JOIN {db_prefix}log_boards AS lb ON (lb.id_board = b.id_board AND lb.id_member = {int:current_member})';
 		}
 
-		if (!empty(Theme::$current->settings['avatars_on_boardIndex'])) {
+		if (!empty($this->theme::$current->settings['avatars_on_boardIndex'])) {
 			$selects[] = 'mem.email_address';
 			$selects[] = 'mem.avatar';
 			$selects[] = 'COALESCE(am.id_attach, 0) AS member_id_attach';
@@ -440,7 +441,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 						'description' => $row_board['cat_desc'],
 						'order' => $row_board['cat_order'],
 						'can_collapse' => !empty($row_board['can_collapse']),
-						'is_collapsed' => !empty($row_board['can_collapse']) && !empty(Theme::$current->options['collapse_category_' . $row_board['id_cat']]),
+						'is_collapsed' => !empty($row_board['can_collapse']) && !empty($this->theme::$current->options['collapse_category_' . $row_board['id_cat']]),
 						'href' => Config::$scripturl . '#c' . $row_board['id_cat'],
 						'new' => false,
 						'css_class' => '',
@@ -489,7 +490,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 					'link' => '<a href="' . Config::$scripturl . '?board=' . $row_board['id_board'] . '.0">' . $row_board['board_name'] . '</a>',
 					'board_class' => 'off',
 					'css_class' => '',
-					'last_post' => self::prepareLastPost($row_board),
+					'last_post' => $this->prepareLastPost($row_board),
 				]);
 
 				$board->parseDescription();
@@ -638,9 +639,9 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 	 * Protected to force instantiation via self::load().
 	 */
 	public function __construct(
-		private TemplateRendererInterface $template
+		private Theme $theme,
 	) {
-		Theme::load();
+		$this->theme::load();
 
 		Utils::$context['template_layers'][] = 'boardindex_outer';
 
@@ -655,12 +656,12 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 		}
 
 		// Replace the collapse and expand default alts.
-		Theme::addJavaScriptVar('smf_expandAlt', Lang::$txt['show_category'], true);
-		Theme::addJavaScriptVar('smf_collapseAlt', Lang::$txt['hide_category'], true);
+		$this->theme::addJavaScriptVar('smf_expandAlt', Lang::$txt['show_category'], true);
+		$this->theme::addJavaScriptVar('smf_collapseAlt', Lang::$txt['hide_category'], true);
 
-		if (!empty(Theme::$current->settings['show_newsfader'])) {
-			Theme::loadJavaScriptFile('slippry.min.js', [], 'smf_jquery_slippry');
-			Theme::loadCSSFile('slider.min.css', [], 'smf_jquery_slider');
+		if (!empty($this->theme::$current->settings['show_newsfader'])) {
+			$this->theme::loadJavaScriptFile('slippry.min.js', [], 'smf_jquery_slippry');
+			$this->theme::loadCSSFile('slider.min.css', [], 'smf_jquery_slider');
 		}
 
 		// Set a few minor things.
@@ -733,7 +734,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 	 * @param array $row_board Raw board data.
 	 * @return array Formatted post data.
 	 */
-	protected static function prepareLastPost($row_board): array
+	protected function prepareLastPost($row_board): array
 	{
 		if (empty($row_board['id_msg'])) {
 			return [
@@ -778,7 +779,7 @@ class BoardIndex extends Action implements MiddlewareInterface, RequestHandlerIn
 
 		unset($msg, Msg::$loaded[$row_board['id_msg']]);
 
-		if (!empty(Theme::$current->settings['avatars_on_boardIndex'])) {
+		if (!empty($this->theme::$current->settings['avatars_on_boardIndex'])) {
 			$last_post['member']['avatar'] = User::setAvatarData([
 				'avatar' => $row_board['avatar'],
 				'email' => $row_board['email_address'],

@@ -11,7 +11,7 @@
  * @version 3.0 Alpha 1
  */
 
-namespace SMF\Actions;
+namespace SMF\Middleware;
 
 use SMF\BBCodeParser;
 use SMF\Board;

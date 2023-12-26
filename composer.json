@@ -10,7 +10,8 @@
     "prefer-stable": true,
     "require-dev": {
         "simplemachines/build-tools": "dev-release-3.0",
-        "friendsofphp/php-cs-fixer": "^3.40"
+        "friendsofphp/php-cs-fixer": "^3.40",
+        "vimeo/psalm": "^5.18"
     },
     "scripts": {
         "lint": "php-cs-fixer check --diff",
@@ -18,7 +19,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.0.0"
+            "php": "8.0.1"
         }
     }
 }

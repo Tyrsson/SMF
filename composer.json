@@ -12,6 +12,17 @@
         "simplemachines/build-tools": "dev-release-3.0",
         "friendsofphp/php-cs-fixer": "^3.40"
     },
+	"autoload": {
+		"files": [
+			"./Sources/Subs-Compat.php"
+		],
+		"psr-4": {
+			"ReCaptcha\\": "./Sources/ReCaptcha/",
+			"MatthiasMullie\\Minify\\": "./Sources/minify/src/",
+			"MatthiasMullie\\PathConverter\\": "./Sources/minify/path-converter/src/",
+			"SMF\\": "./Sources/"
+		}
+	},
     "scripts": {
         "lint": "php-cs-fixer check --diff",
         "lint-fix": "php-cs-fixer fix -v"

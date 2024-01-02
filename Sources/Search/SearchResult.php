@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace SMF\Search;
 
-use SMF\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
@@ -31,18 +30,6 @@ use SMF\Utils;
  */
 class SearchResult extends \SMF\Msg
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'highlight' => 'highlight',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -553,11 +540,6 @@ class SearchResult extends \SMF\Msg
 			Utils::$context['can_merge'] = in_array(0, self::$boards_can['merge_any']);
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\SearchResult::exportStatic')) {
-	SearchResult::exportStatic();
 }
 
 ?>

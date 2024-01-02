@@ -14,7 +14,6 @@
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
@@ -34,18 +33,6 @@ use SMF\Utils;
  */
 class ErrorLog implements ActionInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ViewErrorLog',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -602,11 +589,6 @@ class ErrorLog implements ActionInterface
 		// Back to the error log!
 		Utils::redirectexit('action=admin;area=logs;sa=errorlog' . (isset($_REQUEST['desc']) ? ';desc' : ''));
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ErrorLog::exportStatic')) {
-	ErrorLog::exportStatic();
 }
 
 ?>

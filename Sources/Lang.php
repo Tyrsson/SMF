@@ -28,14 +28,6 @@ class Lang
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'load' => 'loadLanguage',
-			'get' => 'getLanguages',
-			'censorText' => 'censorText',
-			'tokenTxtReplace' => 'tokenTxtReplace',
-			'sentenceList' => 'sentence_list',
-			'numberFormat' => 'comma_format',
-		],
 		'prop_names' => [
 			'txt' => 'txt',
 			'tztxt' => 'tztxt',
@@ -620,8 +612,8 @@ class Lang
 	}
 }
 
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Lang::exportStatic')) {
+// Export properties to global namespace for backward compatibility.
+if (is_callable([Lang::class, 'exportStatic'])) {
 	Lang::exportStatic();
 }
 

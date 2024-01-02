@@ -17,7 +17,7 @@ namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
 use SMF\Actions\MessageIndex;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -42,33 +42,6 @@ use SMF\WebFetch\WebFetchApi;
 class Smileys implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageSmileys',
-			'list_getSmileySets' => 'list_getSmileySets',
-			'list_getNumSmileySets' => 'list_getNumSmileySets',
-			'list_getSmileys' => 'list_getSmileys',
-			'list_getNumSmileys' => 'list_getNumSmileys',
-			'list_getMessageIcons' => 'list_getMessageIcons',
-			'addSmiley' => 'AddSmiley',
-			'editSmileys' => 'EditSmileys',
-			'editSmileyOrder' => 'EditSmileyOrder',
-			'installSmileySet' => 'InstallSmileySet',
-			'editMessageIcons' => 'EditMessageIcons',
-		],
-	];
-
-	/*****************
-	 * Class constants
-	 *****************/
-
-	// code...
 
 	/*******************
 	 * Public properties
@@ -2290,6 +2263,7 @@ class Smileys implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public function editSmileySettings($return_config = false)
 	{
@@ -2298,12 +2272,13 @@ class Smileys implements ActionInterface
 		}
 
 		self::load();
-		self::$obj->subaction = '';
+		self::$obj->subaction = 'settings';
 		self::$obj->execute();
 	}
 
 	/**
 	 * Backward compatibility wrapper for the addsmiley sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function addSmiley(): void
 	{
@@ -2314,6 +2289,7 @@ class Smileys implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the editsmileys sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editSmileys(): void
 	{
@@ -2324,6 +2300,7 @@ class Smileys implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the setorder sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editSmileyOrder(): void
 	{
@@ -2334,6 +2311,7 @@ class Smileys implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the install sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function installSmileySet(): void
 	{
@@ -2344,6 +2322,7 @@ class Smileys implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the editsets sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editMessageIcons(): void
 	{
@@ -2881,11 +2860,6 @@ class Smileys implements ActionInterface
 			CacheApi::put('posting_smileys_' . $smiley_set['raw_path'], null, 480);
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Smileys::exportStatic')) {
-	Smileys::exportStatic();
 }
 
 ?>

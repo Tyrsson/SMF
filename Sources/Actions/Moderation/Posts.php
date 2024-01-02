@@ -15,7 +15,7 @@ namespace SMF\Actions\Moderation;
 
 use SMF\Actions\ActionInterface;
 use SMF\Attachment;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Board;
 use SMF\Config;
@@ -40,23 +40,6 @@ use SMF\Utils;
 class Posts implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'PostModerationMain',
-			'approveAllData' => 'approveAllData',
-			'list_getUnapprovedAttachments' => 'list_getUnapprovedAttachments',
-			'list_getNumUnapprovedAttachments' => 'list_getNumUnapprovedAttachments',
-			'unapprovedPosts' => 'UnapprovedPosts',
-			'unapprovedAttachments' => 'UnapprovedAttachments',
-			'approveMessage' => 'ApproveMessage',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -278,9 +261,9 @@ class Posts implements ActionInterface
 			// If we have anything left we can actually do the approving (etc).
 			if (!empty($toAction)) {
 				if ($curAction == 'approve') {
-					approveMessages($toAction, $details, Utils::$context['current_view']);
+					self::approveMessages($toAction, $details, Utils::$context['current_view']);
 				} else {
-					removeMessages($toAction, $details, Utils::$context['current_view']);
+					self::removeMessages($toAction, $details, Utils::$context['current_view']);
 				}
 			}
 		}
@@ -891,6 +874,7 @@ class Posts implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the replies sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function unapprovedPosts(): void
 	{
@@ -901,6 +885,7 @@ class Posts implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the attachments sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function unapprovedAttachments(): void
 	{
@@ -911,6 +896,7 @@ class Posts implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the approve sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function approveMessage(): void
 	{
@@ -1004,11 +990,6 @@ class Posts implements ActionInterface
 			}
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Posts::exportStatic')) {
-	Posts::exportStatic();
 }
 
 ?>

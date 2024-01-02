@@ -13,6 +13,7 @@
 
 namespace SMF;
 
+use ArrayAccess;
 use SMF\Actions\Admin\ACP;
 use SMF\Actions\Admin\Bans;
 use SMF\Actions\Login2;
@@ -64,7 +65,7 @@ use SMF\PersonalMessage\PM;
  * deprecated global variables. A future version of SMF will remove backward
  * compatibility support for these deprecated globals.
  */
-class User implements \ArrayAccess
+class User implements ArrayAccess
 {
 	use BackwardCompatibility;
 	use ArrayAccessHelper;
@@ -75,36 +76,6 @@ class User implements \ArrayAccess
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'buildQueryBoard' => 'build_query_board',
-			'setAvatarData' => 'set_avatar_data',
-			'updateMemberData' => 'updateMemberData',
-			'getTimezone' => 'getUserTimezone',
-			'delete' => 'deleteMembers',
-			'validatePassword' => 'validatePassword',
-			'validateUsername' => 'validateUsername',
-			'isReservedName' => 'isReservedName',
-			'isBannedEmail' => 'isBannedEmail',
-			'find' => 'findMembers',
-			'membersAllowedTo' => 'membersAllowedTo',
-			'groupsAllowedTo' => 'groupsAllowedTo',
-			'getGroupsWithPermissions' => 'getGroupsWithPermissions',
-			'generateValidationCode' => 'generateValidationCode',
-			'logSpider' => 'logSpider',
-			'loadMemberData' => 'loadMemberData',
-			'loadUserSettings' => 'loadUserSettings',
-			'loadMyPermissions' => 'loadPermissions',
-			'loadMemberContext' => 'loadMemberContext',
-			'is_not_guest' => 'is_not_guest',
-			'is_not_banned' => 'is_not_banned',
-			'banPermissions' => 'banPermissions',
-			'log_ban' => 'log_ban',
-			'sessionValidate' => 'validateSession',
-			'sessionCheck' => 'checkSession',
-			'hasPermission' => 'allowedTo',
-			'mustHavePermission' => 'isAllowedTo',
-			'hasPermissionInBoards' => 'boardsAllowedTo',
-		],
 		'prop_names' => [
 			'profiles' => 'user_profile',
 			'settings' => 'user_settings',
@@ -5307,6 +5278,10 @@ class User implements \ArrayAccess
 	 */
 	protected static function loadUserData(array $users, int $type = self::LOAD_BY_ID, string $dataset = 'normal'): array
 	{
+		if (!isset(self::$dataset_levels[$dataset])) {
+			$dataset = 'normal';
+		}
+
 		// Keep track of which IDs we load during this run.
 		$loaded_ids = [];
 
@@ -5370,7 +5345,7 @@ class User implements \ArrayAccess
 				}
 
 				// Does the cached data have everything we need?
-				if (self::$dataset_levels[$data['dataset']] >= self::$dataset_levels[$dataset]) {
+				if (is_array($data) && self::$dataset_levels[$data['dataset'] ?? 'minimal'] >= self::$dataset_levels[$dataset]) {
 					self::$profiles[$id] = $data;
 					$loaded_ids[] = $id;
 					unset($users[$key]);
@@ -5610,8 +5585,8 @@ class User implements \ArrayAccess
 	}
 }
 
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\User::exportStatic')) {
+// Export properties to global namespace for backward compatibility.
+if (is_callable([User::class, 'exportStatic'])) {
 	User::exportStatic();
 }
 

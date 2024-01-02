@@ -20,27 +20,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Security
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'hashPassword' => 'hash_password',
-			'hashVerifyPassword' => 'hash_verify_password',
-			'hashBenchmark' => 'hash_benchmark',
-			'checkConfirm' => 'checkConfirm',
-			'checkSubmitOnce' => 'checkSubmitOnce',
-			'spamProtection' => 'spamProtection',
-			'secureDirectory' => 'secureDirectory',
-			'frameOptionsHeader' => 'frameOptionsHeader',
-			'corsPolicyHeader' => 'corsPolicyHeader',
-			'kickGuest' => 'KickGuest',
-		],
-	];
 
 	/***********************
 	 * Public static methods
@@ -551,14 +530,5 @@ class Security
 		User::$me->kickIfGuest(null, false);
 	}
 }
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Security::exportStatic')) {
-	Security::exportStatic();
-}
-
-// Some functions have moved.
-class_exists('SMF\\SecurityToken');
-class_exists('SMF\\User');
 
 ?>

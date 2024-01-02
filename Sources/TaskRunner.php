@@ -38,18 +38,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class TaskRunner
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'calculateNextTrigger' => 'CalculateNextTrigger',
-		],
-	];
 
 	/***********
 	 * Constants
@@ -852,11 +840,6 @@ class TaskRunner
 
 		return $next_time;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\TaskRunner::exportStatic')) {
-	TaskRunner::exportStatic();
 }
 
 ?>

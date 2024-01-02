@@ -15,7 +15,6 @@
 
 namespace SMF\Actions;
 
-use SMF\BackwardCompatibility;
 use SMF\Board;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -40,20 +39,6 @@ use SMF\Utils;
 class TopicMerge implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'MergeTopics',
-			'mergeIndex' => 'MergeIndex',
-			'mergeExecute' => 'MergeExecute',
-			'mergeDone' => 'MergeDone',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -1075,6 +1060,7 @@ class TopicMerge implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the index sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function mergeIndex(): void
 	{
@@ -1343,11 +1329,6 @@ class TopicMerge implements ActionInterface
 
 		Db::$db->free_result($request);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\TopicMerge::exportStatic')) {
-	TopicMerge::exportStatic();
 }
 
 ?>

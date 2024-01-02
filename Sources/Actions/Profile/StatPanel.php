@@ -14,7 +14,6 @@
 namespace SMF\Actions\Profile;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -31,17 +30,6 @@ use SMF\Utils;
 class StatPanel implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'statPanel' => 'statPanel',
-		],
-	];
 
 	/****************************
 	 * Internal static properties
@@ -306,6 +294,7 @@ class StatPanel implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper.
+	 * @deprecated since 3.0
 	 */
 	public static function statPanel(int $memID): void
 	{
@@ -332,11 +321,6 @@ class StatPanel implements ActionInterface
 			Profile::load();
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\StatPanel::exportStatic')) {
-	StatPanel::exportStatic();
 }
 
 ?>

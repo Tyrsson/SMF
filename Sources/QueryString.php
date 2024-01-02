@@ -20,21 +20,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class QueryString
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'cleanRequest' => 'cleanRequest',
-			'isFilteredRequest' => 'is_filtered_request',
-			'ob_sessrewrite' => 'ob_sessrewrite',
-			'matchIPtoCIDR' => 'matchIPtoCIDR',
-		],
-	];
 
 	/***********************
 	 * Public static methods
@@ -486,7 +471,7 @@ class QueryString
 	 * @param string $cidr_address CIDR address to verify.
 	 * @return bool Whether the IP matches the CIDR.
 	 */
-	public function matchIPtoCIDR(string $ip_address, string $cidr_address): bool
+	public static function matchIPtoCIDR(string $ip_address, string $cidr_address): bool
 	{
 		list($cidr_network, $cidr_subnetmask) = preg_split('/', $cidr_address);
 
@@ -524,11 +509,6 @@ class QueryString
 
 		return (ip2long($ip_address) & (~((1 << (32 - $cidr_subnetmask)) - 1))) == ip2long($cidr_network);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\QueryString::exportStatic')) {
-	QueryString::exportStatic();
 }
 
 ?>

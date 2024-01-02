@@ -28,24 +28,6 @@ use SMF\ServerSideIncludes as SSI;
  */
 class ErrorHandler
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'smf_error_handler',
-			'log' => 'log_error',
-			'fatal' => 'fatal_error',
-			'fatalLang' => 'fatal_lang_error',
-			'displayMaintenanceMessage' => 'display_maintenance_message',
-			'displayDbError' => 'display_db_error',
-			'displayLoadAvgError' => 'display_loadavg_error',
-		],
-	];
 
 	/****************
 	 * Public methods
@@ -706,11 +688,6 @@ class ErrorHandler
 
 		return false;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ErrorHandler::exportStatic')) {
-	ErrorHandler::exportStatic();
 }
 
 ?>

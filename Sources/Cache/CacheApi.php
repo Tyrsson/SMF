@@ -34,14 +34,6 @@ abstract class CacheApi
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'load' => 'loadCacheAccelerator',
-			'detect' => 'loadCacheAPIs',
-			'clean' => 'clean_cache',
-			'quickGet' => 'cache_quick_get',
-			'put' => 'cache_put_data',
-			'get' => 'cache_get_data',
-		],
 		'prop_names' => [
 			'loadedApi' => 'cacheAPI',
 			'hits' => 'cache_hits',
@@ -466,6 +458,7 @@ abstract class CacheApi
 	final public static function clean(string $type = ''): void
 	{
 		// If we can't get to the API, can't do this.
+		// todo: instanceof check
 		if (empty(self::$loadedApi)) {
 			return;
 		}
@@ -610,8 +603,8 @@ abstract class CacheApi
 	}
 }
 
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\CacheApi::exportStatic')) {
+// Export properties to global namespace for backward compatibility.
+if (is_callable([CacheApi::class, 'exportStatic'])) {
 	CacheApi::exportStatic();
 }
 

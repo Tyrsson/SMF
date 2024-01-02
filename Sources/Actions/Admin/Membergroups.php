@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -35,22 +35,6 @@ use SMF\Utils;
 class Membergroups implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ModifyMembergroups',
-			'AddMembergroup' => 'AddMembergroup',
-			'DeleteMembergroup' => 'DeleteMembergroup',
-			'EditMembergroup' => 'EditMembergroup',
-			'MembergroupIndex' => 'MembergroupIndex',
-			'ModifyMembergroupsettings' => 'ModifyMembergroupsettings',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -994,6 +978,7 @@ class Membergroups implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the add sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function AddMembergroup(): void
 	{
@@ -1004,6 +989,7 @@ class Membergroups implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the delete sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function DeleteMembergroup(): void
 	{
@@ -1014,6 +1000,7 @@ class Membergroups implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the edit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function EditMembergroup(): void
 	{
@@ -1024,6 +1011,7 @@ class Membergroups implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the index sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function MembergroupIndex(): void
 	{
@@ -1037,6 +1025,7 @@ class Membergroups implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function ModifyMembergroupsettings($return_config = false)
 	{
@@ -1077,11 +1066,6 @@ class Membergroups implements ActionInterface
 			$this->subaction = 'settings';
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Membergroups::exportStatic')) {
-	Membergroups::exportStatic();
 }
 
 ?>

@@ -15,7 +15,7 @@ namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
 use SMF\Actions\TopicRemove;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\Cache\CacheApi;
 use SMF\Category;
 use SMF\Config;
@@ -41,45 +41,6 @@ use SMF\Utils;
 class Maintenance implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageMaintenance',
-			'getIntegrationHooksData' => 'getIntegrationHooksData',
-			'reattributePosts' => 'reattributePosts',
-			'maintainRoutine' => 'MaintainRoutine',
-			'maintainDatabase' => 'MaintainDatabase',
-			'maintainMembers' => 'MaintainMembers',
-			'maintainTopics' => 'MaintainTopics',
-			'list_integration_hooks' => 'list_integration_hooks',
-			'versionDetail' => 'VersionDetail',
-			'maintainFindFixErrors' => 'MaintainFindFixErrors',
-			'adminBoardRecount' => 'AdminBoardRecount',
-			'rebuildSettingsFile' => 'RebuildSettingsFile',
-			'maintainEmptyUnimportantLogs' => 'MaintainEmptyUnimportantLogs',
-			'maintainCleanCache' => 'MaintainCleanCache',
-			'optimizeTables' => 'OptimizeTables',
-			'convertEntities' => 'ConvertEntities',
-			'convertMsgBody' => 'ConvertMsgBody',
-			'maintainReattributePosts' => 'MaintainReattributePosts',
-			'maintainPurgeInactiveMembers' => 'MaintainPurgeInactiveMembers',
-			'maintainRecountPosts' => 'MaintainRecountPosts',
-			'maintainMassMoveTopics' => 'MaintainMassMoveTopics',
-			'maintainRemoveOldPosts' => 'MaintainRemoveOldPosts',
-			'maintainRemoveOldDrafts' => 'MaintainRemoveOldDrafts',
-		],
-	];
-
-	/*****************
-	 * Class constants
-	 *****************/
-
-	// code...
 
 	/*******************
 	 * Public properties
@@ -158,12 +119,6 @@ class Maintenance implements ActionInterface
 			'activities' => [],
 		],
 	];
-
-	/*********************
-	 * Internal properties
-	 *********************/
-
-	// code...
 
 	/****************************
 	 * Internal static properties
@@ -2156,6 +2111,9 @@ class Maintenance implements ActionInterface
 	 * @param int $start The item to start with (for pagination purposes)
 	 * @param int $per_page How many items to display on each page
 	 * @param string $sort A string indicating how to sort things
+	 * @param object|array $filtered_hooks
+	 * @param string $normalized_boarddir
+	 * @param string $normalized_sourcedir
 	 * @return array An array of information about the integration hooks
 	 */
 	public static function getIntegrationHooksData($start, $per_page, $sort, $filtered_hooks, $normalized_boarddir, $normalized_sourcedir): array
@@ -2220,8 +2178,8 @@ class Maintenance implements ActionInterface
 	 * If $post_count is set, the member's post count is increased.
 	 *
 	 * @param int $memID The ID of the original poster.
-	 * @param bool|string $email If set, should be the email of the poster.
-	 * @param bool|string $membername If set, the membername of the poster.
+	 * @param ?string $email If set, should be the email of the poster.
+	 * @param ?string $membername If set, the membername of the poster.
 	 * @param bool $post_count Whether to adjust post counts.
 	 * @return array The numbers of messages, topics, and reports updated.
 	 */
@@ -2355,6 +2313,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the routine sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainRoutine(): void
 	{
@@ -2365,6 +2324,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the database sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainDatabase(): void
 	{
@@ -2375,6 +2335,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the members sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainMembers(): void
 	{
@@ -2385,6 +2346,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the topics sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainTopics(): void
 	{
@@ -2395,6 +2357,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the hooks sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function list_integration_hooks(): void
 	{
@@ -2405,6 +2368,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the version activity.
+	 * @deprecated since 3.0
 	 */
 	public static function versionDetail(): void
 	{
@@ -2416,6 +2380,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the repair activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainFindFixErrors(): void
 	{
@@ -2427,6 +2392,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the recount activity.
+	 * @deprecated since 3.0
 	 */
 	public static function adminBoardRecount(): void
 	{
@@ -2438,6 +2404,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the rebuild_settings activity.
+	 * @deprecated since 3.0
 	 */
 	public static function rebuildSettingsFile(): void
 	{
@@ -2449,6 +2416,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the logs activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainEmptyUnimportantLogs(): void
 	{
@@ -2460,6 +2428,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the cleancache activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainCleanCache(): void
 	{
@@ -2471,6 +2440,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the optimize activity.
+	 * @deprecated since 3.0
 	 */
 	public static function optimizeTables(): void
 	{
@@ -2482,6 +2452,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the convertentities activity.
+	 * @deprecated since 3.0
 	 */
 	public static function convertEntities(): void
 	{
@@ -2493,6 +2464,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the convertmsgbody activity.
+	 * @deprecated since 3.0
 	 */
 	public static function convertMsgBody(): void
 	{
@@ -2504,6 +2476,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the reattribute activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainReattributePosts(): void
 	{
@@ -2515,6 +2488,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the purgeinactive activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainPurgeInactiveMembers(): void
 	{
@@ -2526,6 +2500,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the recountposts activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainRecountPosts(): void
 	{
@@ -2537,6 +2512,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the massmove activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainMassMoveTopics(): void
 	{
@@ -2548,6 +2524,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the pruneold activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainRemoveOldPosts(): void
 	{
@@ -2559,6 +2536,7 @@ class Maintenance implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the olddrafts activity.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainRemoveOldDrafts(): void
 	{
@@ -2750,11 +2728,6 @@ class Maintenance implements ActionInterface
 
 		return $functions;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Maintenance::exportStatic')) {
-	Maintenance::exportStatic();
 }
 
 ?>

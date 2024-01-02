@@ -18,7 +18,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -40,31 +40,6 @@ use SMF\Utils;
 class Bans implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'Ban',
-			'updateBanMembers' => 'updateBanMembers',
-			'list_getBans' => 'list_getBans',
-			'list_getNumBans' => 'list_getNumBans',
-			'list_getBanItems' => 'list_getBanItems',
-			'list_getNumBanItems' => 'list_getNumBanItems',
-			'list_getBanTriggers' => 'list_getBanTriggers',
-			'list_getNumBanTriggers' => 'list_getNumBanTriggers',
-			'list_getBanLogEntries' => 'list_getBanLogEntries',
-			'list_getNumBanLogEntries' => 'list_getNumBanLogEntries',
-			'banList' => 'BanList',
-			'banEdit' => 'BanEdit',
-			'banBrowseTriggers' => 'BanBrowseTriggers',
-			'banEditTrigger' => 'BanEditTrigger',
-			'banLog' => 'BanLog',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -979,7 +954,7 @@ class Bans implements ActionInterface
 					],
 					'data' => [
 						'function' => function ($rowData) {
-							return timeformat($rowData['log_time']);
+							return Time::timeformat($rowData['log_time']);
 						},
 					],
 					'sort' => [
@@ -1389,7 +1364,7 @@ class Bans implements ActionInterface
 	 * @param string $trigger_type The trigger type - can be 'ip', 'hostname' or 'email'
 	 * @return array An array of ban trigger info for the list
 	 */
-	public static function list_getBanTriggers($start, $items_per_page, $sort, $trigger_type): array
+	public static function list_getBanTriggers(int $start, int $items_per_page, string $sort, string $trigger_type): array
 	{
 		$ban_triggers = [];
 
@@ -1435,7 +1410,7 @@ class Bans implements ActionInterface
 	 * @param string $trigger_type The trigger type. Can be 'ip', 'hostname' or 'email'
 	 * @return int The number of triggers of the specified type
 	 */
-	public static function list_getNumBanTriggers($trigger_type): int
+	public static function list_getNumBanTriggers(string $trigger_type): int
 	{
 		$where = [
 			'ip' => 'bi.ip_low is not null',
@@ -1519,6 +1494,7 @@ class Bans implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the list sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function banList(): void
 	{
@@ -1529,6 +1505,7 @@ class Bans implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the edit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function banEdit(): void
 	{
@@ -1539,6 +1516,7 @@ class Bans implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the browse sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function banBrowseTriggers(): void
 	{
@@ -1549,6 +1527,7 @@ class Bans implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the edittrigger sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function banEditTrigger(): void
 	{
@@ -1559,6 +1538,7 @@ class Bans implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the log sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function banLog(): void
 	{
@@ -2624,11 +2604,6 @@ class Bans implements ActionInterface
 			]);
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Bans::exportStatic')) {
-	Bans::exportStatic();
 }
 
 ?>

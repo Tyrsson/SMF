@@ -14,7 +14,6 @@
 namespace SMF\Actions\Profile;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Board;
 use SMF\Config;
@@ -39,23 +38,6 @@ use SMF\Utils;
 class ShowPosts implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'list_getUnwatched' => 'list_getUnwatched',
-			'list_getNumUnwatched' => 'list_getNumUnwatched',
-			'list_getAttachments' => 'list_getAttachments',
-			'list_getNumAttachments' => 'list_getNumAttachments',
-			'showPosts' => 'showPosts',
-			'showUnwatched' => 'showUnwatched',
-			'showAttachments' => 'showAttachments',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -618,6 +600,7 @@ class ShowPosts implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper.
+	 * @deprecated since 3.0
 	 */
 	public static function showPosts(int $memID): void
 	{
@@ -633,6 +616,7 @@ class ShowPosts implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the unwatchedtopics sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function showUnwatched(int $memID): void
 	{
@@ -649,6 +633,7 @@ class ShowPosts implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the attach sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function showAttachments(int $memID): void
 	{
@@ -1062,11 +1047,6 @@ class ShowPosts implements ActionInterface
 			];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ShowPosts::exportStatic')) {
-	ShowPosts::exportStatic();
 }
 
 ?>

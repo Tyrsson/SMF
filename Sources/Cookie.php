@@ -18,22 +18,6 @@ namespace SMF;
  */
 class Cookie
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'setLoginCookie' => 'setLoginCookie',
-			'setTFACookie' => 'setTFACookie',
-			'urlParts' => 'url_parts',
-			'encrypt' => 'hash_salt',
-			'setcookie' => 'smf_setcookie',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -179,7 +163,7 @@ class Cookie
 
 		// Special case for the login and TFA cookies.
 		if (in_array($this->name, [Config::$cookiename, Config::$cookiename . '_tfa'])) {
-			$this->member = $this->custom_data[0] ?? User::$me->id;
+			$this->member = (int) ($this->custom_data[0] ?? User::$me->id);
 			$this->hash = $this->custom_data[1] ?? self::encrypt(User::$me->passwd, User::$me->password_salt);
 
 			$expires = $expires ?? $this->custom_data[2] ?? null;
@@ -551,11 +535,6 @@ class Cookie
 
 		$cookie->set();
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Cookie::exportStatic')) {
-	Cookie::exportStatic();
 }
 
 ?>

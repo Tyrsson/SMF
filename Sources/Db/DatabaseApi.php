@@ -26,17 +26,12 @@ use SMF\Utils;
 abstract class DatabaseApi
 {
 	use BackwardCompatibility;
-
 	/**
 	 * @var array
 	 *
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'load' => 'loadDatabase',
-			'extend' => 'db_extend',
-		],
 		'prop_names' => [
 			'count' => 'db_count',
 			'cache' => 'db_cache',
@@ -542,8 +537,8 @@ abstract class DatabaseApi
 	}
 }
 
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\DatabaseApi::exportStatic')) {
+// Export properties to global namespace for backward compatibility.
+if (is_callable([DatabaseApi::class, 'exportStatic'])) {
 	DatabaseApi::exportStatic();
 }
 

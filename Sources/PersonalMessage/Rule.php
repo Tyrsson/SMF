@@ -14,7 +14,6 @@
 namespace SMF\PersonalMessage;
 
 use SMF\ArrayAccessHelper;
-use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -30,22 +29,7 @@ use SMF\Utils;
  */
 class Rule implements \ArrayAccess
 {
-	use BackwardCompatibility;
 	use ArrayAccessHelper;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'load' => 'loadRules',
-			'apply' => 'applyRules',
-			'delete' => 'delete',
-			'manage' => 'manage',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -630,7 +614,7 @@ class Rule implements \ArrayAccess
 						!ctype_digit((string) $ind)
 						|| !isset($_POST['labdef'][$ind])
 						|| $_POST['labdef'][$ind] == ''
-						|| !isset(self::$labels[$_POST['labdef'][$ind]])
+						|| !isset(Label::$loaded[$_POST['labdef'][$ind]])
 					)
 				) {
 					continue;
@@ -665,11 +649,6 @@ class Rule implements \ArrayAccess
 			Utils::redirectexit('action=pm;sa=manrules');
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Rule::exportStatic')) {
-	Rule::exportStatic();
 }
 
 ?>

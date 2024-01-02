@@ -14,7 +14,6 @@
 namespace SMF\Actions\Profile;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\ErrorHandler;
 use SMF\ItemList;
@@ -29,17 +28,6 @@ use SMF\Utils;
 class ViewWarning implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'viewWarning' => 'viewWarning',
-		],
-	];
 
 	/****************************
 	 * Internal static properties
@@ -182,6 +170,7 @@ class ViewWarning implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper.
+	 * @deprecated since 3.0
 	 */
 	public static function viewWarning(int $memID): void
 	{
@@ -215,11 +204,6 @@ class ViewWarning implements ActionInterface
 
 		Config::$modSettings['warning_mute'] = !empty(Config::$modSettings['warning_mute']) ? Config::$modSettings['warning_mute'] : 110;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ViewWarning::exportStatic')) {
-	ViewWarning::exportStatic();
 }
 
 ?>

@@ -34,42 +34,6 @@ use SMF\WebFetch\WebFetchApi;
  */
 class Theme
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		// Public static methods not listed here will keep the same name when
-		// exported to global namespace.
-		'func_names' => [
-			'load' => 'loadTheme',
-			'loadEssential' => 'loadEssentialThemeData',
-			'loadTemplate' => 'loadTemplate',
-			'loadSubTemplate' => 'loadSubTemplate',
-			'loadCSSFile' => 'loadCSSFile',
-			'addInlineCss' => 'addInlineCss',
-			'loadJavaScriptFile' => 'loadJavaScriptFile',
-			'addJavaScriptVar' => 'addJavaScriptVar',
-			'addInlineJavaScript' => 'addInlineJavaScript',
-			'setupContext' => 'setupThemeContext',
-			'setupMenuContext' => 'setupMenuContext',
-			'template_header' => 'template_header',
-			'copyright' => 'theme_copyright',
-			'template_footer' => 'template_footer',
-			'template_javascript' => 'template_javascript',
-			'template_css' => 'template_css',
-			'custMinify' => 'custMinify',
-			'deleteAllMinified' => 'deleteAllMinified',
-			'setJavaScript' => 'SetJavaScript',
-			'wrapAction' => 'WrapAction',
-			'dispatch' => 'dispatch',
-			'pickTheme' => 'PickTheme',
-			'createButton' => 'create_button',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -3118,11 +3082,6 @@ class Theme
 			die;
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Theme::exportStatic')) {
-	Theme::exportStatic();
 }
 
 ?>

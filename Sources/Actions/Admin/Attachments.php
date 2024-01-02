@@ -19,7 +19,7 @@ namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
 use SMF\Attachment;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\IntegrationHook;
@@ -32,39 +32,14 @@ use SMF\Time;
 use SMF\User;
 use SMF\Utils;
 
+use const DIRECTORY_SEPARATOR;
+
 /**
  * Maintains and manages attachments and avatars.
  */
 class Attachments implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageAttachments',
-			'list_getFiles' => 'list_getFiles',
-			'list_getNumFiles' => 'list_getNumFiles',
-			'list_getAttachDirs' => 'list_getAttachDirs',
-			'list_getBaseDirs' => 'list_getBaseDirs',
-			'attachDirStatus' => 'attachDirStatus',
-			'manageAttachmentSettings' => 'ManageAttachmentSettings',
-			'manageAvatarSettings' => 'ManageAvatarSettings',
-			'browseFiles' => 'BrowseFiles',
-			'maintainFiles' => 'MaintainFiles',
-			'removeAttachment' => 'RemoveAttachment',
-			'removeAttachmentByAge' => 'RemoveAttachmentByAge',
-			'removeAttachmentBySize' => 'RemoveAttachmentBySize',
-			'removeAllAttachments' => 'RemoveAllAttachments',
-			'repairAttachments' => 'RepairAttachments',
-			'manageAttachmentPaths' => 'ManageAttachmentPaths',
-			'transferAttachments' => 'TransferAttachments',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -2469,7 +2444,7 @@ class Attachments implements ActionInterface
 			}
 
 			// Check if the directory is doing okay.
-			list($status, $error, $files) = attachDirStatus($dir, $expected_files[$id]);
+			list($status, $error, $files) = self::attachDirStatus($dir, $expected_files[$id]);
 
 			// If it is one, let's show that it's a base directory.
 			$sub_dirs = 0;
@@ -2577,7 +2552,7 @@ class Attachments implements ActionInterface
 	 * @param int $expected_files How many files should be in that directory
 	 * @return array An array containing the status of the directory, whether the number of files was what we expected and how many were in the directory
 	 */
-	public static function attachDirStatus($dir, $expected_files): array
+	public static function attachDirStatus(string $dir, int $expected_files): array
 	{
 		if (!is_dir($dir)) {
 			return ['does_not_exist', true, ''];
@@ -2621,7 +2596,7 @@ class Attachments implements ActionInterface
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
 	 */
-	public static function manageAttachmentSettings($return_config = false)
+	public static function manageAttachmentSettings(bool $return_config = false)
 	{
 		if (!empty($return_config)) {
 			return self::attachConfigVars();
@@ -2651,6 +2626,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the browse sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function browseFiles(): void
 	{
@@ -2661,6 +2637,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the maintenance sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function maintainFiles(): void
 	{
@@ -2671,6 +2648,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the remove sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function removeAttachment(): void
 	{
@@ -2681,6 +2659,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the byage sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function removeAttachmentByAge(): void
 	{
@@ -2691,6 +2670,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the bysize sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function removeAttachmentBySize(): void
 	{
@@ -2701,6 +2681,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the removeall sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function removeAllAttachments(): void
 	{
@@ -2711,6 +2692,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the repair sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function repairAttachments(): void
 	{
@@ -2721,6 +2703,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the attachpaths sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function manageAttachmentPaths(): void
 	{
@@ -2731,6 +2714,7 @@ class Attachments implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the transfer sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function transferAttachments(): void
 	{
@@ -2822,14 +2806,6 @@ class Attachments implements ActionInterface
 
 		Utils::obExit();
 	}
-}
-
-// Some functions have been migrated from here to the Attachment class.
-class_exists('SMF\\Attachment');
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Attachments::exportStatic')) {
-	Attachments::exportStatic();
 }
 
 ?>

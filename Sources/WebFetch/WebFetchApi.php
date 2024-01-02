@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace SMF\WebFetch;
 
-use SMF\BackwardCompatibility;
 use SMF\Lang;
 use SMF\Url;
 
@@ -24,18 +23,6 @@ use SMF\Url;
  */
 abstract class WebFetchApi implements WebFetchApiInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'fetch' => 'fetch_web_data',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -180,11 +167,6 @@ abstract class WebFetchApi implements WebFetchApiInterface
 
 		return trim($post_data);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\WebFetchApi::exportStatic')) {
-	WebFetchApi::exportStatic();
 }
 
 ?>

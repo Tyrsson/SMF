@@ -15,7 +15,7 @@ namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
 use SMF\Actions\Notify;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
@@ -41,27 +41,6 @@ use SMF\Utils;
 class News extends ACP implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageNews',
-			'list_getNews' => 'list_getNews',
-			'list_getNewsTextarea' => 'list_getNewsTextarea',
-			'list_getNewsPreview' => 'list_getNewsPreview',
-			'list_getNewsCheckbox' => 'list_getNewsCheckbox',
-			'prepareMailingForPreview' => 'prepareMailingForPreview',
-			'editNews' => 'EditNews',
-			'selectMailingMembers' => 'SelectMailingMembers',
-			'composeMailing' => 'ComposeMailing',
-			'sendMailing' => 'SendMailing',
-			'modifyNewsSettings' => 'ModifyNewsSettings',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -1173,10 +1152,10 @@ class News extends ACP implements ActionInterface
 	/**
 	 * Callback to prepare HTML for the input fields in the news editing form.
 	 *
-	 * @param $news Info about a news item.
+	 * @param array $news Info about a news item.
 	 * @return string HTML string to show in the form.
 	 */
-	public static function list_getNewsTextarea($news): string
+	public static function list_getNewsTextarea(array $news): string
 	{
 		return !is_numeric($news['id']) ? $news['unparsed'] : '
 			<textarea id="data_' . $news['id'] . '" rows="3" cols="50" name="news[]" class="padding block">' . $news['unparsed'] . '</textarea>
@@ -1189,7 +1168,7 @@ class News extends ACP implements ActionInterface
 	 * @param $news Info about a news item.
 	 * @return string HTML string to show in the form.
 	 */
-	public static function list_getNewsPreview($news): string
+	public static function list_getNewsPreview(array $news): string
 	{
 		return '<div id="box_preview_' . $news['id'] . '" style="overflow: auto; width: 100%; height: 10ex;">' . $news['parsed'] . '</div>';
 	}
@@ -1197,10 +1176,10 @@ class News extends ACP implements ActionInterface
 	/**
 	 * Callback to prepare HTML for the checkboxes in the news editing form.
 	 *
-	 * @param $news Info about a news item.
+	 * @param array $news Info about a news item.
 	 * @return string HTML string to show in the form.
 	 */
-	public static function list_getNewsCheckbox($news): string
+	public static function list_getNewsCheckbox(array $news): string
 	{
 		return !is_numeric($news['id']) ? '' : '<input type="checkbox" name="remove[]" value="' . $news['id'] . '">';
 	}
@@ -1264,6 +1243,7 @@ class News extends ACP implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the edit sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editNews(): void
 	{
@@ -1274,6 +1254,7 @@ class News extends ACP implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the mailingmembers sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function selectMailingMembers(): void
 	{
@@ -1284,6 +1265,7 @@ class News extends ACP implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the mailingcompose sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function composeMailing(): void
 	{
@@ -1294,6 +1276,7 @@ class News extends ACP implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the mailingsend sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function sendMailing(): void
 	{
@@ -1307,6 +1290,7 @@ class News extends ACP implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyNewsSettings($return_config = false)
 	{
@@ -1413,11 +1397,6 @@ class News extends ACP implements ActionInterface
 			},
 		);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\News::exportStatic')) {
-	News::exportStatic();
 }
 
 ?>

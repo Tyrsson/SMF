@@ -51,22 +51,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class BBCodeParser
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'getSigTags' => 'get_signature_allowed_bbc_tags',
-			'highlightPhpCode' => 'highlight_php_code',
-			'sanitizeMSCutPaste' => 'sanitizeMSCutPaste',
-			'backcompatParseBbc' => 'parse_bbc',
-			'backcompatParseSmileys' => 'parseSmileys',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -2960,10 +2944,6 @@ class BBCodeParser
 					$data = $tmp_data;
 				}
 			}
-
-			if (isset($_REQUEST['preview'])) {
-				file_put_contents('/tmp/derp.txt', 'data = ' . $data . "\n", FILE_APPEND);
-			}
 		}
 
 		return $data;
@@ -4827,11 +4807,6 @@ class BBCodeParser
 			self::$integrate_bbc_codes_done = true;
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\BBCodeParser::exportStatic')) {
-	BBCodeParser::exportStatic();
 }
 
 ?>

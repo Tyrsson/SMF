@@ -26,18 +26,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Session implements \SessionHandlerInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'load' => 'loadSession',
-		],
-	];
 
 	/****************
 	 * Public methods
@@ -317,11 +305,6 @@ class Session implements \SessionHandlerInterface
 	{
 		return (new self())->gc($max_lifetime);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Session::exportStatic')) {
-	Session::exportStatic();
 }
 
 ?>

@@ -15,7 +15,7 @@ namespace SMF\Actions\Moderation;
 
 use SMF\Actions\ActionInterface;
 use SMF\Alert;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\BBCodeParser;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
@@ -39,24 +39,6 @@ use SMF\Utils;
 class ReportedContent implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ReportedContent',
-			'recountOpenReports' => 'recountOpenReports',
-			'showReports' => 'ShowReports',
-			'showClosedReports' => 'ShowClosedReports',
-			'reportDetails' => 'ReportDetails',
-			'handleReport' => 'HandleReport',
-			'handleComment' => 'HandleComment',
-			'editComment' => 'EditComment',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -661,6 +643,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the show sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function showReports(): void
 	{
@@ -671,6 +654,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the closed sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function showClosedReports(): void
 	{
@@ -681,6 +665,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the details sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function reportDetails(): void
 	{
@@ -691,6 +676,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the handle sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function handleReport(): void
 	{
@@ -701,6 +687,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the handlecomment sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function handleComment(): void
 	{
@@ -711,6 +698,7 @@ class ReportedContent implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the editcomment sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editComment(): void
 	{
@@ -1475,11 +1463,6 @@ class ReportedContent implements ActionInterface
 			];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\ReportedContent::exportStatic')) {
-	ReportedContent::exportStatic();
 }
 
 ?>

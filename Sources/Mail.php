@@ -20,26 +20,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class Mail
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'send' => 'sendmail',
-			'addToQueue' => 'AddMailQueue',
-			'reduceQueue' => 'reduceQueue',
-			'mimespecialchars' => 'mimespecialchars',
-			'sendSmtp' => 'smtp_mail',
-			'serverParse' => 'serverParse',
-			'sendNotifications' => 'sendNotifications',
-			'adminNotify' => 'adminNotify',
-			'loadEmailTemplate' => 'loadEmailTemplate',
-		],
-	];
 
 	/***********************
 	 * Public static methods
@@ -1216,11 +1196,6 @@ class Mail
 
 		return $use_ref ? $ref : $matches[0];
 	}
-}
-
-// Export public static functions to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Mail::exportStatic')) {
-	Mail::exportStatic();
 }
 
 ?>

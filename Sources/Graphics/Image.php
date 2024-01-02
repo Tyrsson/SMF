@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace SMF\Graphics;
 
-use SMF\BackwardCompatibility;
 use SMF\Cache\CacheApi;
 use SMF\Config;
 use SMF\ErrorHandler;
@@ -34,29 +33,6 @@ if (!defined('IMAGETYPE_AVIF')) {
  */
 class Image
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'getImageTypes' => 'getImageTypes',
-			'getSupportedFormats' => 'getSupportedFormats',
-			'checkMemory' => 'imageMemoryCheck',
-			'getSizeExternal' => 'url_image_size',
-			'gifOutputAsPng' => 'gif_outputAsPng',
-			'getSvgSize' => 'getSvgSize',
-			'makeThumbnail' => 'createThumbnail',
-			'reencodeImage' => 'reencodeImage',
-			'checkImageContents' => 'checkImageContents',
-			'checkSvgContents' => 'checkSvgContents',
-			'resizeImageFile' => 'resizeImageFile',
-			'resizeImage' => 'resizeImage',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -1309,11 +1285,6 @@ class Image
 
 		return 0;
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Image::exportStatic')) {
-	Image::exportStatic();
 }
 
 ?>

@@ -20,20 +20,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class IntegrationHook
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'call_integration_hook',
-			'add' => 'add_integration_function',
-			'remove' => 'remove_integration_function',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -271,7 +257,7 @@ class IntegrationHook
 	 * Does nothing if the function is not available.
 	 * Cleans up enabled/disabled variants before taking requested action.
 	 *
-	 * @see IntegrationHook:add
+	 * @see IntegrationHook::add
 	 *
 	 * @param string $name The complete hook name.
 	 * @param string $function The function name. Can be a call to a method via
@@ -331,11 +317,6 @@ class IntegrationHook
 
 		Config::$modSettings[$name] = implode(',', $functions);
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\IntegrationHook::exportStatic')) {
-	IntegrationHook::exportStatic();
 }
 
 ?>

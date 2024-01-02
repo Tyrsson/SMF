@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -36,29 +36,6 @@ use SMF\Utils;
 class Subscriptions implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManagePaidSubscriptions',
-			'getSubs' => 'loadSubscriptions',
-			'add' => 'addSubscription',
-			'remove' => 'removeSubscription',
-			'reapply' => 'reapplySubscriptions',
-			'loadPaymentGateways' => 'loadPaymentGateways',
-			'list_getSubscribedUserCount' => 'list_getSubscribedUserCount',
-			'list_getSubscribedUsers' => 'list_getSubscribedUsers',
-			'viewSubscriptions' => 'ViewSubscriptions',
-			'viewSubscribedUsers' => 'ViewSubscribedUsers',
-			'modifySubscription' => 'ModifySubscription',
-			'modifyUserSubscription' => 'ModifyUserSubscription',
-			'modifySubscriptionSettings' => 'ModifySubscriptionSettings',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -2224,6 +2201,7 @@ class Subscriptions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the view sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function viewSubscriptions(): void
 	{
@@ -2234,6 +2212,7 @@ class Subscriptions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the viewsub sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function viewSubscribedUsers(): void
 	{
@@ -2244,6 +2223,7 @@ class Subscriptions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the modify sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifySubscription(): void
 	{
@@ -2254,6 +2234,7 @@ class Subscriptions implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the modifyuser sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyUserSubscription(): void
 	{
@@ -2267,6 +2248,7 @@ class Subscriptions implements ActionInterface
 	 *
 	 * @param bool $return_config Whether to return the config_vars array.
 	 * @return void|array Returns nothing or returns the config_vars array.
+	 * @deprecated since 3.0
 	 */
 	public static function modifySubscriptionSettings($return_config = false)
 	{
@@ -2322,11 +2304,6 @@ class Subscriptions implements ActionInterface
 			$this->subaction = $_REQUEST['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Subscriptions::exportStatic')) {
-	Subscriptions::exportStatic();
 }
 
 ?>

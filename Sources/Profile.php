@@ -35,17 +35,6 @@ class Profile extends User implements \ArrayAccess
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'loadCustomFieldDefinitions' => 'loadCustomFieldDefinitions',
-			'validateSignature' => 'validateSignature',
-			'backcompat_profileLoadGroups' => 'profileLoadGroups',
-			'backcompat_loadProfileFields' => 'loadProfileFields',
-			'backcompat_loadCustomFields' => 'loadCustomFields',
-			'backcompat_loadThemeOptions' => 'loadThemeOptions',
-			'backcompat_setupProfileContext' => 'setupProfileContext',
-			'backcompat_makeCustomFieldChanges' => 'makeCustomFieldChanges',
-			'backcompat_makeThemeChanges' => 'makeThemeChanges',
-		],
 		'prop_names' => [
 			'profile_fields' => 'profile_fields',
 			'profile_vars' => 'profile_vars',
@@ -2083,10 +2072,72 @@ class Profile extends User implements \ArrayAccess
 	}
 
 	/**
+	 * Backward compatibility provider
+	 * @param string $calledFunction 2.1 function
+	 * @param null|int $id
+	 * @param null|bool $force_reload
+	 * @param null|string $area
+	 * @param null|bool $defaultSettings
+	 * @param null|array $fields
+	 * @param null|bool $sanitize
+	 * @param null|bool $return_errors
+	 * @param null|int $id_theme
+	 * @return array|bool|null
+	 */
+	public static function backCompatProvider(
+		string $calledFunction,
+		?int $id = null,
+		bool $force_reload = false,
+		string $area = 'summary',
+		bool $defaultSettings = false,
+		array $fields = [],
+		bool $sanitize = true,
+		bool $return_errors = false,
+		?int $id_theme = null,
+	): array|bool|null {
+
+		if (! isset(self::$loaded[$id])) {
+			self::load($id);
+		}
+		return match($calledFunction) {
+			'profileLoadGroups'	  => (function($id) {
+										self::$loaded[$id]->loadAssignableGroups();
+										return true;
+									})($id),
+			'loadProfileFields'	  => (function($id, $force_reload) {
+										self::$loaded[$id]->loadStandardFields($force_reload);
+									})($id, $force_reload),
+			'loadCustomFields'	  => (function($id, $area) {
+										self::$loaded[$id]->loadCustomFields($area);
+									})($id, $area),
+			'loadThemeOptions'	  => (function($id, $defaultSettings) {
+										self::$loaded[$id]->loadThemeOptions($defaultSettings);
+									})($id, $defaultSettings),
+			'setupProfileContext' => (function($id, $fields) {
+										self::$member->setupContext($fields);
+									})($id, $fields),
+			'makeCustomFieldChanges' => (function($id, $area, $sanitize, $return_errors): ?array {
+											$_REQUEST['sa'] = $area;
+											self::$member->post_sanitized = !$sanitize;
+											self::$member->save();
+
+											if (!empty($return_errors)) {
+												return self::$member->cf_save_errors;
+											}
+										})($id, $area, $sanitize, $return_errors),
+			'makeThemeChanges'       => (function($id, $id_theme) {
+											self::$member->new_data['id_theme'] = $id_theme;
+											self::$member->save();
+										})($id, $id_theme),
+		};
+	}
+
+	/**
 	 * Backward compatibilty wrapper for the loadAssignableGroups() method.
 	 *
 	 * @param int $id ID number of the member whose profile is being viewed.
 	 * @return true Always returns true
+	 * @deprecated since 3.0
 	 */
 	public static function backcompat_profileLoadGroups(?int $id = null)
 	{
@@ -2104,6 +2155,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param bool $force_reload Whether to reload the data.
 	 * @param int $id The ID of the member.
+	 * @deprecated
 	 */
 	public static function backcompat_loadProfileFields($force_reload = false, ?int $id = null): void
 	{
@@ -2119,6 +2171,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param int $id The ID of the member.
 	 * @param string $area Which area to load fields for.
+	 * @deprecated
 	 */
 	public static function backcompat_loadCustomFields(int $id, string $area = 'summary'): void
 	{
@@ -2134,6 +2187,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param int $id The ID of the member.
 	 * @param bool $defaultSettings If true, we are loading default options.
+	 * @deprecated
 	 */
 	public static function backcompat_loadThemeOptions(int $id, bool $defaultSettings = false)
 	{
@@ -2150,6 +2204,7 @@ class Profile extends User implements \ArrayAccess
 	 * @param array $fields The profile fields to display. Each item should
 	 *    correspond to an item in the Profile::$member->standard_fields array.
 	 * @param int $id The ID of the member.
+	 * @deprecated
 	 */
 	public static function backcompat_setupProfileContext(array $fields, int $id): void
 	{
@@ -2169,6 +2224,7 @@ class Profile extends User implements \ArrayAccess
 	 * @param bool $sanitize = true Whether or not to sanitize the data.
 	 * @param bool $return_errors Whether or not to return any error information.
 	 * @return void|array Returns nothing or returns an array of error info if $return_errors is true.
+	 * @deprecated
 	 */
 	public static function backcompat_makeCustomFieldChanges($id, $area, $sanitize = true, $return_errors = false)
 	{
@@ -2190,6 +2246,7 @@ class Profile extends User implements \ArrayAccess
 	 *
 	 * @param int $id The ID of the user
 	 * @param int $id_theme The ID of the theme
+	 * @deprecated
 	 */
 	public static function backcompat_makeThemeChanges($id, $id_theme)
 	{
@@ -3117,14 +3174,9 @@ class Profile extends User implements \ArrayAccess
 	}
 }
 
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Profile::exportStatic')) {
+// Export properties to global namespace for backward compatibility.
+if (is_callable([Profile::class, 'exportStatic'])) {
 	Profile::exportStatic();
 }
-
-// Old mods might include this file to get access to functions that have been moved.
-class_exists('\\SMF\\Actions\\Profile\\Main');
-class_exists('\\SMF\\Actions\\Profile\\Popup');
-class_exists('\\SMF\\Actions\\Profile\\AlertsPopup');
 
 ?>

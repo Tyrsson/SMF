@@ -24,20 +24,6 @@ namespace SMF;
  */
 class SecurityToken extends \ArrayObject
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'create' => 'createToken',
-			'validate' => 'validateToken',
-			'clean' => 'cleanTokens',
-		],
-	];
 
 	/*****************
 	 * Class constants
@@ -249,11 +235,6 @@ class SecurityToken extends \ArrayObject
 	{
 		return hash_hmac('sha1', $val . (User::$sc ?? '') . ($_SERVER['HTTP_USER_AGENT'] ?? ''), Config::getAuthSecret());
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\SecurityToken::exportStatic')) {
-	SecurityToken::exportStatic();
 }
 
 ?>

@@ -13,7 +13,6 @@
 
 namespace SMF\Actions;
 
-use SMF\BackwardCompatibility;
 use SMF\Cache\CacheApi;
 use SMF\Config;
 use SMF\Lang;
@@ -28,18 +27,6 @@ use SMF\Utils;
  */
 class VerificationCode implements ActionInterface
 {
-	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'VerificationCode',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -849,11 +836,6 @@ class VerificationCode implements ActionInterface
 		// Nothing more to add.
 		die();
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\VerificationCode::exportStatic')) {
-	VerificationCode::exportStatic();
 }
 
 ?>

@@ -14,7 +14,7 @@
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
-use SMF\BackwardCompatibility;
+use SMF\Actions\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\IntegrationHook;
@@ -31,24 +31,6 @@ use SMF\Utils;
 class Mail implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageMail',
-			'list_getMailQueue' => 'list_getMailQueue',
-			'list_getMailQueueSize' => 'list_getMailQueueSize',
-			'timeSince' => 'timeSince',
-			'browseMailQueue' => 'BrowseMailQueue',
-			'clearMailQueue' => 'ClearMailQueue',
-			'modifyMailSettings' => 'ModifyMailSettings',
-			'testMailSend' => 'TestMailSend',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -565,6 +547,7 @@ class Mail implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the browse sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function browseMailQueue(): void
 	{
@@ -575,6 +558,7 @@ class Mail implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the clear sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function clearMailQueue(): void
 	{
@@ -585,6 +569,7 @@ class Mail implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the settings sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyMailSettings($return_config = false)
 	{
@@ -599,6 +584,7 @@ class Mail implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the test sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function testMailSend(): void
 	{
@@ -675,11 +661,6 @@ class Mail implements ActionInterface
 
 		Utils::obExit();
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Mail::exportStatic')) {
-	Mail::exportStatic();
 }
 
 ?>

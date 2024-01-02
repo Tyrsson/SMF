@@ -38,22 +38,6 @@ class Board implements \ArrayAccess
 	 * BackwardCompatibility settings for this class.
 	 */
 	private static $backcompat = [
-		'func_names' => [
-			'load' => 'loadBoard',
-			'markRead' => 'MarkRead',
-			'markBoardsRead' => 'markBoardsRead',
-			'getMsgMemberID' => 'getMsgMemberID',
-			'modify' => 'modifyBoard',
-			'create' => 'createBoard',
-			'delete' => 'deleteBoards',
-			'reorder' => 'reorderBoards',
-			'fixChildren' => 'fixChildren',
-			'sort' => 'sortBoards',
-			'getModerators' => 'getBoardModerators',
-			'getModeratorGroups' => 'getBoardModeratorGroups',
-			'isChildOf' => 'isChildOf',
-			'getParents' => 'getBoardParents',
-		],
 		'prop_names' => [
 			'board_id' => 'board',
 			'info' => 'board_info',
@@ -2736,8 +2720,8 @@ class Board implements \ArrayAccess
 	}
 }
 
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Board::exportStatic')) {
+// Export properties to global namespace for backward compatibility.
+if (is_callable([Board::class, 'exportStatic'])) {
 	Board::exportStatic();
 }
 

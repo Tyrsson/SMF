@@ -13,7 +13,7 @@
 
 namespace SMF\Actions;
 
-use SMF\BackwardCompatibility;
+use SMF\Actions\Profile\BackwardCompatibility;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
@@ -33,19 +33,6 @@ use SMF\Utils;
 class TrackIP implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'list_getIPMessages' => 'list_getIPMessages',
-			'list_getIPMessageCount' => 'list_getIPMessageCount',
-			'trackIP' => 'TrackIP',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -460,6 +447,7 @@ class TrackIP implements ActionInterface
 	 * Backward compatibility wrapper.
 	 *
 	 * @param int $memID The ID of a member whose IP we want to track.
+	 * @deprecated since 3.0
 	 */
 	public static function trackIP(int $memID = 0): void
 	{
@@ -491,11 +479,6 @@ class TrackIP implements ActionInterface
 			$this->memID = Profile::$member->id;
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\TrackIP::exportStatic')) {
-	TrackIP::exportStatic();
 }
 
 ?>

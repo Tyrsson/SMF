@@ -16,8 +16,8 @@
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
+use SMF\Actions\BackwardCompatibility;
 use SMF\Actions\Calendar as Cal;
-use SMF\BackwardCompatibility;
 use SMF\Board;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
@@ -37,19 +37,6 @@ use SMF\Utils;
 class Calendar implements ActionInterface
 {
 	use BackwardCompatibility;
-
-	/**
-	 * @var array
-	 *
-	 * BackwardCompatibility settings for this class.
-	 */
-	private static $backcompat = [
-		'func_names' => [
-			'call' => 'ManageCalendar',
-			'modifyHolidays' => 'ModifyHolidays',
-			'editHoliday' => 'EditHoliday',
-		],
-	];
 
 	/*******************
 	 * Public properties
@@ -480,6 +467,7 @@ class Calendar implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the holidays sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function modifyHolidays(): void
 	{
@@ -490,6 +478,7 @@ class Calendar implements ActionInterface
 
 	/**
 	 * Backward compatibility wrapper for the editholiday sub-action.
+	 * @deprecated since 3.0
 	 */
 	public static function editHoliday(): void
 	{
@@ -552,11 +541,6 @@ class Calendar implements ActionInterface
 			$this->subaction = $_REQUEST['sa'];
 		}
 	}
-}
-
-// Export public static functions and properties to global namespace for backward compatibility.
-if (is_callable(__NAMESPACE__ . '\\Calendar::exportStatic')) {
-	Calendar::exportStatic();
 }
 
 ?>

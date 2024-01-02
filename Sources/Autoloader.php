@@ -13,6 +13,16 @@
 
 namespace SMF;
 
+use function basename;
+use function class_exists;
+use function is_dir;
+use function is_file;
+use function spl_autoload_register;
+use function strlen;
+use function strncmp;
+use function strtr;
+use function substr;
+
 /*
  * An autoloader for certain classes.
  *
@@ -32,7 +42,7 @@ spl_autoload_register(function ($class) {
 	];
 
 	// Ensure $sourcedir is set to something valid.
-	if (class_exists('SMF\\Config', false) && isset(Config::$sourcedir)) {
+	if (class_exists(Config::class, false) && isset(Config::$sourcedir)) {
 		$sourcedir = Config::$sourcedir;
 	}
 
@@ -41,12 +51,12 @@ spl_autoload_register(function ($class) {
 	}
 
 	// Do any third-party scripts want in on the fun?
-	if (!defined('SMF_INSTALLING') && class_exists('SMF\\Config', false) && $hook_value !== (Config::$modSettings['integrate_autoload'] ?? '')) {
-		if (!class_exists('SMF\\IntegrationHook', false) && is_file($sourcedir . '/IntegrationHook.php')) {
+	if (!defined('SMF_INSTALLING') && class_exists(Config::class, false) && $hook_value !== (Config::$modSettings['integrate_autoload'] ?? '')) {
+		if (!class_exists(IntegrationHook::class, false) && is_file($sourcedir . '/IntegrationHook.php')) {
 			require_once $sourcedir . '/IntegrationHook.php';
 		}
 
-		if (class_exists('SMF\\IntegrationHook', false)) {
+		if (class_exists(IntegrationHook::class, false)) {
 			$hook_value = Config::$modSettings['integrate_autoload'];
 			IntegrationHook::call('integrate_autoload', [&$class_map]);
 		}

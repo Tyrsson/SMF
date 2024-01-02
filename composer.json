@@ -31,5 +31,8 @@
         "platform": {
             "php": "8.0.0"
         }
+    },
+    "require": {
+        "league/event": "^3.0"
     }
 }

@@ -13,7 +13,10 @@
 
 namespace SMF;
 
+use DirectoryIterator;
 use SMF\Db\DatabaseApi as Db;
+use SMF\Mods;
+use League\Event\EventDispatcher;
 
 /**
  * The root Forum class. Used when browsing the forum normally.
@@ -191,7 +194,7 @@ class Forum
 	/**
 	 * Constructor
 	 */
-	public function __construct()
+	public function __construct(private EventDispatcher $eventDispatcher)
 	{
 		// If Config::$maintenance is set specifically to 2, then we're upgrading or something.
 		if (!empty(Config::$maintenance) &&  2 === Config::$maintenance) {
@@ -331,6 +334,9 @@ class Forum
 			Theme::load();
 		}
 
+		// testing
+		$this->initMods();
+
 		// Check if the user should be disallowed access.
 		User::$me->kickIfBanned();
 
@@ -433,6 +439,16 @@ class Forum
 
 		// Do the right thing.
 		return Utils::getCallable(self::$actions[$_REQUEST['action']][1]);
+	}
+
+	public function initMods()
+	{
+		$mods = glob(Config::$sourcedir . '/Mods/*/Mod.php');
+		foreach ($mods as $modFile) {
+			$mod = include_once $modFile;
+			$mod = new Mods\Demo\Mod($this->eventDispatcher);
+		}
+
 	}
 }
 

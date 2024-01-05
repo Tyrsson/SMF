@@ -8,5 +8,6 @@ use League\Event\ListenerSubscriber;
 
 interface Modification extends ListenerSubscriber
 {
+	public const NS_BASE = 'SMF';
 	public const MOD_DIR = __DIR__;
 }

@@ -15,8 +15,11 @@ namespace SMF;
 
 use DirectoryIterator;
 use SMF\Db\DatabaseApi as Db;
-use SMF\Mods;
+use SMF\Events\IntegrationEvent;
+use SMF\Mods\Modification;
 use League\Event\EventDispatcher;
+use League\Event\ListenerRegistry;
+use League\Event\PrioritizedListenerRegistry;
 
 /**
  * The root Forum class. Used when browsing the forum normally.
@@ -187,6 +190,8 @@ class Forum
 		'signup2',
 	];
 
+	private ListenerRegistry $registry;
+
 	/****************
 	 * Public methods
 	 ****************/
@@ -196,6 +201,9 @@ class Forum
 	 */
 	public function __construct(private EventDispatcher $eventDispatcher)
 	{
+		// testing
+		$this->registry = new PrioritizedListenerRegistry();
+
 		// If Config::$maintenance is set specifically to 2, then we're upgrading or something.
 		if (!empty(Config::$maintenance) &&  2 === Config::$maintenance) {
 			ErrorHandler::displayMaintenanceMessage();
@@ -239,8 +247,12 @@ class Forum
 		// Start the session. (assuming it hasn't already been.)
 		Session::load();
 
+		// testing
+		$this->initMods();
+
 		// Why three different hooks? For historical reasons.
 		// Allow modifying $actions easily.
+		$this->eventDispatcher->dispatch(new IntegrationEvent('add.action', $this));
 		IntegrationHook::call('integrate_actions', [&self::$actions]);
 
 		// Allow modifying $unlogged_actions easily.
@@ -333,9 +345,6 @@ class Forum
 		else {
 			Theme::load();
 		}
-
-		// testing
-		$this->initMods();
 
 		// Check if the user should be disallowed access.
 		User::$me->kickIfBanned();
@@ -443,12 +452,10 @@ class Forum
 
 	public function initMods()
 	{
-		$mods = glob(Config::$sourcedir . '/Mods/*/Mod.php');
-		foreach ($mods as $modFile) {
-			$mod = include_once $modFile;
-			$mod = new Mods\Demo\Mod($this->eventDispatcher);
+		foreach (glob(Config::$sourcedir . '/Mods/*/Init.php') as $file)
+		{
+			(require_once $file)($this->eventDispatcher, $this->registry);
 		}
-
 	}
 }
 

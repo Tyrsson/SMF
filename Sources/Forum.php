@@ -190,8 +190,6 @@ class Forum
 		'signup2',
 	];
 
-	private ListenerRegistry $registry;
-
 	/****************
 	 * Public methods
 	 ****************/
@@ -199,10 +197,10 @@ class Forum
 	/**
 	 * Constructor
 	 */
-	public function __construct(private EventDispatcher $eventDispatcher)
-	{
-		// testing
-		$this->registry = new PrioritizedListenerRegistry();
+	public function __construct(
+		private EventDispatcher $eventDispatcher,
+		private ListenerRegistry $listenerRegistry
+	) {
 
 		// If Config::$maintenance is set specifically to 2, then we're upgrading or something.
 		if (!empty(Config::$maintenance) &&  2 === Config::$maintenance) {
@@ -454,7 +452,7 @@ class Forum
 	{
 		foreach (glob(Config::$sourcedir . '/Mods/*/Init.php') as $file)
 		{
-			(require_once $file)($this->eventDispatcher, $this->registry);
+			(require_once $file)($this->eventDispatcher, $this->listenerRegistry);
 		}
 	}
 }

@@ -142,7 +142,10 @@ require_once 'vendor/autoload.php';
  *********************************************************************/
 
 if (SMF === 1) {
-	(new SMF\Forum( (new SMF\Events\DispatcherFactory())() ))->execute();
+	(new SMF\Forum(
+		(new SMF\Events\DispatcherFactory())(),
+		(new SMF\Events\ListenerRegistryFactory())()
+		))->execute();
 }
 
 ?>

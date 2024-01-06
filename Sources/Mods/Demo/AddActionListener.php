@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SMF\Mods\Demo;
 
 use SMF\Events\IntegrationEvent;
+use SMF\Mods\Demo\DemoAction;
 
 final class AddActionListener
 {
@@ -16,8 +17,8 @@ final class AddActionListener
 
 	public function __invoke(IntegrationEvent $event)
 	{
-		$customAction = ['', static::class];
 		$target = $event->getTarget();
-		$target::$actions += ['demo' => $customAction];
+		$instance = new DemoAction();
+		$target::$actions += ['demo' => [$instance, '__invoke']];
 	}
 }

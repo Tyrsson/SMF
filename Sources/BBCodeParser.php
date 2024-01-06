@@ -15,6 +15,7 @@ namespace SMF;
 
 use SMF\Cache\CacheApi;
 use SMF\Db\DatabaseApi as Db;
+use SMF\Events\DispatcherFactory;
 
 /**
  * Parses Bulletin Board Code in a string and converts it to HTML.
@@ -4782,6 +4783,7 @@ class BBCodeParser
 	{
 		// Only do this once.
 		if (self::$integrate_bbc_codes_done !== true) {
+			$this->
 			IntegrationHook::call('integrate_bbc_codes', [&self::$codes, &self::$no_autolink_tags]);
 
 			// Prevent duplicates.

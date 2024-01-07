@@ -7,6 +7,8 @@ namespace SMF\Mods\Demo;
 use League\Event\EventDispatcher;
 use League\Event\ListenerPriority;
 use League\Event\ListenerRegistry;
+use SMF\BBCodeParser;
+use SMF\Editor;
 use SMF\Mods\Modification;
 
 final class Mod implements Modification
@@ -32,7 +34,7 @@ final class Mod implements Modification
 				'priority' => ListenerPriority::NORMAL,
 			],
 			[
-				'event'    => 'add.bbc',
+				'event'    => [BBCodeParser::BBC_CODE_EVENT, Editor::BBC_BUTTON_EVENT],
 				'listener' => AddBbcListener::class,
 				'priority' => ListenerPriority::HIGH,
 			],
@@ -42,11 +44,22 @@ final class Mod implements Modification
 	public function subscribeListeners(ListenerRegistry $acceptor): void
 	{
 		foreach ($this->getListenerConfig() as $listener) {
-			$acceptor->subscribeTo(
-				$listener['event'],
-				new $listener['listener'],
-				$listener['priority']
-			);
+			if (\is_array($listener['event'])) {
+				for ($i=0; $i < count($listener['event']); $i++) {
+					$acceptor->subscribeTo(
+						$listener['event'][$i],
+						new $listener['listener'],
+						$listener['priority']
+					);
+					continue;
+				}
+			} else {
+				$acceptor->subscribeTo(
+					$listener['event'],
+					new $listener['listener'],
+					$listener['priority']
+				);
+			}
 		}
 	}
 }

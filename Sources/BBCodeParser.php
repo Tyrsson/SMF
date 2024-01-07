@@ -13,9 +13,11 @@
 
 namespace SMF;
 
+use League\Event\EventDispatcher;
 use SMF\Cache\CacheApi;
 use SMF\Db\DatabaseApi as Db;
 use SMF\Events\DispatcherFactory;
+use SMF\Events\IntegrationEvent;
 
 /**
  * Parses Bulletin Board Code in a string and converts it to HTML.
@@ -52,6 +54,8 @@ use SMF\Events\DispatcherFactory;
  */
 class BBCodeParser
 {
+	public const BBC_CODE_EVENT = 'add.bbc.code';
+	private EventDispatcher $dispatcher;
 
 	/*******************
 	 * Public properties
@@ -1083,7 +1087,9 @@ class BBCodeParser
 		$this->enable_post_html = !empty(Config::$modSettings['enablePostHTML']);
 
 		// Let mods add new BBC without hassle.
-		self::integrateBBC();
+		$this->dispatcher = (new DispatcherFactory())();
+		$this->dispatcher->dispatch( new IntegrationEvent(self::BBC_CODE_EVENT, $this) );
+		//self::integrateBBC();
 
 		usort(
 			self::$codes,
@@ -4783,7 +4789,8 @@ class BBCodeParser
 	{
 		// Only do this once.
 		if (self::$integrate_bbc_codes_done !== true) {
-			$this->
+
+
 			IntegrationHook::call('integrate_bbc_codes', [&self::$codes, &self::$no_autolink_tags]);
 
 			// Prevent duplicates.
@@ -4809,6 +4816,7 @@ class BBCodeParser
 			self::$integrate_bbc_codes_done = true;
 		}
 	}
+
 }
 
 ?>

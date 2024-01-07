@@ -452,7 +452,11 @@ class Forum
 	{
 		foreach (glob(Config::$sourcedir . '/Mods/*/Init.php') as $file)
 		{
-			(require_once $file)($this->eventDispatcher, $this->listenerRegistry);
+			$func = require_once $file;
+			if (!\is_bool($func)) {
+				$func($this->eventDispatcher, $this->listenerRegistry);
+			}
+
 		}
 	}
 }

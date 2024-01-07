@@ -17,8 +17,8 @@ final class AddActionListener
 
 	public function __invoke(IntegrationEvent $event)
 	{
-		$target = $event->getTarget();
+		$target   = $event->getTarget();
 		$instance = new DemoAction();
-		$target::$actions += ['demo' => [$instance, '__invoke']];
+		$target::$actions += ['demo' => ['', [$instance, '__invoke']]];
 	}
 }

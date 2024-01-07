@@ -13,8 +13,11 @@
 
 namespace SMF;
 
+use League\Event\EventDispatcher;
 use SMF\Cache\CacheApi;
 use SMF\Db\DatabaseApi as Db;
+use SMF\Events\DispatcherFactory;
+use SMF\Events\IntegrationEvent;
 
 /**
  * Creates the editor input box so that people can write messages to post.
@@ -29,10 +32,14 @@ class Editor implements \ArrayAccess
 
 	public const PREVIEW_HTML = 1;
 	public const PREVIEW_XML = 2;
+	// events
+	public const BBC_BUTTON_EVENT = 'add.bbc.button';
 
 	/*******************
 	 * Public properties
 	 *******************/
+
+	private EventDispatcher $dispatcher;
 
 	/**
 	 * @var string
@@ -207,6 +214,7 @@ class Editor implements \ArrayAccess
 	 */
 	public function __construct(array $options)
 	{
+		$this->dispatcher = (new DispatcherFactory())();
 		$this->init();
 		$this->buildButtons();
 
@@ -626,6 +634,7 @@ class Editor implements \ArrayAccess
 		];
 
 		// Allow mods to modify BBC buttons.
+		$this->dispatcher->dispatch(new IntegrationEvent(self::BBC_BUTTON_EVENT, $this));
 		IntegrationHook::call('integrate_bbc_buttons', [&self::$bbc_tags, &$editor_tag_map, &self::$disabled_tags]);
 
 		// Generate a list of buttons that shouldn't be shown - this should be the fastest way to do this.

@@ -8,15 +8,14 @@ use SMF\BBCodeParser;
 use SMF\Editor;
 use SMF\Events\Exception\UnknownEventException;
 use SMF\Events\IntegrationEvent;
+use SMF\Lang;
 
 final class AddBbcListener
 {
 	private $event;
-	private $target;
 
 	public function __construct()
 	{
-
 	}
 
 	public function __invoke(IntegrationEvent $event)
@@ -55,6 +54,39 @@ final class AddBbcListener
 
 	protected function addButton()
 	{
-
+		Lang::load('IndentBBC');
+		/** @var Editor */
+		$target = $this->event->getTarget();
+		// Add indent bbc buttons new group after 'justify' button.
+		$indent_bbc = [];
+		foreach ($target::$bbc_tags[0] as $tag)
+		{
+			$indent_bbc[] = $tag;
+			if (isset($tag['code']) && $tag['code'] == 'justify')
+			{
+				$indent_bbc[] = [
+					'image' => 'indent-left',
+					'code' => 'indent-left',
+					'before' => '[indent-left]',
+					'after' => '[/indent-left]',
+					'description' => Lang::$txt['indent-left']
+				];
+				$indent_bbc[] = [
+					'image' => 'indent-right',
+					'code' => 'indent-right',
+					'before' => '[indent-right]',
+					'after' => '[/indent-right]',
+					'description' => Lang::$txt['indent-right']
+				];
+				$indent_bbc[] = [
+					'image' => 'indent-both',
+					'code' => 'indent-both',
+					'before' => '[indent-both]',
+					'after' => '[/indent-both]',
+					'description' => Lang::$txt['indent-both']
+				];
+			}
+		}
+		$target::$bbc_tags[0] = $indent_bbc;
 	}
 }

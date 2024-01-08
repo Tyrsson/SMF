@@ -9,9 +9,9 @@ use League\Event\ListenerPriority;
 use League\Event\ListenerRegistry;
 use SMF\BBCodeParser;
 use SMF\Editor;
-use SMF\Mods\Modification;
+use SMF\Mods\AbstractMod;
 
-final class Mod implements Modification
+final class Mod extends AbstractMod
 {
 
 	public function __construct(
@@ -25,7 +25,8 @@ final class Mod implements Modification
 		$this->eventDispatcher->subscribeListenersFrom($this);
 	}
 
-	protected function getListenerConfig(): array
+	/** @inheritDoc */
+	public function getListenerConfig(): array
 	{
 		return [
 			[
@@ -39,27 +40,5 @@ final class Mod implements Modification
 				'priority' => ListenerPriority::HIGH,
 			],
 		];
-	}
-
-	public function subscribeListeners(ListenerRegistry $acceptor): void
-	{
-		foreach ($this->getListenerConfig() as $listener) {
-			if (\is_array($listener['event'])) {
-				for ($i=0; $i < count($listener['event']); $i++) {
-					$acceptor->subscribeTo(
-						$listener['event'][$i],
-						new $listener['listener'],
-						$listener['priority']
-					);
-					continue;
-				}
-			} else {
-				$acceptor->subscribeTo(
-					$listener['event'],
-					new $listener['listener'],
-					$listener['priority']
-				);
-			}
-		}
 	}
 }

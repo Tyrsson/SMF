@@ -5,7 +5,7 @@
  *
  * @package SMF
  * @author Simple Machines https://www.simplemachines.org
- * @copyright 2023 Simple Machines and individual contributors
+ * @copyright 2024 Simple Machines and individual contributors
  * @license https://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 3.0 Alpha 1
@@ -84,6 +84,21 @@ class Folder
 	 * requested via $_GET['pmid'] or $_GET['pmsg'].
 	 */
 	public object $requested_pm;
+
+	/**************************
+	 * Public static properties
+	 **************************/
+
+	/**
+	 * @var array
+	 *
+	 * Instructions for sorting the personal messages.
+	 */
+	public static $sort_methods = [
+		'date' => 'pm.id_pm',
+		'name' => 'COALESCE(mem.real_name, \'\')',
+		'subject' => 'pm.subject',
+	];
 
 	/****************
 	 * Public methods
@@ -198,7 +213,7 @@ class Folder
 		Utils::$context['page_title'] = Lang::$txt['pm_inbox'];
 
 		// Finally mark the relevant messages as read.
-		if ($this->is_inbox && !empty(self::$labels[(int) $this->current_label_id]['unread_messages'])) {
+		if ($this->is_inbox && !empty(Label::$loaded[(int) $this->current_label_id]['unread_messages'])) {
 			PM::markRead($display_pms, $this->current_label_id);
 		}
 	}

@@ -5,7 +5,7 @@
  *
  * @package SMF
  * @author Simple Machines https://www.simplemachines.org
- * @copyright 2023 Simple Machines and individual contributors
+ * @copyright 2024 Simple Machines and individual contributors
  * @license https://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 3.0 Alpha 1
@@ -26,7 +26,7 @@ use SMF\Utils;
 
 define('SMF_VERSION', '3.0 Alpha 1');
 define('SMF_FULL_VERSION', 'SMF ' . SMF_VERSION);
-define('SMF_SOFTWARE_YEAR', '2023');
+define('SMF_SOFTWARE_YEAR', '2024');
 define('DB_SCRIPT_VERSION', '3-0');
 define('SMF_INSTALLING', 1);
 
@@ -67,7 +67,7 @@ require_once Config::$sourcedir . '/Subs-Compat.php';
 $databases = [
 	'mysql' => [
 		'name' => 'MySQL',
-		'version' => '5.6.0',
+		'version' => '8.0.35',
 		'version_check' => function () {
 			if (!function_exists('mysqli_fetch_row')) {
 				return false;
@@ -96,7 +96,7 @@ $databases = [
 	],
 	'postgresql' => [
 		'name' => 'PostgreSQL',
-		'version' => '9.6',
+		'version' => '12.17',
 		'version_check' => function () {
 			$request = pg_query(Db::$db->connection, 'SELECT version()');
 			list($version) = pg_fetch_row($request);

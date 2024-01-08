@@ -5,7 +5,7 @@
  *
  * @package SMF
  * @author Simple Machines https://www.simplemachines.org
- * @copyright 2023 Simple Machines and individual contributors
+ * @copyright 2024 Simple Machines and individual contributors
  * @license https://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 3.0 Alpha 1
@@ -25,7 +25,7 @@ use SMF\WebFetch\WebFetchApi;
 // Version information...
 define('SMF_VERSION', '3.0 Alpha 1');
 define('SMF_FULL_VERSION', 'SMF ' . SMF_VERSION);
-define('SMF_SOFTWARE_YEAR', '2023');
+define('SMF_SOFTWARE_YEAR', '2024');
 define('SMF_LANG_VERSION', '3.0 Alpha 1');
 define('SMF_INSTALLING', 1);
 
@@ -53,7 +53,7 @@ $GLOBALS['required_php_version'] = '8.0.0';
 $databases = [
 	'mysql' => [
 		'name' => 'MySQL',
-		'version' => '5.6.0',
+		'version' => '8.0.35',
 		'version_check' => function () {
 			if (!function_exists('mysqli_fetch_row')) {
 				return false;
@@ -65,7 +65,7 @@ $databases = [
 	],
 	'postgresql' => [
 		'name' => 'PostgreSQL',
-		'version' => '9.6',
+		'version' => '12.17',
 		'version_check' => function () {
 			if (!function_exists('pg_version')) {
 				return false;

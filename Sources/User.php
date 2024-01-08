@@ -5,7 +5,7 @@
  *
  * @package SMF
  * @author Simple Machines https://www.simplemachines.org
- * @copyright 2023 Simple Machines and individual contributors
+ * @copyright 2024 Simple Machines and individual contributors
  * @license https://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 3.0 Alpha 1
@@ -4632,7 +4632,7 @@ class User implements \ArrayAccess
 
 			self::$loaded[$id] = $this;
 
-			if (!isset(self::$profiles[$id]) || self::$dataset_levels[self::$profiles[$id]['dataset']] < self::$dataset_levels[$dataset ?? 'normal']) {
+			if (!empty(self::$profiles[$id]) || self::$dataset_levels[self::$profiles[$id]['dataset']] < self::$dataset_levels[$dataset ?? 'normal']) {
 				self::loadUserData((array) $id, self::LOAD_BY_ID, $dataset ?? 'normal');
 			}
 
@@ -5307,6 +5307,10 @@ class User implements \ArrayAccess
 	 */
 	protected static function loadUserData(array $users, int $type = self::LOAD_BY_ID, string $dataset = 'normal'): array
 	{
+		if (!isset(self::$dataset_levels[$dataset])) {
+			$dataset = 'normal';
+		}
+
 		// Keep track of which IDs we load during this run.
 		$loaded_ids = [];
 
@@ -5370,7 +5374,7 @@ class User implements \ArrayAccess
 				}
 
 				// Does the cached data have everything we need?
-				if (self::$dataset_levels[$data['dataset']] >= self::$dataset_levels[$dataset]) {
+				if (is_array($data) && self::$dataset_levels[$data['dataset'] ?? 'minimal'] >= self::$dataset_levels[$dataset]) {
 					self::$profiles[$id] = $data;
 					$loaded_ids[] = $id;
 					unset($users[$key]);

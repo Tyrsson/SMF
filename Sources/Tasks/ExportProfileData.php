@@ -5,7 +5,7 @@
  *
  * @package SMF
  * @author Simple Machines https://www.simplemachines.org
- * @copyright 2023 Simple Machines and individual contributors
+ * @copyright 2024 Simple Machines and individual contributors
  * @license https://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 3.0 Alpha 1
@@ -1647,8 +1647,6 @@ class ExportProfileData extends BackgroundTask
 			$this->stylesheet = preg_replace('/^(?!\n)/mu', "\t", $this->stylesheet);
 			$this->stylesheet = strtr($this->stylesheet, array_flip($placeholders));
 		}
-
-		file_put_contents('/tmp/derp.xml', $this->stylesheet);
 	}
 
 	/**

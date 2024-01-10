@@ -10,12 +10,12 @@ use SMF\Mods\Demo\DemoAction;
 
 final class AddActionListener
 {
-	public function __construct()
-	{
-
-	}
-
-	public function __invoke(IntegrationEvent $event)
+	/**
+	 *
+	 * @param IntegrationEvent $event
+	 * @return void
+	 */
+	public function __invoke(IntegrationEvent $event): void
 	{
 		/** @var Forum */
 		$target   = $event->getTarget();

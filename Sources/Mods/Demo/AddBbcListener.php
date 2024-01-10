@@ -14,10 +14,12 @@ final class AddBbcListener
 {
 	private $event;
 
-	public function __construct()
-	{
-	}
-
+	/**
+	 *
+	 * @param IntegrationEvent $event
+	 * @return void
+	 * @throws UnknownEventException
+	 */
 	public function __invoke(IntegrationEvent $event)
 	{
 		$this->event = $event;
@@ -28,7 +30,8 @@ final class AddBbcListener
 		};
 	}
 
-	protected function addCode()
+	/** @return void */
+	protected function addCode(): void
 	{
 		/** @var BBCodeParser */
 		$target = $this->event->getTarget();
@@ -52,7 +55,8 @@ final class AddBbcListener
 		];
 	}
 
-	protected function addButton()
+	/** @return void */
+	protected function addButton(): void
 	{
 		Lang::load('IndentBBC');
 		/** @var Editor */

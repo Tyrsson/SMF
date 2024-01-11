@@ -11,6 +11,8 @@
  * @version 3.0 Alpha 1
  */
 
+declare(strict_types=1);
+
 namespace SMF;
 
 use DirectoryIterator;
@@ -218,6 +220,7 @@ class Forum
 
 		// Seed the random generator.
 		if (empty(Config::$modSettings['rand_seed']) || mt_rand(1, 250) == 69) {
+			// @TODO: Calls a deprecated function.
 			Config::generateSeed();
 		}
 
@@ -267,7 +270,7 @@ class Forum
 	 * then calls that function, and then calls obExit() in order to send
 	 * results to the browser.
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		// What function shall we execute? (done like this for memory's sake.)
 		call_user_func($this->main());
@@ -285,7 +288,7 @@ class Forum
 	 * - display a login screen with sub template 'maintenance'.
 	 * - sends a 503 header, so search engines don't bother indexing while we're in maintenance mode.
 	 */
-	public static function inMaintenance()
+	public static function inMaintenance(): void
 	{
 		Lang::load('Login');
 		Theme::loadTemplate('Login');
@@ -309,9 +312,9 @@ class Forum
 	 * The main dispatcher.
 	 * This delegates to each area.
 	 *
-	 * @return array|string|void An array containing the file to include and name of function to call, the name of a function to call or dies with a fatal_lang_error if we couldn't find anything to do.
+	 * @return array|string An array containing the file to include and name of function to call, the name of a function to call or dies with a fatal_lang_error if we couldn't find anything to do.
 	 */
-	protected function main()
+	protected function main(): array|string
 	{
 		// Special case: session keep-alive, output a transparent pixel.
 		if (isset($_GET['action']) && $_GET['action'] == 'keepalive') {

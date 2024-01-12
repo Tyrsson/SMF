@@ -1354,7 +1354,7 @@ class User implements ArrayAccess
 				);
 
 				// Cache when we did it last.
-				CacheApi::put('log_online-update', time(), 30);
+				CacheApi::put('log_online-update', (string) time(), 30);
 			}
 
 			Db::$db->query(

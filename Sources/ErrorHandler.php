@@ -30,7 +30,6 @@ use SMF\ServerSideIncludes as SSI;
  */
 class ErrorHandler
 {
-
 	/****************
 	 * Public methods
 	 ****************/

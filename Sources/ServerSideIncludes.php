@@ -29,7 +29,6 @@ use SMF\Db\DatabaseApi as Db;
  */
 class ServerSideIncludes
 {
-
 	/******************************
 	 * Properties for internal use.
 	 ******************************/

@@ -23,7 +23,6 @@ use Socket;
  */
 class Mail
 {
-
 	/***********************
 	 * Public static methods
 	 ***********************/

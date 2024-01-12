@@ -36,7 +36,6 @@ use SMF\WebFetch\WebFetchApi;
  */
 class Theme
 {
-
 	/*******************
 	 * Public properties
 	 *******************/

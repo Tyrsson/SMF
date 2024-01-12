@@ -4504,8 +4504,6 @@ class User implements ArrayAccess
 	 *    of permissions to check.
 	 * @param bool $check_access Whether to check only the boards the user has
 	 *    access to.
-	 * @param bool $simple Whether to return a simple array of board IDs or one
-	 *    with permissions as the keys.
 	 * @return array|bool An array of board IDs if $simple is true. Otherwise, an
 	 *    array containing 'permission' => array(id, id, id...) pairs.
 	 */

@@ -31,7 +31,6 @@ use SMF\WebFetch\WebFetchApi;
  */
 class SubsPackage
 {
-
 	/**************************
 	 * Public static properties
 	 **************************/

@@ -911,7 +911,7 @@ class Utils
 		};
 
 		// This recursive closure turns the trie into a regular expression.
-		$trie_to_regex = function (array &$trie, string $delim = null) use (&$trie_to_regex) {
+		$trie_to_regex = function (array &$trie, ?string $delim = null) use (&$trie_to_regex) {
 			static $depth = 0;
 			$depth++;
 
@@ -1937,6 +1937,7 @@ class Utils
 
 		// Done.
 		self::obExit(false);
+
 		return null;
 	}
 
@@ -2001,6 +2002,11 @@ class Utils
 					$setLocation,
 				);
 			}
+		}
+
+		// The request was from ajax/xhr/other api call, append ajax ot the url.
+		if (!empty(Utils::$context['from_ajax'])) {
+			$setLocation .= (strpos($setLocation, '?') ? ';' : '?') . 'ajax';
 		}
 
 		// Maybe integrations want to change where we are heading?

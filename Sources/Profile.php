@@ -481,6 +481,7 @@ class Profile extends User implements \ArrayAccess
 				'log_change' => true,
 				'input_validate' => function (&$value) {
 					$value = (int) $value;
+
 					return $this->validateGroups($value, $_POST['additional_groups'] ?? []);
 				},
 			],
@@ -1775,6 +1776,7 @@ class Profile extends User implements \ArrayAccess
 		IntegrationHook::call('before_profile_save_avatar', [&$value]);
 
 		$result = null;
+
 		switch ($value) {
 			case 'server_stored':
 				$this->setAvatarServerStored($_POST['file'] ?? $_POST['cat'] ?? '');

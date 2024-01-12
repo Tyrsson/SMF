@@ -364,7 +364,7 @@ class ErrorHandler
 		}
 
 		// Load the language file, only if it needs to be reloaded
-		if ($reload_lang_file && !empty($txt[$error])) {
+		if ($reload_lang_file && !empty(Lang::$txt[$error])) {
 			Lang::load('Errors');
 
 			$error_message = empty($sprintf) ? Lang::$txt[$error] : vsprintf(Lang::$txt[$error], $sprintf);
@@ -660,7 +660,7 @@ class ErrorHandler
 	 * Logs the last database error into a file.
 	 * Attempts to use the backup file first, to store the last database error
 	 * and only update db_last_error.php if the first was successful.
-	 * 
+	 *
 	 * @return bool true if succefully able to write the last database error.
 	 */
 	protected static function logLastDatabaseError(): bool

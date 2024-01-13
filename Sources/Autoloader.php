@@ -30,6 +30,8 @@ spl_autoload_register(function ($class) {
 		'MatthiasMullie\\Minify\\' => 'minify/src/',
 		'MatthiasMullie\\PathConverter\\' => 'minify/path-converter/src/',
 		'Psr\\Cache\\' => 'psr/cache/src/',
+		'Psr\\Clock\\' => 'psr/clock/src/',
+		'Psr\\SimpleCache\\' => 'psr/simple-cache/src/',
 		'Psr\\EventDispatcher\\' => 'psr/event-dispatcher/src/',
 		'League\\Event\\' => 'league/event/src/',
 		// In general, the SMF namespace maps to $sourcedir.

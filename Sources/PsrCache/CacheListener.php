@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SMF\Cache;
+namespace SMF\PsrCache;
 
 use Psr\Cache\CacheItemPoolInterface;
 use SMF\Cache\CacheLookup;

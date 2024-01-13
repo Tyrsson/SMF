@@ -25,6 +25,7 @@ spl_autoload_register(function ($class) {
 
 	static $class_map = [
 		// Some special cases.
+		'Fig\\EventDispatcher\\' => 'fig/event-dispatcher-util/src/',
 		'ReCaptcha\\' => 'ReCaptcha/',
 		'MatthiasMullie\\Minify\\' => 'minify/src/',
 		'MatthiasMullie\\PathConverter\\' => 'minify/path-converter/src/',

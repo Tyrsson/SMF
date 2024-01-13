@@ -33,6 +33,7 @@
         }
     },
     "require": {
-        "league/event": "^3.0"
+        "league/event": "^3.0",
+        "fig/event-dispatcher-util": "^1.3"
     }
 }

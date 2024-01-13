@@ -29,11 +29,11 @@ final class Mod extends AbstractMod
 	public function getListenerConfig(): array
 	{
 		return [
-			[
-				'event'    => 'add.action',
-				'listener' => AddActionListener::class,
-				'priority' => ListenerPriority::NORMAL,
-			],
+			// [
+			// 	'event'    => 'add.action',
+			// 	'listener' => AddActionListener::class,
+			// 	'priority' => ListenerPriority::NORMAL,
+			// ],
 			[
 				'event'    => [BBCodeParser::BBC_CODE_EVENT, Editor::BBC_BUTTON_EVENT],
 				'listener' => AddBbcListener::class,

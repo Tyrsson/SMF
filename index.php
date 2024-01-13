@@ -118,23 +118,23 @@ call_user_func(function () {
 
 	// Pass all the settings to SMF\Config.
 	require_once $sourcedir . '/Config.php';
-	SMF\Config::set(get_defined_vars());
+	\SMF\Config::set(get_defined_vars());
 });
 
 // Devs want all error messages, but others don't.
 if (SMF === 1) {
-	error_reporting(!empty(SMF\Config::$db_show_debug) ? E_ALL : E_ALL & ~E_DEPRECATED);
+	error_reporting(!empty(\SMF\Config::$db_show_debug) ? E_ALL : E_ALL & ~E_DEPRECATED);
 }
 
 /*
  * 3. Load some other essential includes.
  */
 
-//require_once SMF\Config::$sourcedir . '/Autoloader.php';
-require_once 'vendor/autoload.php';
+require_once SMF\Config::$sourcedir . '/Autoloader.php';
+//require_once 'vendor/autoload.php';
 
 // Ensure we don't trip over disabled internal functions
-//require_once SMF\Config::$sourcedir . '/Subs-Compat.php';
+require_once SMF\Config::$sourcedir . '/Subs-Compat.php';
 
 
 /*********************************************************************
@@ -142,10 +142,11 @@ require_once 'vendor/autoload.php';
  *********************************************************************/
 
 if (SMF === 1) {
-	(new SMF\Forum(
-		(new SMF\Events\DispatcherFactory())(),
-		(new SMF\Events\ListenerRegistryFactory())()
-		))->execute();
+	(new \SMF\Forum(
+		(new \SMF\Events\DispatcherFactory())(),
+		(new \SMF\Events\ListenerRegistryFactory())()
+		)
+	)->execute();
 }
 
 ?>

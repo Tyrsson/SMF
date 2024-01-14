@@ -15,12 +15,13 @@ declare(strict_types=1);
 
 namespace SMF\Cache;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\IntegrationHook;
 use SMF\Utils;
 
-abstract class CacheApi
+abstract class CacheApi implements CacheInterface
 {
 	use BackwardCompatibility;
 

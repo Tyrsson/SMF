@@ -189,4 +189,55 @@ final class CacheItemPool implements CacheItemPoolInterface
 		}
 		return false;
 	}
+
+	private function saveMultipleItems(array $items, ?int $itemTtl): array
+    {
+        $keyItemPair = [];
+        foreach ($items as $item) {
+            $keyItemPair[$item->getKey()] = $item;
+        }
+
+        // delete expired item
+        if ($itemTtl < 0) {
+            $this->deleteItems(array_keys($keyItemPair));
+            foreach ($keyItemPair as $cacheItem) {
+                $cacheItem->setIsHit(false);
+            }
+
+            return $keyItemPair;
+        }
+
+        $options = $this->storage->getOptions();
+        $ttl     = $options->getTtl();
+
+        $keyValuePair = [];
+        foreach ($items as $item) {
+            $key                = $item->getKey();
+            $keyValuePair[$key] = $item->get();
+        }
+
+        $options->setTtl($itemTtl ?? 0);
+
+        try {
+            $notSavedKeys = $this->storage->setItems($keyValuePair);
+        } catch (InvalidArgumentException $e) {
+            throw new InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
+        } catch (\Exception) {
+            $notSavedKeys = array_keys($keyValuePair);
+        } finally {
+            $options->setTtl($ttl);
+        }
+
+        $notSavedItems = [];
+        foreach ($keyItemPair as $key => $item) {
+            if (in_array($key, $notSavedKeys, true)) {
+                $notSavedItems[$key] = $item;
+                continue;
+            }
+
+            $item->setIsHit(true);
+        }
+
+        return $notSavedItems;
+    }
 }

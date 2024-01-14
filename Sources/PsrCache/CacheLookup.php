@@ -4,25 +4,13 @@ declare(strict_types=1);
 
 namespace SMF\PsrCache;
 
-use Psr\EventDispatcher\StoppableEventInterface;
+use SMF\Events\Event;
 
-class CacheLookup implements StoppableEventInterface
+class CacheLookup extends Event
 {
-	/** @var mixed */
-	private $value;
 
 	/** @var array[] */
 	private $callbacks = [];
-
-	/**
-	 *
-	 * @param string $cacheKey
-	 * @return void
-	 */
-	public function __construct(
-		private string $cacheKey = ''
-	) {
-	}
 
 	public function key(): string
 	{
@@ -31,18 +19,18 @@ class CacheLookup implements StoppableEventInterface
 
 	public function getKey(): string
 	{
-		return $this->cacheKey;
+		return $this->getParam('cache_key');
 	}
 
 	public function setValue($value): void
 	{
-		$this->value = $value;
+		$this->setParam('value', $value);
 	}
 
-	/** @return mixed */
+	/** @inheritDoc */
 	public function getValue()
 	{
-		return $this->value;
+		return $this->getParam('value');
 	}
 
 	/**
@@ -58,7 +46,7 @@ class CacheLookup implements StoppableEventInterface
 	/** @return bool */
 	public function isPropagationStopped(): bool
 	{
-		return !is_null($this->value);
+		return !is_null($this->getParam('value'));
 	}
 
 }

@@ -21,6 +21,14 @@ class CacheItem implements CacheItemInterface
 
 	private ClockInterface $clock;
 
+	/**
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @param bool $isHit
+	 * @param null|ClockInterface $clock
+	 * @return void
+	 */
 	public function __construct(
 		private string $key,
 		private mixed $value,
@@ -94,6 +102,10 @@ class CacheItem implements CacheItemInterface
 		return $this->expiresAt($now->add($time));
 	}
 
+	/**
+	 *
+	 * @return null|int
+	 */
 	public function getTtl()
 	{
 		if ($this->expiration === null) {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SMF\PsrCache;
 
 use Psr\Cache\CacheItemPoolInterface;
-use SMF\Cache\CacheLookup;
 
 final class CacheListener
 {

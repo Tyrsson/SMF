@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace SMF\PsrCache\Storage;
 
-use Psr\Cache\CacheItemPoolInterface;
+use SMF\PsrCache\StorageInterface;
 
-abstract class AbstractStorage
+abstract class AbstractStorage implements StorageInterface
 {
 
 }

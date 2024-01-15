@@ -626,7 +626,7 @@ class Post2 extends Post
 		}
 
 		if (Board::$info->num_topics == 0) {
-			CacheApi::put('board-' . Board::$info->id, null, 120);
+			(CacheApi::load())->set(key: 'board-' . Board::$info->id, ttl: 120);
 		}
 
 		IntegrationHook::call('integrate_post2_end');

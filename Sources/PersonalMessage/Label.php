@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace SMF\PersonalMessage;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\ArrayAccessHelper;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -84,6 +85,8 @@ class Label implements \ArrayAccess
 	 * Internal properties
 	 *********************/
 
+	private static CacheInterface|CacheApi $cache;
+
 	/**
 	 * @var array
 	 *
@@ -111,6 +114,7 @@ class Label implements \ArrayAccess
 		$this->name = $name;
 		$this->set($props);
 		self::$loaded[$id] = $this;
+		self::$cache = CacheApi::load();
 	}
 
 	/***********************
@@ -129,7 +133,7 @@ class Label implements \ArrayAccess
 		}
 
 		// Load the label data.
-		if (User::$me->new_pm || ($labels = CacheApi::get('labelCounts:' . User::$me->id, 720)) === null) {
+		if (User::$me->new_pm || ($labels = self::$cache->get(key: 'labelCounts:' . User::$me->id, ttl: 720)) === null) {
 			// Inbox "label"
 			$labels[-1] = [
 				'id' => -1,
@@ -201,7 +205,7 @@ class Label implements \ArrayAccess
 			Db::$db->free_result($result);
 
 			// Store it please!
-			CacheApi::put('labelCounts:' . User::$me->id, $labels, 720);
+			self::$cache->set('labelCounts:' . User::$me->id, $labels, 720);
 		}
 
 		foreach ($labels as $label) {
@@ -451,7 +455,7 @@ class Label implements \ArrayAccess
 			}
 
 			// Make sure we're not caching this!
-			CacheApi::put('labelCounts:' . User::$me->id, null, 720);
+			self::$cache->set(key: 'labelCounts:' . User::$me->id, ttl: 720);
 
 			// To make the changes appear right away, redirect.
 			Utils::redirectexit('action=pm;sa=manlabels');

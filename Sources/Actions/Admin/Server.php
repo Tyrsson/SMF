@@ -28,6 +28,7 @@ use SMF\Theme;
 use SMF\Url;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Contains all the functionality required to be able to edit the core server
@@ -99,6 +100,8 @@ class Server implements ActionInterface
 		'loadavg_bbc' => 30.0,
 		'loadavg_forum' => 40.0,
 	];
+
+	private CacheInterface|CacheApi $cache;
 
 	/*******************
 	 * Public properties
@@ -479,7 +482,7 @@ class Server implements ActionInterface
 			IntegrationHook::call('integrate_save_cache_settings');
 
 			if (is_callable([CacheApi::$loadedApi, 'cleanCache']) && ((int) $_POST['cache_enable'] < CacheApi::$enable || $_POST['cache_accelerator'] != CacheApi::$accelerator)) {
-				CacheApi::clean();
+				$this->cache->clear();
 			}
 
 			ACP::saveSettings($config_vars);
@@ -1351,6 +1354,8 @@ class Server implements ActionInterface
 	 */
 	protected function __construct()
 	{
+		$this->cache = CacheApi::load();
+
 		Lang::load('ManageSettings');
 
 		// Load up all the tabs...

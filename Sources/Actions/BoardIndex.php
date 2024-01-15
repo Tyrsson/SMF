@@ -25,6 +25,7 @@ use SMF\Theme;
 use SMF\Time;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * This class shows the board index.
@@ -37,6 +38,8 @@ use SMF\Utils;
  */
 class BoardIndex implements ActionInterface
 {
+	private CacheInterface|CacheApi $cache;
+
 	/****************************
 	 * Internal static properties
 	 ****************************/
@@ -73,7 +76,7 @@ class BoardIndex implements ActionInterface
 		// Retrieve the latest posts if the theme settings require it.
 		if (!empty(Theme::$current->settings['number_recent_posts'])) {
 			if (Theme::$current->settings['number_recent_posts'] > 1) {
-				Utils::$context['latest_posts'] = CacheApi::quickGet('boardindex-latest_posts:' . md5(User::$me->query_wanna_see_board . User::$me->language), '', [$this, 'cache_getLastPosts'], [Theme::$current->settings['number_recent_posts']]);
+				Utils::$context['latest_posts'] = $this->cache->quickGet('boardindex-latest_posts:' . md5(User::$me->query_wanna_see_board . User::$me->language), '', [$this, 'cache_getLastPosts'], [Theme::$current->settings['number_recent_posts']]);
 			}
 
 			if (!empty(Utils::$context['latest_posts']) || !empty(Utils::$context['latest_post'])) {
@@ -94,7 +97,7 @@ class BoardIndex implements ActionInterface
 				'num_days_shown' => empty(Config::$modSettings['cal_days_for_index']) || Config::$modSettings['cal_days_for_index'] < 1 ? 1 : Config::$modSettings['cal_days_for_index'],
 			];
 
-			Utils::$context += CacheApi::quickGet('calendar_index_offset_' . User::$me->time_offset, 'Actions/Calendar.php', 'SMF\\Actions\\Calendar::cache_getRecentEvents', [$eventOptions]);
+			Utils::$context += $this->cache->quickGet('calendar_index_offset_' . User::$me->time_offset, 'Actions/Calendar.php', 'SMF\\Actions\\Calendar::cache_getRecentEvents', [$eventOptions]);
 
 			// Whether one or multiple days are shown on the board index.
 			Utils::$context['calendar_only_today'] = Config::$modSettings['cal_days_for_index'] == 1;
@@ -137,7 +140,7 @@ class BoardIndex implements ActionInterface
 
 		// Are we showing all membergroups on the board index?
 		if (!empty(Theme::$current->settings['show_group_key'])) {
-			Utils::$context['membergroups'] = CacheApi::quickGet('membergroup_list', 'Group.php', 'SMF\\Group::getCachedList', []);
+			Utils::$context['membergroups'] = $this->cache->quickGet('membergroup_list', 'Group.php', 'SMF\\Group::getCachedList', []);
 		}
 
 		// Mark read button
@@ -600,6 +603,8 @@ class BoardIndex implements ActionInterface
 	 */
 	protected function __construct()
 	{
+		$this->cache = CacheApi::load();
+
 		Theme::loadTemplate('BoardIndex');
 		Utils::$context['template_layers'][] = 'boardindex_outer';
 

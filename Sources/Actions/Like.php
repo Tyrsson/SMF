@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Alert;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -640,7 +641,9 @@ class Like implements ActionInterface
 		// in integrate_issue_like, but do so in integrate_valid_likes where it
 		// absolutely has to exist.
 		if (!empty($this->valid_likes['flush_cache'])) {
-			CacheApi::put($this->valid_likes['flush_cache'], null);
+			/** @var CacheInterface|CacheApi */
+			$cache = CacheApi::load();
+			$cache->set($this->valid_likes['flush_cache']);
 		}
 
 		// All done, start building the data to pass as response.

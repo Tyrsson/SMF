@@ -28,6 +28,7 @@ use SMF\Theme;
 use SMF\Time;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * This class concerns itself almost completely with theme administration.
@@ -51,6 +52,8 @@ use SMF\Utils;
 class Themes implements ActionInterface
 {
 	use BackwardCompatibility;
+
+	private CacheInterface|CacheApi $cache;
 
 	/*******************
 	 * Public properties
@@ -222,7 +225,7 @@ class Themes implements ActionInterface
 					$setValues[] = [$id, 0, 'base_images_url', $_POST['reset_url'] . '/' . basename($theme['base_theme_dir']) . '/' . basename($theme['base_images_url'])];
 				}
 
-				CacheApi::put('theme_settings-' . $id, null, 90);
+				$this->cache->set(key: 'theme_settings-' . $id, ttl: 90);
 			}
 
 			if (!empty($setValues)) {
@@ -410,8 +413,13 @@ class Themes implements ActionInterface
 				);
 			}
 
-			CacheApi::put('theme_settings-' . $_GET['th'], null, 90);
-			CacheApi::put('theme_settings-1', null, 90);
+			$this->cache->setMultiple(
+				[
+					['theme_settings-' . $_GET['th'] => null],
+					['theme_settings-1' => null],
+				],
+				90
+			);
 
 			Utils::redirectexit('action=admin;area=theme;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] . ';sa=reset');
 		} elseif (isset($_POST['submit']) && $_POST['who'] == 1) {
@@ -789,8 +797,13 @@ class Themes implements ActionInterface
 				);
 			}
 
-			CacheApi::put('theme_settings-' . $_GET['th'], null, 90);
-			CacheApi::put('theme_settings-1', null, 90);
+			$this->cache->setMultiple(
+				[
+					['theme_settings-' . $_GET['th'] => null],
+					['theme_settings-1' => null]
+				],
+				90
+			);
 
 			// Invalidate the cache.
 			Config::updateModSettings(['settings_updated' => time()]);
@@ -1365,6 +1378,8 @@ class Themes implements ActionInterface
 		}
 
 		User::$me->isAllowedTo('admin_forum');
+
+		$this->cache = CacheApi::load();
 
 		// Load the important language files...
 		Lang::load('Admin');

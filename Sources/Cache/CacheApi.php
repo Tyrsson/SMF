@@ -15,10 +15,21 @@ declare(strict_types=1);
 
 namespace SMF\Cache;
 
+use DateInterval;
+use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 use SMF\BackwardCompatibility;
 use SMF\Config;
 use SMF\IntegrationHook;
 use SMF\Utils;
+use Traversable;
+use TypeError;
+
+use function gettype;
+use function is_array;
+use function is_bool;
+use function is_numeric;
+use function sprintf;
 
 abstract class CacheApi
 {
@@ -335,9 +346,9 @@ abstract class CacheApi
 	 *
 	 * @param string $overrideCache Allows manually specifying a cache accelerator engine.
 	 * @param bool $fallbackSMF Use the default SMF method if the accelerator fails.
-	 * @return object|false An instance of a child class of this class, or false on failure.
+	 * @return ?object An instance of a child class of this class, or false on failure.
 	 */
-	final public static function load(string $overrideCache = '', bool $fallbackSMF = true): object|bool
+	final public static function load(string $overrideCache = '', bool $fallbackSMF = true): ?object
 	{
 		if (!isset(self::$enable)) {
 			self::$enable = min(max((int) Config::$cache_enable, 0), 3);
@@ -349,7 +360,7 @@ abstract class CacheApi
 
 		// Is caching enabled?
 		if (empty(self::$enable) && empty($overrideCache)) {
-			return false;
+			return null;
 		}
 
 		// Not overriding this and we have a cacheAPI, send it back.
@@ -373,7 +384,7 @@ abstract class CacheApi
 			$cache_api = new $fully_qualified_class_name();
 
 			// There are rules you know...
-			if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
+			if (!($cache_api instanceof CacheApiInterface)) {
 				$cache_api = false;
 			}
 
@@ -403,7 +414,8 @@ abstract class CacheApi
 			$cache_api = self::load(self::APIS_NAMESPACE . self::APIS_DEFAULT, false);
 		}
 
-		return $cache_api;
+		// Allow ?-> nullsafe operator usage
+		return $cache_api instanceof CacheInterface ? $cache_api : null;
 	}
 
 	/**
@@ -482,9 +494,9 @@ abstract class CacheApi
 	 * @param int $level The cache level
 	 * @return string The cached data
 	 */
-	final public static function quickGet(string $key, string $file, string|array $function, array $params, int $level = 1): mixed
+	final public function quickGet(string $key, string $file, string|array $function, array $params, int $level = 1): mixed
 	{
-		if (class_exists('SMF\\IntegrationHook', false)) {
+		if (class_exists(IntegrationHook::class, false)) {
 			IntegrationHook::call('pre_cache_quick_get', [&$key, &$file, &$function, &$params, &$level]);
 		}
 
@@ -503,7 +515,7 @@ abstract class CacheApi
 			$cache_block = call_user_func_array($function, $params);
 
 			if (!empty(self::$enable) && self::$enable >= $level) {
-				self::put($key, $cache_block, $cache_block['expires'] - time());
+				$this->set($key, $cache_block, $cache_block['expires'] - time());
 			}
 		}
 
@@ -512,7 +524,7 @@ abstract class CacheApi
 			eval($cache_block['post_retri_eval']);
 		}
 
-		if (class_exists('SMF\\IntegrationHook', false)) {
+		if (class_exists(IntegrationHook::class, false)) {
 			IntegrationHook::call('post_cache_quick_get', [&$cache_block]);
 		}
 
@@ -534,7 +546,7 @@ abstract class CacheApi
 	 * @param mixed $value The data to cache
 	 * @param int $ttl How long (in seconds) the data should be cached for
 	 */
-	final public static function put(string $key, mixed $value, int $ttl = 120): void
+	final public function put(string $key, mixed $value, int $ttl = 120): void
 	{
 		if (empty(self::$enable) || empty(self::$loadedApi)) {
 			return;
@@ -569,7 +581,7 @@ abstract class CacheApi
 	 * @param int $ttl The maximum age of the cached data
 	 * @return array|null The cached data or null if nothing was loaded
 	 */
-	final public static function get(string $key, int $ttl = 120): mixed
+	final public function get(string $key, mixed $default = null, int $ttl = 120): mixed
 	{
 		if (empty(self::$enable) || empty(self::$loadedApi)) {
 			return null;
@@ -607,6 +619,130 @@ abstract class CacheApi
 		} else {
 			return $value;
 		}
+	}
+
+	/** @inheritDoc */
+	public function set(string $key, mixed $value = null, null|int|DateInterval $ttl = null): bool
+	{
+		if (empty(self::$enable) || empty(self::$loadedApi)) {
+			return false;
+		}
+
+		if (!$this->isCacheableValue($value)) {
+			throw new InvalidArgumentException(
+				sprintf(
+					'$value must be of type string, int, float, bool, null, array, object received: %s',
+					gettype($value)
+				)
+			);
+		}
+
+		if ($ttl === null) {
+			$ttl = 120;
+		}
+
+		self::$count_hits++;
+
+		if (isset(Config::$db_show_debug) && Config::$db_show_debug === true) {
+			self::$hits[self::$count_hits] = ['k' => $key, 'd' => 'put', 's' => $value === null ? 0 : strlen(Utils::jsonEncode($value))];
+			$st = microtime(true);
+		}
+
+		// The API will handle the rest.
+		$value = $value === null ? null : Utils::jsonEncode($value);
+		self::$loadedApi->putData($key, $value, $ttl);
+
+		if (class_exists(IntegrationHook::class, false)) {
+			IntegrationHook::call('cache_put_data', [&$key, &$value, &$ttl]);
+		}
+
+		if (isset(Config::$db_show_debug) && Config::$db_show_debug === true) {
+			self::$hits[self::$count_hits]['t'] = microtime(true) - $st;
+		}
+
+		return true;
+	}
+
+	public function delete(string $key): bool
+	{
+		return true;
+	}
+
+	public function clear(string $type = ''): bool
+	{
+		// If we can't get to the API, can't do this.
+		// todo: instanceof check
+		if (empty(self::$loadedApi)) {
+			return false;
+		}
+
+		// Ask the API to do the heavy lifting. cleanCache also calls invalidateCache to be sure.
+		self::$loadedApi->cleanCache($type);
+
+		IntegrationHook::call('integrate_clean_cache');
+
+		clearstatcache();
+		return true;
+	}
+
+	public function getMultiple(iterable $keys, mixed $default = null): iterable
+	{
+		return [];
+	}
+
+	/** @inheritDoc */
+	public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool
+	{
+		if (!is_array($values) || !$values instanceof Traversable) {
+			throw new InvalidArgumentException('$values must be an array or Traversable');
+		}
+
+		try {
+			foreach ($values as $item) {
+				if (!isset($item['key']) || !is_string($item['key'])) {
+					continue;
+				}
+				$this->set($item['key'], $item['value'], $item['ttl'] ?? $ttl);
+			}
+		} catch (TypeError|InvalidArgumentException $e) {
+			// todo: log error
+			return false;
+		}
+
+		return true;
+	}
+
+	public function deleteMultiple(iterable $keys): bool
+	{
+		return true;
+	}
+
+	public function has(string $key): bool
+	{
+		return true;
+	}
+
+	public function isCacheableValue($value): bool
+	{
+		if (is_array($value)) {
+			return true;
+		}
+		if (is_string($value)) {
+			return true;
+		}
+		if (is_object($value)) {
+			return true;
+		}
+		if (is_numeric($value)) {
+			return true;
+		}
+		if (is_bool($value)) {
+			return true;
+		}
+		if ($value === null) {
+			return true;
+		}
+		return false;
 	}
 }
 

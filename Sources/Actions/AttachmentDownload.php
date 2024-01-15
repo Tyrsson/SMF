@@ -22,6 +22,7 @@ use SMF\IntegrationHook;
 use SMF\Lang;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Downloads an avatar or attachment based on $_GET['attach'], and increments the download count.
@@ -33,6 +34,9 @@ use SMF\Utils;
  */
 class AttachmentDownload implements ActionInterface
 {
+
+	private CacheInterface|CacheApi $cache;
+
 	/*******************
 	 * Public properties
 	 *******************/
@@ -94,7 +98,7 @@ class AttachmentDownload implements ActionInterface
 		}
 
 		// Use cache when possible.
-		if (($cache = CacheApi::get('attachment_lookup_id-' . $this->id)) != null) {
+		if (($cache = $this->cache->get(key: 'attachment_lookup_id-' . $this->id)) != null) {
 			list($file, $thumbFile) = $cache;
 
 			$file = @unserialize($file);
@@ -149,7 +153,7 @@ class AttachmentDownload implements ActionInterface
 
 			// Cache it.
 			if (!empty($file) || !empty($thumbFile)) {
-				CacheApi::put('attachment_lookup_id-' . $this->id, [serialize($file ?? null), serialize($thumbFile ?? null)], mt_rand(850, 900));
+				$this->cache->put('attachment_lookup_id-' . $this->id, [serialize($file ?? null), serialize($thumbFile ?? null)], mt_rand(850, 900));
 			}
 		}
 
@@ -160,9 +164,9 @@ class AttachmentDownload implements ActionInterface
 				$boards_allowed = [0];
 			}
 			// Check permissions and board access.
-			elseif (($boards_allowed = CacheApi::get('view_attachment_boards_id-' . User::$me->id)) == null) {
+			elseif (($boards_allowed = $this->cache->get('view_attachment_boards_id-' . User::$me->id)) == null) {
 				$boards_allowed = User::$me->boardsAllowedTo('view_attachments');
-				CacheApi::put('view_attachment_boards_id-' . User::$me->id, $boards_allowed, mt_rand(850, 900));
+				$this->cache->set('view_attachment_boards_id-' . User::$me->id, $boards_allowed, mt_rand(850, 900));
 			}
 		}
 
@@ -348,6 +352,8 @@ class AttachmentDownload implements ActionInterface
 	 */
 	protected function __construct()
 	{
+		$this->cache = CacheApi::load();
+
 		// Some defaults that we need.
 		if (!isset(Utils::$context['character_set'])) {
 			Utils::$context['character_set'] = empty(Config::$modSettings['global_character_set']) ? (empty(Lang::$txt['lang_character_set']) ? 'ISO-8859-1' : Lang::$txt['lang_character_set']) : Config::$modSettings['global_character_set'];

@@ -15,11 +15,13 @@ declare(strict_types=1);
 
 namespace SMF\Cache;
 
+use Psr\SimpleCache\CacheInterface;
+
 if (!defined('SMF')) {
 	die('No direct access...');
 }
 
-interface CacheApiInterface
+interface CacheApiInterface extends CacheInterface
 {
 	/**
 	 * Checks whether we can use the cache method performed by this API.

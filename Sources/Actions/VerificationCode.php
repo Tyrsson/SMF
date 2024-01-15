@@ -720,15 +720,23 @@ class VerificationCode implements ActionInterface
 	 */
 	protected function createWaveFile($word)
 	{
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
 		// Allow max 2 requests per 20 seconds.
-		if (($ip = CacheApi::get('wave_file/' . User::$me->ip, 20)) > 2 || ($ip2 = CacheApi::get('wave_file/' . User::$me->ip2, 20)) > 2) {
+		if (($ip = $cache->get(key: 'wave_file/' . User::$me->ip, ttl: 20)) > 2 || ($ip2 = $cache->get(key: 'wave_file/' . User::$me->ip2, ttl: 20)) > 2) {
 			Utils::sendHttpStatus(400);
 
 			die();
 		}
 
-		CacheApi::put('wave_file/' . User::$me->ip, $ip ? $ip + 1 : 1, 20);
-		CacheApi::put('wave_file/' . User::$me->ip2, $ip2 ? $ip2 + 1 : 1, 20);
+		$cache->setMultiple(
+			[
+				['key' => 'wave_file/' . User::$me->ip, 'value' => $ip ? $ip + 1 : 1],
+				['key' => 'wave_file/' . User::$me->ip2, 'value' => $ip2 ? $ip2 + 1 : 1],
+			],
+			20
+		);
 
 		// Fixate randomization for this word.
 		$tmp = unpack('n', md5($word . session_id()));

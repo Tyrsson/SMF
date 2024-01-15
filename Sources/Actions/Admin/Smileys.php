@@ -35,6 +35,7 @@ use SMF\Theme;
 use SMF\User;
 use SMF\Utils;
 use SMF\WebFetch\WebFetchApi;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * This class takes care of all administration of smileys.
@@ -155,6 +156,8 @@ class Smileys implements ActionInterface
 	/****************************
 	 * Internal static properties
 	 ****************************/
+
+	private static CacheInterface|CacheApi $cache;
 
 	/**
 	 * @var object
@@ -2267,6 +2270,8 @@ class Smileys implements ActionInterface
 	 */
 	protected function __construct()
 	{
+		self::$cache = CacheApi::load();
+
 		User::$me->isAllowedTo('manage_smileys');
 
 		Lang::load('ManageSmileys');
@@ -2783,8 +2788,13 @@ class Smileys implements ActionInterface
 	protected static function resetCache(): void
 	{
 		foreach (self::$smiley_sets as $smiley_set) {
-			CacheApi::put('parsing_smileys_' . $smiley_set['raw_path'], null, 480);
-			CacheApi::put('posting_smileys_' . $smiley_set['raw_path'], null, 480);
+			self::$cache->setMultiple(
+				[
+					['parsing_smileys_' . $smiley_set['raw_path'] => null],
+					['posting_smileys_' . $smiley_set['raw_path'] => null]
+				],
+				480
+			);
 		}
 	}
 }

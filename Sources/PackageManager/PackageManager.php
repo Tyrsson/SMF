@@ -13,6 +13,7 @@
 
 namespace SMF\PackageManager;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\BBCodeParser;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -1367,7 +1368,10 @@ class PackageManager
 		Logging::logAction(Utils::$context['uninstalling'] ? 'uninstall_package' : (!empty($is_upgrade) ? 'upgrade_package' : 'install_package'), ['package' => Utils::htmlspecialchars($packageInfo['name']), 'version' => Utils::htmlspecialchars($packageInfo['version'])], 'admin');
 
 		// Just in case, let's clear the whole cache and any minimized CSS and JS to avoid anything going up the swanny.
-		CacheApi::clean();
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+		$cache->clear();
+
 		Theme::deleteAllMinified();
 
 		foreach (['css_files', 'javascript_files'] as $file_type) {

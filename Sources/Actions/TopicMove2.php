@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Board;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -145,8 +146,12 @@ class TopicMove2 implements ActionInterface
 			// If it's still valid move onwards and upwards.
 			if ($_POST['custom_subject'] != '') {
 				if (isset($_POST['enforce_subject'])) {
+
+					/** @var CacheInterface|CacheApi */
+					$cache = CacheApi::load();
+
 					// Get a response prefix, but in the forum's default language.
-					if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = CacheApi::get('response_prefix'))) {
+					if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = $cache->get('response_prefix'))) {
 						if (Lang::$default === User::$me->language) {
 							Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 						} else {
@@ -154,7 +159,7 @@ class TopicMove2 implements ActionInterface
 							Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 							Lang::load('index');
 						}
-						CacheApi::put('response_prefix', Utils::$context['response_prefix'], 600);
+						$cache->set('response_prefix', Utils::$context['response_prefix'], 600);
 					}
 
 					Db::$db->query(

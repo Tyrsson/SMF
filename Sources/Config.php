@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace SMF;
 
+use SMF\Cache\CacheApi;
+
 /**
  * Handles loading and saving SMF's settings, both in Settings.php and database.
  * Handles checking and modifying certain server and forum configuration values.
@@ -1003,10 +1005,10 @@ class Config
 	public static function reloadModSettings(): void
 	{
 		// We need some caching support, maybe.
-		Cache\CacheApi::load();
+		$cache = Cache\CacheApi::load();
 
 		// Try to load it from the cache first; it'll never get cached if the setting is off.
-		if ((self::$modSettings = Cache\CacheApi::get('modSettings', 90)) == null) {
+		if ((self::$modSettings = $cache->get(key: 'modSettings', ttl: 90)) == null) {
 			self::$modSettings = [];
 
 			$request = Db\DatabaseApi::$db->query(
@@ -1050,7 +1052,7 @@ class Config
 			}
 
 			if (!empty(Cache\CacheApi::$enable)) {
-				Cache\CacheApi::put('modSettings', self::$modSettings, 90);
+				$cache->set('modSettings', self::$modSettings, 90);
 			}
 		}
 
@@ -1071,7 +1073,7 @@ class Config
 			)
 		) {
 			// Wipe the cached self::$modSettings values so they don't interfere with anything later.
-			Cache\CacheApi::put('modSettings', null);
+			$cache->set('modSettings');
 
 			// Redirect to the upgrader if we can.
 			if (file_exists(self::$boarddir . '/upgrade.php')) {
@@ -1115,7 +1117,7 @@ class Config
 
 		// Check the load averages?
 		if (!empty(self::$modSettings['loadavg_enable'])) {
-			if ((self::$modSettings['load_average'] = Cache\CacheApi::get('loadavg', 90)) == null) {
+			if ((self::$modSettings['load_average'] = $cache->get(key: 'loadavg', ttl: 90)) == null) {
 				self::$modSettings['load_average'] = @file_get_contents('/proc/loadavg');
 
 				if (!empty(self::$modSettings['load_average']) && preg_match('~^([^ ]+?) ([^ ]+?) ([^ ]+)~', self::$modSettings['load_average'], $matches) != 0) {
@@ -1127,7 +1129,7 @@ class Config
 				}
 
 				if (!empty(self::$modSettings['load_average']) || self::$modSettings['load_average'] === 0.0) {
-					Cache\CacheApi::put('loadavg', self::$modSettings['load_average'], 90);
+					$cache->set('loadavg', self::$modSettings['load_average'], 90);
 				}
 			}
 
@@ -1224,6 +1226,8 @@ class Config
 			return;
 		}
 
+		$cache = CacheApi::load();
+
 		$to_remove = [];
 
 		// Go check if there is any setting to be removed.
@@ -1265,7 +1269,7 @@ class Config
 			}
 
 			// Clean out the cache and make sure the cobwebs are gone too.
-			Cache\CacheApi::put('modSettings', null, 90);
+			$cache->set(key: 'modSettings', ttl: 90);
 
 			return;
 		}
@@ -1301,7 +1305,7 @@ class Config
 		);
 
 		// Kill the cache - it needs redoing now, but we won't bother ourselves with that here.
-		Cache\CacheApi::put('modSettings', null, 90);
+		$cache->set(key: 'modSettings', ttl: 90);
 	}
 
 	/**

@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\BrowserDetector;
 use SMF\Cache\CacheApi;
 use SMF\Config;
@@ -905,7 +906,10 @@ class PersonalMessage implements ActionInterface
 			return;
 		}
 
-		if (($limit = CacheApi::get('msgLimit:' . User::$me->id, 360)) === null) {
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
+		if (($limit = $cache->get(key: 'msgLimit:' . User::$me->id, ttl: 360)) === null) {
 			// @todo Why do we do this?  It seems like if they have any limit we should use it.
 			$request = Db::$db->query(
 				'',
@@ -922,7 +926,7 @@ class PersonalMessage implements ActionInterface
 			$limit = $minMessage == 0 ? 0 : $maxMessage;
 
 			// Save us doing it again!
-			CacheApi::put('msgLimit:' . User::$me->id, $limit, 360);
+			$cache->set('msgLimit:' . User::$me->id, $limit, 360);
 		}
 
 		// Prepare the context for the capacity bar.

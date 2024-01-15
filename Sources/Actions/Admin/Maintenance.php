@@ -34,6 +34,7 @@ use SMF\Theme;
 use SMF\Topic;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Forum maintenance. Important stuff.
@@ -41,6 +42,8 @@ use SMF\Utils;
 class Maintenance implements ActionInterface
 {
 	use BackwardCompatibility;
+
+	private CacheInterface|CacheApi $cache;
 
 	/*******************
 	 * Public properties
@@ -917,7 +920,7 @@ class Maintenance implements ActionInterface
 		SecurityToken::validate('admin-maint');
 
 		// Just wipe the whole cache!
-		CacheApi::clean();
+		$this->cache->clear();
 
 		Utils::$context['maintenance_finished'] = Lang::$txt['maintain_cache'];
 	}
@@ -1801,8 +1804,12 @@ class Maintenance implements ActionInterface
 
 				// Just return if we don't have any topics left to move.
 				if (empty($topics)) {
-					CacheApi::put('board-' . $id_board_from, null, 120);
-					CacheApi::put('board-' . $id_board_to, null, 120);
+					$this->cache->setMultiple(
+						[
+							['board-' . $id_board_from => null],
+							['board-' . $id_board_to => null]
+						]
+					);
 					Utils::redirectexit('action=admin;area=maintain;sa=topics;done=massmove');
 				}
 
@@ -1825,8 +1832,12 @@ class Maintenance implements ActionInterface
 		}
 
 		// Don't confuse admins by having an out of date cache.
-		CacheApi::put('board-' . $id_board_from, null, 120);
-		CacheApi::put('board-' . $id_board_to, null, 120);
+		$this->cache->setMultiple(
+			[
+				['board-' . $id_board_from => null],
+				['board-' . $id_board_to => null]
+			]
+		);
 
 		Utils::redirectexit('action=admin;area=maintain;sa=topics;done=massmove');
 	}
@@ -2322,6 +2333,8 @@ class Maintenance implements ActionInterface
 	{
 		// You absolutely must be an admin by here!
 		User::$me->isAllowedTo('admin_forum');
+
+		$this->cache = CacheApi::load();
 
 		// Need something to talk about?
 		Lang::load('ManageMaintenance');

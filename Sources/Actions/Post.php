@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Attachment;
 use SMF\BBCodeParser;
 use SMF\Board;
@@ -849,7 +850,10 @@ class Post implements ActionInterface
 	 */
 	protected function setResponsePrefix(): void
 	{
-		if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = CacheApi::get('response_prefix'))) {
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
+		if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = $cache->get('response_prefix'))) {
 			if (Lang::$default === User::$me->language) {
 				Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 			} else {
@@ -857,7 +861,7 @@ class Post implements ActionInterface
 				Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 				Lang::load('index');
 			}
-			CacheApi::put('response_prefix', Utils::$context['response_prefix'], 600);
+			$cache->set('response_prefix', Utils::$context['response_prefix'], 600);
 		}
 	}
 

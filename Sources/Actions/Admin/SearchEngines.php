@@ -29,6 +29,7 @@ use SMF\Theme;
 use SMF\Time;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Manages the settings related to search engines.
@@ -36,6 +37,8 @@ use SMF\Utils;
 class SearchEngines implements ActionInterface
 {
 	use BackwardCompatibility;
+
+	private CacheInterface|CacheApi $cache;
 
 	/*******************
 	 * Public properties
@@ -475,7 +478,7 @@ class SearchEngines implements ActionInterface
 				],
 			);
 
-			CacheApi::put('spider_search', null, 300);
+			$this->cache->set(key: 'spider_search', ttl: 300);
 			self::recacheSpiderNames();
 		}
 
@@ -724,7 +727,7 @@ class SearchEngines implements ActionInterface
 				);
 			}
 
-			CacheApi::put('spider_search', null);
+			$this->cache->set('spider_search');
 			self::recacheSpiderNames();
 
 			Utils::redirectexit('action=admin;area=sengines;sa=spiders');
@@ -1099,6 +1102,8 @@ class SearchEngines implements ActionInterface
 	 */
 	protected function __construct()
 	{
+		$this->cache = CacheApi::load();
+
 		User::$me->isAllowedTo('admin_forum');
 
 		Lang::load('Search');

@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Cache\CacheApi;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
@@ -346,7 +347,10 @@ class Credits implements ActionInterface
 		// Support for mods that use the <credits> tag via the package manager
 		Utils::$context['credits_modifications'] = [];
 
-		if (($mods = CacheApi::get('mods_credits', 86400)) === null) {
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
+		if (($mods = $cache->get(key: 'mods_credits', ttl: 86400)) === null) {
 			$mods = [];
 
 			$request = Db::$db->query(
@@ -379,7 +383,7 @@ class Credits implements ActionInterface
 				$mods[] = $mod_name . (!empty($license) ? ' | ' . $license : '') . (!empty($copyright) ? ' | ' . $copyright : '');
 			}
 
-			CacheApi::put('mods_credits', $mods, 86400);
+			$cache->set('mods_credits', $mods, 86400);
 		}
 
 		Utils::$context['credits_modifications'] = $mods;

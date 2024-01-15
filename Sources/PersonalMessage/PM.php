@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace SMF\PersonalMessage;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Actions\Notify;
 use SMF\Actions\PersonalMessage as PMAction;
 use SMF\ArrayAccessHelper;
@@ -157,6 +158,8 @@ class PM implements \ArrayAccess
 	 * Internal properties
 	 *********************/
 
+	private static CacheInterface|CacheApi $cache;
+
 	/**
 	 * @var array
 	 *
@@ -221,6 +224,7 @@ class PM implements \ArrayAccess
 		$this->set($props);
 		$this->received = Received::loadByPm($this->id);
 		$this->folder = $this->member_from !== User::$me->id ? 'inbox' : 'sent';
+		self::$cache = CacheApi::load();
 		self::$loaded[$id] = $this;
 	}
 
@@ -628,7 +632,7 @@ class PM implements \ArrayAccess
 			$pm->format();
 
 			// Add 'Re: ' to it....
-			if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = CacheApi::get('response_prefix'))) {
+			if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = self::$cache->get('response_prefix'))) {
 				if (Lang::$default === User::$me->language) {
 					Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 				} else {
@@ -637,7 +641,7 @@ class PM implements \ArrayAccess
 					Lang::load('index');
 				}
 
-				CacheApi::put('response_prefix', Utils::$context['response_prefix'], 600);
+				self::$cache->set('response_prefix', Utils::$context['response_prefix'], 600);
 			}
 
 			$form_subject = $pm->formatted['subject'];
@@ -1746,7 +1750,7 @@ class PM implements \ArrayAccess
 		}
 
 		// Any cached numbers may be wrong now.
-		CacheApi::put('labelCounts:' . User::$me->id, null, 720);
+		self::$cache->set(key: 'labelCounts:' . User::$me->id, ttl: 720);
 	}
 
 	/**
@@ -1865,7 +1869,7 @@ class PM implements \ArrayAccess
 			Db::$db->free_result($result);
 
 			// Need to store all this.
-			CacheApi::put('labelCounts:' . $owner, Utils::$context['labels'], 720);
+			self::$cache->set('labelCounts:' . $owner, Utils::$context['labels'], 720);
 			User::updateMemberData($owner, ['unread_messages' => $total_unread]);
 
 			// If it was for the current member, reflect this in User::$me as well.

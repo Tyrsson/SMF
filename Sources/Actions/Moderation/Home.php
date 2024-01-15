@@ -13,6 +13,7 @@
 
 namespace SMF\Actions\Moderation;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Actions\ActionInterface;
 use SMF\BBCodeParser;
 use SMF\Cache\CacheApi;
@@ -33,6 +34,9 @@ use SMF\Utils;
  */
 class Home implements ActionInterface
 {
+
+	private CacheInterface|cacheApi $cache;
+
 	/*******************
 	 * Public properties
 	 *******************/
@@ -170,6 +174,7 @@ class Home implements ActionInterface
 	 */
 	protected function __construct()
 	{
+		$this->cache = CacheApi::load();
 		Theme::loadTemplate('ModerationCenter');
 		Theme::loadJavaScriptFile('admin.js', ['minimize' => true], 'smf_admin');
 
@@ -211,8 +216,8 @@ class Home implements ActionInterface
 				);
 
 				// Clear the cache.
-				CacheApi::put('moderator_notes', null, 240);
-				CacheApi::put('moderator_notes_total', null, 240);
+				$this->cache->set(key: 'moderator_notes', ttl: 240);
+				$this->cache->set(key: 'moderator_notes_total', ttl: 240);
 			}
 
 			// Everything went better than expected!
@@ -263,8 +268,8 @@ class Home implements ActionInterface
 			);
 
 			// Clear the cache.
-			CacheApi::put('moderator_notes', null, 240);
-			CacheApi::put('moderator_notes_total', null, 240);
+			$this->cache->set(key: 'moderator_notes', ttl: 240);
+			$this->cache->set(key: 'moderator_notes_total', ttl: 240);
 
 			// Tell them the message was deleted.
 			$_SESSION['rc_confirmation'] = 'message_deleted';
@@ -273,7 +278,7 @@ class Home implements ActionInterface
 		}
 
 		// How many notes in total?
-		if (($moderator_notes_total = CacheApi::get('moderator_notes_total', 240)) === null) {
+		if (($moderator_notes_total = $this->cache->get(key:'moderator_notes_total', ttl: 240)) === null) {
 			$request = Db::$db->query(
 				'',
 				'SELECT COUNT(*)
@@ -286,14 +291,14 @@ class Home implements ActionInterface
 			list($moderator_notes_total) = Db::$db->fetch_row($request);
 			Db::$db->free_result($request);
 
-			CacheApi::put('moderator_notes_total', $moderator_notes_total, 240);
+			$this->cache->set('moderator_notes_total', $moderator_notes_total, 240);
 		}
 
 		// Grab the current notes. We can only use the cache for the first page of notes.
 		$offset = isset($_GET['notes']) && isset($_GET['start']) ? $_GET['start'] : 0;
 		$start = (int) ($_GET['start'] ?? 0);
 
-		if ($offset != 0 || ($moderator_notes = CacheApi::get('moderator_notes', 240)) === null) {
+		if ($offset != 0 || ($moderator_notes = $this->cache->get(key: 'moderator_notes', ttl: 240)) === null) {
 			$moderator_notes = [];
 
 			$request = Db::$db->query(
@@ -316,7 +321,7 @@ class Home implements ActionInterface
 			Db::$db->free_result($request);
 
 			if ($offset == 0) {
-				CacheApi::put('moderator_notes', $moderator_notes, 240);
+				$this->cache->set('moderator_notes', $moderator_notes, 240);
 			}
 		}
 
@@ -395,7 +400,7 @@ class Home implements ActionInterface
 	 */
 	protected function watchedUsers(): void
 	{
-		if (($watched_users = CacheApi::get('recent_user_watches', 240)) === null) {
+		if (($watched_users = $this->cache->get(key: 'recent_user_watches', ttl: 240)) === null) {
 			Config::$modSettings['warning_watch'] = empty(Config::$modSettings['warning_watch']) ? 1 : Config::$modSettings['warning_watch'];
 
 			$watched_users = [];
@@ -417,7 +422,7 @@ class Home implements ActionInterface
 			}
 			Db::$db->free_result($request);
 
-			CacheApi::put('recent_user_watches', $watched_users, 240);
+			$this->cache->set('recent_user_watches', $watched_users, 240);
 		}
 
 		foreach ($watched_users as $user) {
@@ -443,7 +448,7 @@ class Home implements ActionInterface
 		// Got the info already?
 		$cachekey = md5(Utils::jsonEncode(User::$me->mod_cache['bq']));
 
-		if (($reported_posts = CacheApi::get('reported_posts_' . $cachekey, 90)) === null) {
+		if (($reported_posts = $this->cache->get(key: 'reported_posts_' . $cachekey, ttl:90)) === null) {
 			// By George, that means we in a position to get the reports, jolly good.
 			$reported_posts = [];
 
@@ -472,7 +477,7 @@ class Home implements ActionInterface
 			}
 			Db::$db->free_result($request);
 
-			CacheApi::put('reported_posts_' . $cachekey, $reported_posts, 90);
+			$this->cache->set('reported_posts_' . $cachekey, $reported_posts, 90);
 		}
 
 		foreach ($reported_posts as $i => $row) {
@@ -504,7 +509,7 @@ class Home implements ActionInterface
 
 		$cachekey = md5(Utils::jsonEncode((int) User::$me->allowedTo('moderate_forum')));
 
-		if (($reported_users = CacheApi::get('reported_users_' . $cachekey, 90)) === null) {
+		if (($reported_users = $this->cache->get(key: 'reported_users_' . $cachekey, ttl: 90)) === null) {
 			$reported_users = [];
 
 			$request = Db::$db->query(
@@ -531,7 +536,7 @@ class Home implements ActionInterface
 			}
 			Db::$db->free_result($request);
 
-			CacheApi::put('reported_users_' . $cachekey, $reported_users, 90);
+			$this->cache->set('reported_users_' . $cachekey, $reported_users, 90);
 		}
 
 		foreach ($reported_users as $i => $row) {

@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Cache\CacheApi;
 use SMF\Config;
 use SMF\Db\DatabaseApi as Db;
@@ -194,8 +195,11 @@ class Stats implements ActionInterface
 		// Let's calculate gender stats only every four minutes.
 		$disabled_fields = isset(Config::$modSettings['disabled_profile_fields']) ? explode(',', Config::$modSettings['disabled_profile_fields']) : [];
 
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
 		if (!in_array('gender', $disabled_fields)) {
-			if ((Utils::$context['gender'] = CacheApi::get('stats_gender', 240)) == null) {
+			if ((Utils::$context['gender'] = $cache->get(key: 'stats_gender', ttl: 240)) == null) {
 				$result = Db::$db->query(
 					'',
 					'SELECT default_value
@@ -236,7 +240,7 @@ class Stats implements ActionInterface
 
 				Utils::$context['gender'][$default_gender] += Config::$modSettings['totalMembers'] - array_sum(Utils::$context['gender']);
 
-				CacheApi::put('stats_gender', Utils::$context['gender'], 240);
+				$cache->set('stats_gender', Utils::$context['gender'], 240);
 			}
 		}
 
@@ -480,7 +484,7 @@ class Stats implements ActionInterface
 		}
 
 		// Try to cache this when possible, because it's a little unavoidably slow.
-		if (($members = CacheApi::get('stats_top_starters', 360)) == null) {
+		if (($members = $cache->get(key: 'stats_top_starters', ttl: 360)) == null) {
 			$request = Db::$db->query(
 				'',
 				'SELECT id_member_started, COUNT(*) AS hits
@@ -500,7 +504,7 @@ class Stats implements ActionInterface
 			}
 			Db::$db->free_result($request);
 
-			CacheApi::put('stats_top_starters', $members, 360);
+			$cache->set('stats_top_starters', $members, 360);
 		}
 
 		if (empty($members)) {
@@ -549,7 +553,7 @@ class Stats implements ActionInterface
 		}
 
 		// Time online top 10.
-		$temp = CacheApi::get('stats_total_time_members', 600);
+		$temp = $cache->get(key: 'stats_total_time_members', ttl: 600);
 		$members_result = Db::$db->query(
 			'',
 			'SELECT id_member, real_name, total_time_logged_in
@@ -611,7 +615,7 @@ class Stats implements ActionInterface
 
 		// Cache the ones we found for a bit, just so we don't have to look again.
 		if ($temp !== $temp2) {
-			CacheApi::put('stats_total_time_members', $temp2, 480);
+			$cache->set('stats_total_time_members', $temp2, 480);
 		}
 
 		// Likes.

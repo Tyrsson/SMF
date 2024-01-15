@@ -18,6 +18,7 @@ use SMF\Db\DatabaseApi as Db;
 use SMF\ErrorHandler;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * This simple action adds/removes the passed user from the current user's buddy list.
@@ -27,6 +28,9 @@ use SMF\Utils;
  */
 class BuddyListToggle implements ActionInterface
 {
+
+	private CacheInterface|CacheApi $cache;
+
 	/*******************
 	 * Public properties
 	 *******************/
@@ -77,7 +81,7 @@ class BuddyListToggle implements ActionInterface
 			User::$me->buddies[] = $this->userReceiver;
 
 			// And add a nice alert. Don't abuse though!
-			if ((CacheApi::get('Buddy-sent-' . User::$me->id . '-' . $this->userReceiver, 86400)) == null) {
+			if (($this->cache->get(key: 'Buddy-sent-' . User::$me->id . '-' . $this->userReceiver, ttl: 86400)) == null) {
 				Db::$db->insert(
 					'insert',
 					'{db_prefix}background_tasks',
@@ -100,7 +104,7 @@ class BuddyListToggle implements ActionInterface
 				);
 
 				// Store this in a cache entry to avoid creating multiple alerts. Give it a long life cycle.
-				CacheApi::put('Buddy-sent-' . User::$me->id . '-' . $this->userReceiver, '1', 86400);
+				$this->cache->set('Buddy-sent-' . User::$me->id . '-' . $this->userReceiver, '1', 86400);
 			}
 		}
 

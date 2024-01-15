@@ -589,8 +589,11 @@ class Image
 		// Make sure it is a proper URL.
 		$url = str_replace(' ', '%20', $url);
 
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
 		// Can we pull this from the cache... please please?
-		if (($temp = CacheApi::get('url_image_size-' . md5($url), 240)) !== null) {
+		if (($temp = $cache->get(key: 'url_image_size-' . md5($url), ttl: 240)) !== null) {
 			return $temp;
 		}
 
@@ -602,7 +605,7 @@ class Image
 
 		// If this took a long time, we may never have to do it again, but then again we might...
 		if (microtime(true) - TIME_START > 0.8) {
-			CacheApi::put('url_image_size-' . md5($url), [$image->width, $image->height], 240);
+			$cache->set('url_image_size-' . md5($url), [$image->width, $image->height], 240);
 		}
 
 		return [$image->width, $image->height];

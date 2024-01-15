@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace SMF\Cache\APIs;
 
+use DateInterval;
 use FilesystemIterator;
 use GlobIterator;
 use SMF\Cache\CacheApi;
@@ -108,27 +109,28 @@ class FileBased extends CacheApi implements CacheApiInterface
 		$ttl = $ttl !== null ? $ttl : $this->ttl;
 
 		if ($value === null) {
-			@unlink($file);
+			unlink($file);
 
 			return true;
 		}
-			$cache_data = json_encode(
-				[
-					'expiration' => time() + $ttl,
-					'value' => $value,
-				],
-				JSON_NUMERIC_CHECK,
-			);
 
-			// Write out the cache file, check that the cache write was successful; all the data must be written
-			// If it fails due to low diskspace, or other, remove the cache file
-			if ($this->writeFile($file, $cache_data) !== strlen($cache_data)) {
-				@unlink($file);
+		$cache_data = json_encode(
+			[
+				'expiration' => time() + $ttl,
+				'value' => $value,
+			],
+			JSON_NUMERIC_CHECK,
+		);
 
-				return false;
-			}
+		// Write out the cache file, check that the cache write was successful; all the data must be written
+		// If it fails due to low diskspace, or other, remove the cache file
+		if ($this->writeFile($file, $cache_data) !== strlen($cache_data)) {
+			@unlink($file);
 
-			return true;
+			return false;
+		}
+
+		return true;
 
 	}
 

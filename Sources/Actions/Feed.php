@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Attachment;
 use SMF\BBCodeParser;
 use SMF\Board;
@@ -476,9 +477,12 @@ class Feed implements ActionInterface
 
 		$cache_t = microtime(true);
 
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
 		// Get the associative array representing the xml.
 		if (!empty(CacheApi::$enable) && (!User::$me->is_guest || CacheApi::$enable >= 3)) {
-			$this->data = CacheApi::get('xmlfeed-' . $this->format . ':' . (User::$me->is_guest ? '' : User::$me->id . '-') . $cachekey, 240) ?? [];
+			$this->data = $cache->get(key: 'xmlfeed-' . $this->format . ':' . (User::$me->is_guest ? '' : User::$me->id . '-') . $cachekey, ttl: 240) ?? [];
 		}
 
 		if (empty($this->data)) {
@@ -498,7 +502,7 @@ class Feed implements ActionInterface
 					|| (!User::$me->is_guest && (microtime(true) - $cache_t > 0.2))
 				)
 			) {
-				CacheApi::put('xmlfeed-' . $this->format . ':' . (User::$me->is_guest ? '' : User::$me->id . '-') . $cachekey, $this->data, 240);
+				$cache->set('xmlfeed-' . $this->format . ':' . (User::$me->is_guest ? '' : User::$me->id . '-') . $cachekey, $this->data, 240);
 			}
 		}
 

@@ -30,6 +30,7 @@ use SMF\Theme;
 use SMF\User;
 use SMF\Utils;
 use SMF\WebFetch\WebFetchApi;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * This class handles the administration of languages tasks.
@@ -37,6 +38,8 @@ use SMF\WebFetch\WebFetchApi;
 class Languages implements ActionInterface
 {
 	use BackwardCompatibility;
+
+	private CacheInterface|CacheApi $cache;
 
 	/*******************
 	 * Public properties
@@ -449,8 +452,8 @@ class Languages implements ActionInterface
 
 		// Kill the cache, as it is now invalid..
 		if (!empty(CacheApi::$enable)) {
-			CacheApi::put('known_languages', null, !empty(CacheApi::$enable) && CacheApi::$enable < 1 ? 86400 : 3600);
-			CacheApi::put('known_languages_all', null, !empty(CacheApi::$enable) && CacheApi::$enable < 1 ? 86400 : 3600);
+			$this->cache->set(key: 'known_languages', ttl: !empty(CacheApi::$enable) && CacheApi::$enable < 1 ? 86400 : 3600);
+			$this->cache->set(key: 'known_languages_all', ttl: !empty(CacheApi::$enable) && CacheApi::$enable < 1 ? 86400 : 3600);
 		}
 
 		new ItemList($listOptions);
@@ -847,7 +850,7 @@ class Languages implements ActionInterface
 
 			// Fifth, update Lang::get() cache.
 			if (!empty(CacheApi::$enable)) {
-				CacheApi::put('known_languages', null, !empty(CacheApi::$enable) && CacheApi::$enable < 1 ? 86400 : 3600);
+				$this->cache->set(key: 'known_languages', ttl: !empty(CacheApi::$enable) && CacheApi::$enable < 1 ? 86400 : 3600);
 			}
 
 			// Sixth, if we deleted the default language, set us back to english?

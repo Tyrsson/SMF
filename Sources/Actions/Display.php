@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Alert;
 use SMF\Attachment;
 use SMF\Board;
@@ -986,8 +987,11 @@ class Display implements ActionInterface
 			'child_level' => Board::$info->child_level,
 		];
 
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
 		// For quick reply we need a response prefix in the default forum language.
-		if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = CacheApi::get('response_prefix', 600))) {
+		if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = $cache->get(key: 'response_prefix', ttl: 600))) {
 			if (Lang::$default === User::$me->language) {
 				Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 			} else {
@@ -995,7 +999,7 @@ class Display implements ActionInterface
 				Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 				Lang::load('index');
 			}
-			CacheApi::put('response_prefix', Utils::$context['response_prefix'], 600);
+			$cache->set('response_prefix', Utils::$context['response_prefix'], 600);
 		}
 
 		// Are we showing signatures - or disabled fields?

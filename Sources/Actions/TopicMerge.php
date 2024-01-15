@@ -656,8 +656,11 @@ class TopicMerge implements ActionInterface
 			}
 		}
 
+		/** @var CacheInterface|CachApi */
+		$cache = CacheApi::load();
+
 		// Grab the response prefix (like 'Re: ') in the default forum language.
-		if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = CacheApi::get('response_prefix'))) {
+		if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = $cache->get('response_prefix'))) {
 			if (Lang::$default === User::$me->language) {
 				Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 			} else {
@@ -666,7 +669,7 @@ class TopicMerge implements ActionInterface
 				Lang::load('index');
 			}
 
-			CacheApi::put('response_prefix', Utils::$context['response_prefix'], 600);
+			$cache->set('response_prefix', Utils::$context['response_prefix'], 600);
 		}
 
 		// Change the topic IDs of all messages that will be merged.  Also adjust subjects if 'enforce subject' was checked.

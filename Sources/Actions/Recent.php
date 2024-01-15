@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\BBCodeParser;
 use SMF\Board;
 use SMF\Cache\CacheApi;
@@ -447,9 +448,12 @@ class Recent implements ActionInterface
 			return;
 		}
 
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
 		$cache_key = 'recent-' . User::$me->id . '-' . md5(Utils::jsonEncode(array_diff_key($this->query_parameters, ['max_id_msg' => 0]))) . '-' . Utils::$context['start'];
 
-		if (empty(CacheApi::$enable) || ($this->messages = CacheApi::get($cache_key, 120)) == null) {
+		if (empty(CacheApi::$enable) || ($this->messages = $cache->get(key: $cache_key, ttl: 120)) == null) {
 			$done = false;
 
 			while (!$done) {
@@ -492,7 +496,7 @@ class Recent implements ActionInterface
 			Db::$db->free_result($request);
 
 			if (!empty($cache_results)) {
-				CacheApi::put($cache_key, $this->messages, 120);
+				$cache->set($cache_key, $this->messages, 120);
 			}
 		}
 	}

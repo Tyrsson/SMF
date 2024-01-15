@@ -37,7 +37,7 @@ class DailyMaintenance extends ScheduledTask
 	public function execute(): bool
 	{
 		// First clean out the cache.
-		CacheApi::clean();
+		(CacheApi::load())->clear();
 
 		// If warning decrement is enabled and we have people who have not had a new warning in 24 hours, lower their warning level.
 		list(, , Config::$modSettings['warning_decrement']) = explode(',', Config::$modSettings['warning_settings']);

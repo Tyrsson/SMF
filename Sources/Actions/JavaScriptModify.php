@@ -13,6 +13,7 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\BBCodeParser;
 use SMF\Board;
 use SMF\Cache\CacheApi;
@@ -224,8 +225,11 @@ class JavaScriptModify implements ActionInterface
 
 			// Changing the first subject updates other subjects to 'Re: new_subject'.
 			if (isset($_POST['subject'], $_REQUEST['change_all_subjects'])   && $row['id_first_msg'] == $row['id_msg'] && !empty($row['num_replies']) && (User::$me->allowedTo('modify_any') || ($row['id_member_started'] == User::$me->id && User::$me->allowedTo('modify_replies')))) {
+				// we only need this now
+				/** @var CacheInterface|CacheApi */
+				$cache = CacheApi::load();
 				// Get the proper (default language) response prefix first.
-				if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = CacheApi::get('response_prefix'))) {
+				if (!isset(Utils::$context['response_prefix']) && !(Utils::$context['response_prefix'] = $cache->get('response_prefix'))) {
 					if (Lang::$default === User::$me->language) {
 						Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 					} else {
@@ -233,7 +237,7 @@ class JavaScriptModify implements ActionInterface
 						Utils::$context['response_prefix'] = Lang::$txt['response_prefix'];
 						Lang::load('index');
 					}
-					CacheApi::put('response_prefix', Utils::$context['response_prefix'], 600);
+					$cache->set('response_prefix', Utils::$context['response_prefix'], 600);
 				}
 
 				Db::$db->query(

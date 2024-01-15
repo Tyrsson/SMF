@@ -24,6 +24,7 @@ use SMF\Menu;
 use SMF\Theme;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Handles anti-spam settings.
@@ -31,6 +32,8 @@ use SMF\Utils;
 class AntiSpam implements ActionInterface
 {
 	use BackwardCompatibility;
+
+	private CacheInterface|CacheApi $cache;
 
 	/****************************
 	 * Internal static properties
@@ -53,6 +56,8 @@ class AntiSpam implements ActionInterface
 	 */
 	public function execute(): void
 	{
+		$this->cache = CacheApi::load();
+
 		$config_vars = self::getConfigVars();
 
 		// You need to be an admin to edit settings!
@@ -295,7 +300,7 @@ class AntiSpam implements ActionInterface
 			ACP::saveDBSettings($save_vars);
 			$_SESSION['adm-save'] = true;
 
-			CacheApi::put('verificationQuestions', null, 300);
+			$this->cache->set(key: 'verificationQuestions', ttl: 300);
 
 			Utils::redirectexit('action=admin;area=antispam');
 		}

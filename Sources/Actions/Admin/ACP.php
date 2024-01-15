@@ -30,12 +30,16 @@ use SMF\Theme;
 use SMF\Url;
 use SMF\User;
 use SMF\Utils;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * This class, unpredictable as this might be, handles basic administration.
  */
 class ACP implements ActionInterface
 {
+
+	private static CacheInterface|CacheApi $cache;
+
 	/*******************
 	 * Public properties
 	 *******************/
@@ -1716,7 +1720,7 @@ class ACP implements ActionInterface
 		);
 
 		// Make sure we invalidate any cache.
-		CacheApi::put('theme_settings-' . Theme::$current->settings['theme_id'] . ':' . User::$me->id, null, 0);
+		self::$cache->set(key: 'theme_settings-' . Theme::$current->settings['theme_id'] . ':' . User::$me->id,  ttl: 0);
 	}
 
 	/**
@@ -1863,6 +1867,7 @@ class ACP implements ActionInterface
 	 */
 	protected function __construct()
 	{
+		self::$cache = CacheApi::load();
 		// Load the language and templates....
 		Lang::load('Admin');
 		Theme::loadTemplate('Admin');

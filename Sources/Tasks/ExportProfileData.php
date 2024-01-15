@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace SMF\Tasks;
 
 use DOMDocument;
+use Psr\SimpleCache\CacheInterface;
 use SMF\Actions\Feed;
 use SMF\Actions\Profile\Export;
 use SMF\Cache\CacheApi;
@@ -1050,6 +1051,9 @@ class ExportProfileData extends BackgroundTask
 		// Get the data.
 		$xml_data = call_user_func([$feed, $included[$datatype]['func']]);
 
+		/** @var CacheInterface|CacheApi */
+		$cache = CacheApi::load();
+
 		// No data retrieved? Just move on then.
 		if (empty($xml_data)) {
 			$datatype_done = true;
@@ -1065,12 +1069,12 @@ class ExportProfileData extends BackgroundTask
 			// Cache for subsequent reuse.
 			$profile_basic_items = Utils::$context['feed']['items'];
 
-			CacheApi::put('export_profile_basic-' . $uid, $profile_basic_items, Taskrunner::MAX_CLAIM_THRESHOLD);
+			$cache->set('export_profile_basic-' . $uid, $profile_basic_items, Taskrunner::MAX_CLAIM_THRESHOLD);
 		}
 		// Posts and PMs...
 		else {
 			// We need the basic profile data in every export file.
-			$profile_basic_items = CacheApi::get('export_profile_basic-' . $uid, Taskrunner::MAX_CLAIM_THRESHOLD);
+			$profile_basic_items = $cache->get(key: 'export_profile_basic-' . $uid, ttl: Taskrunner::MAX_CLAIM_THRESHOLD);
 
 			if (empty($profile_basic_items)) {
 				$profile_data = call_user_func([$feed, $included['profile']['func']]);
@@ -1079,7 +1083,7 @@ class ExportProfileData extends BackgroundTask
 
 				$profile_basic_items = Utils::$context['feed']['items'];
 
-				CacheApi::put('export_profile_basic-' . $uid, $profile_basic_items, Taskrunner::MAX_CLAIM_THRESHOLD);
+				$cache->set('export_profile_basic-' . $uid, $profile_basic_items, Taskrunner::MAX_CLAIM_THRESHOLD);
 
 				unset(Utils::$context['feed']);
 			}

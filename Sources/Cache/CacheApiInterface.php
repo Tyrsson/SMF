@@ -32,13 +32,6 @@ interface CacheApiInterface extends CacheInterface
 	public function isSupported(bool $test = false): bool;
 
 	/**
-	 * Connects to the cache method. This defines our $key. If this fails, we return false, otherwise we return true.
-	 *
-	 * @return bool Whether or not the cache method was connected to.
-	 */
-	public function connect(): bool;
-
-	/**
 	 * Retrieves an item from the cache.
 	 *
 	 * @param string $key The key to use, the prefix is applied to the key name.

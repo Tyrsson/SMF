@@ -19,6 +19,7 @@ use DateInterval;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use SMF\BackwardCompatibility;
+use SMF\Cache\Driver\FileSystem;
 use SMF\Config;
 use SMF\IntegrationHook;
 use SMF\Utils;
@@ -31,13 +32,13 @@ use function is_bool;
 use function is_numeric;
 use function sprintf;
 
-abstract class CacheApi
+class Cache
 {
 	use BackwardCompatibility;
 
 	public const APIS_FOLDER = __DIR__ . '/APIs';
 	public const APIS_NAMESPACE = __NAMESPACE__ . '\\APIs\\';
-	public const APIS_DEFAULT = 'FileBased';
+	public const APIS_DEFAULT = FileSystem::class;
 
 	/**
 	 * @var array
@@ -153,9 +154,13 @@ abstract class CacheApi
 	 * Does basic setup of a cache method when we create the object but before we call connect.
 	 *
 	 */
-	public function __construct()
-	{
+	public function __construct(
+		private DriverInterface $driver,
+	) {
 		$this->setPrefix();
+		if ($this->setPrefix()) {
+			$this->driver->setPrefix($this->prefix);
+		}
 	}
 
 	/**
@@ -261,16 +266,6 @@ abstract class CacheApi
 	}
 
 	/**
-	 * Closes connections to the cache method.
-	 *
-	 * @return bool Whether the connections were closed.
-	 */
-	public function quit(): bool
-	{
-		return true;
-	}
-
-	/**
 	 * Specify custom settings that the cache API supports.
 	 *
 	 * @param array $config_vars Additional config_vars, see ManageSettings.php for usage.
@@ -342,9 +337,7 @@ abstract class CacheApi
 	 * Try to load up a supported caching method.
 	 * This is saved in $loadedApi if we are not overriding it.
 	 *
-	 * @todo Add a reference to Utils::$context['instances'] as well?
-	 *
-	 * @param string $overrideCache Allows manually specifying a cache accelerator engine.
+	 * @param string class-string $overrideCache Allows manually specifying a cache accelerator engine.
 	 * @param bool $fallbackSMF Use the default SMF method if the accelerator fails.
 	 * @return ?object An instance of a child class of this class, or false on failure.
 	 */
@@ -355,6 +348,7 @@ abstract class CacheApi
 		}
 
 		if (!isset(self::$accelerator)) {
+			// todo: update setting creation to pass ApiClass::class
 			self::$accelerator = Config::$cache_accelerator;
 		}
 
@@ -563,7 +557,7 @@ abstract class CacheApi
 		$value = $value === null ? null : Utils::jsonEncode($value);
 		self::$loadedApi->putData($key, $value, $ttl);
 
-		if (class_exists('SMF\\IntegrationHook', false)) {
+		if (class_exists(IntegrationHook::class, false)) {
 			IntegrationHook::call('cache_put_data', [&$key, &$value, &$ttl]);
 		}
 
@@ -596,7 +590,7 @@ abstract class CacheApi
 		}
 
 		// Ask the API to get the data.
-		$value = self::$loadedApi->getData($key, $ttl);
+		$value = $this->driver->get(key: $key, ttl: $ttl);
 
 		if (isset(Config::$db_show_debug) && Config::$db_show_debug === true) {
 			self::$hits[self::$count_hits]['t'] = microtime(true) - $st;
@@ -628,7 +622,7 @@ abstract class CacheApi
 			return false;
 		}
 
-		if (!$this->isCacheableValue($value)) {
+		if (!$this->driver->isCacheableValue($value)) {
 			throw new InvalidArgumentException(
 				sprintf(
 					'$value must be of type string, int, float, bool, null, array, object received: %s',
@@ -644,15 +638,16 @@ abstract class CacheApi
 		self::$count_hits++;
 
 		if (isset(Config::$db_show_debug) && Config::$db_show_debug === true) {
-			self::$hits[self::$count_hits] = ['k' => $key, 'd' => 'put', 's' => $value === null ? 0 : strlen(Utils::jsonEncode($value))];
+			self::$hits[self::$count_hits] = ['k' => $key, 'd' => 'set', 's' => $value === null ? 0 : strlen(Utils::jsonEncode($value))];
 			$st = microtime(true);
 		}
 
-		// The API will handle the rest.
-		$value = $value === null ? null : Utils::jsonEncode($value);
-		self::$loadedApi->putData($key, $value, $ttl);
+		// proxy to the driver
+		//$value = $value === null ? null : Utils::jsonEncode($value);
+		$this->driver->set($key, $value, $ttl);
 
 		if (class_exists(IntegrationHook::class, false)) {
+			// todo: update hook name or transition to events
 			IntegrationHook::call('cache_put_data', [&$key, &$value, &$ttl]);
 		}
 
@@ -670,14 +665,8 @@ abstract class CacheApi
 
 	public function clear(string $type = ''): bool
 	{
-		// If we can't get to the API, can't do this.
-		// todo: instanceof check
-		if (empty(self::$loadedApi)) {
-			return false;
-		}
-
-		// Ask the API to do the heavy lifting. cleanCache also calls invalidateCache to be sure.
-		self::$loadedApi->cleanCache($type);
+		// proxy to the driver
+		$this->driver->clear($type);
 
 		IntegrationHook::call('integrate_clean_cache');
 
@@ -722,33 +711,12 @@ abstract class CacheApi
 		return true;
 	}
 
-	public function isCacheableValue($value): bool
-	{
-		if (is_array($value)) {
-			return true;
-		}
-		if (is_string($value)) {
-			return true;
-		}
-		if (is_object($value)) {
-			return true;
-		}
-		if (is_numeric($value)) {
-			return true;
-		}
-		if (is_bool($value)) {
-			return true;
-		}
-		if ($value === null) {
-			return true;
-		}
-		return false;
-	}
+
 }
 
 // Export properties to global namespace for backward compatibility.
-if (is_callable([CacheApi::class, 'exportStatic'])) {
-	CacheApi::exportStatic();
+if (is_callable([Cache::class, 'exportStatic'])) {
+	Cache::exportStatic();
 }
 
 ?>

@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace SMF\Cache;
 
 use SMF\Cache\DriverInterface;
+use SMF\Config;
+
+use function is_writable;
+use function substr;
+use function strrpos;
+use function touch;
 
 abstract class AbstractDriver implements DriverInterface
 {
@@ -12,7 +18,44 @@ abstract class AbstractDriver implements DriverInterface
 	// set the SMF default ttl
 	protected ?int $ttl = 120;
 
-	public function isCacheableValue($value): bool
+	/**
+	 * Invalidate all cached data.
+	 *
+	 * @return bool Whether or not we could invalidate the cache.
+	 */
+	public function invalidateCache(): bool
+	{
+		// Invalidate cache, to be sure!
+		// ... as long as index.php can be modified, anyway.
+		if (is_writable(Config::$cachedir . '/' . 'index.php')) {
+			@touch(Config::$cachedir . '/' . 'index.php');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Gets the class name identifier of the current driver.
+	 *
+	 * @return string the Driver class name.
+	 */
+	final public function getDriverClassName(): string
+	{
+		$class_name = static::class;
+
+		if ($position = strrpos($class_name, '\\')) {
+			return substr($class_name, $position + 1);
+		}
+
+		return $class_name;
+	}
+
+	/**
+	 *
+	 * @param mixed $value
+	 * @return bool
+	 */
+	final public function isCacheableValue($value): bool
 	{
 		if (is_array($value)) {
 			return true;

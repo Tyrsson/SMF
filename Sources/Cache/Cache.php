@@ -270,9 +270,9 @@ class Cache
 	 *
 	 * @param array $config_vars Additional config_vars, see ManageSettings.php for usage.
 	 */
-	public function cacheSettings(array &$config_vars): void
-	{
-	}
+	// public function cacheSettings(array &$config_vars): void
+	// {
+	// }
 
 	/**
 	 * Gets the latest version of SMF this is compatible with.
@@ -313,21 +313,6 @@ class Cache
 	{
 	}
 
-	/**
-	 * Gets the class identifier of the current caching API implementation.
-	 *
-	 * @return string the unique identifier for the current class implementation.
-	 */
-	public function getImplementationClassKeyName(): string
-	{
-		$class_name = get_class($this);
-
-		if ($position = strrpos($class_name, '\\')) {
-			return substr($class_name, $position + 1);
-		}
-
-		return get_class($this);
-	}
 
 	/***********************
 	 * Public static methods

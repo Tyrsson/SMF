@@ -187,7 +187,7 @@ class FileSystem extends AbstractDriver
 	 */
 	public function cacheSettings(array &$config_vars): void
 	{
-		$class_name = $this->getImplementationClassKeyName();
+		$class_name = $this->getDriverClassName();
 		$class_name_txt_key = strtolower($class_name);
 
 		$config_vars[] = Lang::$txt['cache_' . $class_name_txt_key . '_settings'];

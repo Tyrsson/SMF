@@ -159,7 +159,6 @@ class Cache
 	public function __construct(
 		private DriverInterface $driver,
 		private ?ClockInterface $clock = null,
-
 	) {
 		if ($this->setPrefix()) {
 			$this->driver->setPrefix($this->prefix);

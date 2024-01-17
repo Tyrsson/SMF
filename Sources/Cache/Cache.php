@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace SMF\Cache;
 
 use DateInterval;
+use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use SMF\BackwardCompatibility;
@@ -36,9 +37,11 @@ class Cache
 {
 	use BackwardCompatibility;
 
-	public const APIS_FOLDER = __DIR__ . '/APIs';
+	public const APIS_FOLDER = __DIR__ . '/Driver';
 	public const APIS_NAMESPACE = __NAMESPACE__ . '\\APIs\\';
-	public const APIS_DEFAULT = FileSystem::class;
+
+
+	public static $default_driver = FileSystem::class;
 
 	/**
 	 * @var array
@@ -98,7 +101,7 @@ class Cache
 	/**
 	 * @var int
 	 *
-	 * The number of times the cache has been acceesed.
+	 * The number of times the cache has been accessed.
 	 *
 	 * For backward compatibilty, also referenced as global $cache_count.
 	 */
@@ -156,13 +159,23 @@ class Cache
 	 */
 	public function __construct(
 		private DriverInterface $driver,
+		private ?ClockInterface $clock = null,
+
 	) {
 		$this->setPrefix();
 		if ($this->setPrefix()) {
-			$this->driver->setPrefix($this->prefix);
+			$this->driver?->setPrefix($this->prefix);
 		}
 	}
 
+	/**
+	 * new method to test if driver reports it has
+	 * all it needs to be used by the cache
+	 */
+	public function isSupportedDriver(): bool
+	{
+		return $this->driver->isSupported();
+	}
 	/**
 	 * Checks whether we can use the cache method performed by this API.
 	 *
@@ -171,11 +184,12 @@ class Cache
 	 */
 	public function isSupported(bool $test = false): bool
 	{
-		if ($test) {
-			return true;
-		}
+		return $this->driver->isSupported($test);
+		// if ($test) {
+		// 	return true;
+		// }
 
-		return !empty(self::$enable);
+		// return !empty(self::$enable);
 	}
 
 	/**
@@ -398,15 +412,18 @@ class Cache
 	}
 
 	/**
-	 * Get the installed Cache API implementations.
+	 * Get the installed Drivers and suppored drivers
 	 */
 	final public static function detect(): array
 	{
-		$loadedApis = [];
+		$drivers = [];
 
-		$api_classes = new \GlobIterator(self::APIS_FOLDER . '/*.php', \FilesystemIterator::NEW_CURRENT_AND_KEY);
+		$installed_drivers = new \GlobIterator(
+			__DIR__ . 'Driver/*.php',
+			\FilesystemIterator::NEW_CURRENT_AND_KEY|\FilesystemIterator::SKIP_DOTS
+		);
 
-		foreach ($api_classes as $file_path => $file_info) {
+		foreach ($installed_drivers as $file_path => $file_info) {
 			$class_name = $file_info->getBasename('.php');
 			$fully_qualified_class_name = self::APIS_NAMESPACE . $class_name;
 
@@ -414,25 +431,22 @@ class Cache
 				continue;
 			}
 
-			/* @var CacheApiInterface $cache_api */
-			$cache_api = new $fully_qualified_class_name();
+			/* @var DriverInterface $driver */
+			$driver = new $fully_qualified_class_name();
 
 			// Deal with it!
-			if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
+			if (!$driver instanceof DriverInterface || !$driver->isSupported()) {
 				continue;
 			}
 
-			// No Support?  NEXT!
-			if (!$cache_api->isSupported(true)) {
-				continue;
-			}
-
-			$loadedApis[$class_name] = $cache_api;
+			$drivers[] = get_class($driver);
+			// clean up
+			unset($driver);
 		}
 
-		IntegrationHook::call('integrate_load_cache_apis', [&$loadedApis]);
+		IntegrationHook::call('integrate_load_cache_apis', [&$drivers]);
 
-		return $loadedApis;
+		return $drivers;
 	}
 
 	/**

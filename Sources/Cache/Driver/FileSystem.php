@@ -47,8 +47,6 @@ class FileSystem extends AbstractDriver
 	 */
 	public function __construct()
 	{
-		//parent::__construct();
-
 		// Set our default cachedir.
 		$this->setCachedir();
 	}
@@ -70,15 +68,9 @@ class FileSystem extends AbstractDriver
 	/**
 	 * {@inheritDoc}
 	 */
-	public function isSupported(bool $test = false): bool
+	public function isSupported(): bool
 	{
-		$supported = is_writable($this->cachedir);
-
-		if ($test) {
-			return $supported;
-		}
-
-		//return parent::isSupported() && $supported;
+		return is_writable($this->cachedir);
 	}
 
 	/**

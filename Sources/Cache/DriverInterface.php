@@ -76,6 +76,6 @@ interface DriverInterface
 	// SMF specific methods
 	public function setPrefix(string $prefix): void;
 	public function getPrefix(): string;
-	public function isSupported(bool $test = false): bool;
+	public function isSupported(): bool;
 	public function isCacheableValue($value): bool;
 }

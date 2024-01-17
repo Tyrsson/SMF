@@ -25,10 +25,11 @@ spl_autoload_register(function ($class) {
 
 	static $class_map = [
 		// Some special cases.
-		'ReCaptcha\\' => 'ReCaptcha/',
-		'MatthiasMullie\\Minify\\' => 'minify/src/',
-		'MatthiasMullie\\PathConverter\\' => 'minify/path-converter/src/',
-		'Psr\\SimpleCache\\' => 'psr/simple-cache/src/',
+		'ReCaptcha\\' => '/../Libs/ReCaptcha/',
+		'MatthiasMullie\\Minify\\' => '/../Libs/minify/src/',
+		'MatthiasMullie\\PathConverter\\' => '/../Libs/minify/path-converter/src/',
+		'Psr\\Clock\\' => '/../Libs/psr/clock/src/',
+		'Psr\\SimpleCache\\' => '/../Libs/psr/simple-cache/src/',
 		// In general, the SMF namespace maps to $sourcedir.
 		'SMF\\' => '',
 	];

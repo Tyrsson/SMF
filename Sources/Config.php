@@ -15,7 +15,8 @@ declare(strict_types=1);
 
 namespace SMF;
 
-use SMF\Cache\CacheApi;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 
 /**
  * Handles loading and saving SMF's settings, both in Settings.php and database.
@@ -1005,7 +1006,8 @@ class Config
 	public static function reloadModSettings(): void
 	{
 		// We need some caching support, maybe.
-		$cache = Cache\CacheApi::load();
+		//$cache = Cache\CacheApi::load();
+		$cache = (new CacheFactory())();
 
 		// Try to load it from the cache first; it'll never get cached if the setting is off.
 		if ((self::$modSettings = $cache->get(key: 'modSettings', ttl: 90)) == null) {

@@ -40,7 +40,6 @@ class Cache
 	public const APIS_FOLDER = __DIR__ . '/Driver';
 	public const APIS_NAMESPACE = __NAMESPACE__ . '\\APIs\\';
 
-
 	public static $default_driver = FileSystem::class;
 
 	/**
@@ -162,9 +161,8 @@ class Cache
 		private ?ClockInterface $clock = null,
 
 	) {
-		$this->setPrefix();
 		if ($this->setPrefix()) {
-			$this->driver?->setPrefix($this->prefix);
+			$this->driver->setPrefix($this->prefix);
 		}
 		if ($this->driver instanceof CacheableInterface) {
 			$this->driver->connect();

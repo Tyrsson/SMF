@@ -166,6 +166,9 @@ class Cache
 		if ($this->setPrefix()) {
 			$this->driver?->setPrefix($this->prefix);
 		}
+		if ($this->driver instanceof CacheableInterface) {
+			$this->driver->connect();
+		}
 	}
 
 	/**

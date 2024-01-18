@@ -74,8 +74,12 @@ interface DriverInterface
 	public function has(string $key): bool;
 
 	// SMF specific methods
+	public function setTtl(int $ttl = 120): void;
+	public function getTtl(): ?int;
 	public function setPrefix(string $prefix): void;
 	public function getPrefix(): string;
 	public function isSupported(): bool;
+	// we do not set a return type here so the driver can define the needed return
+	public function getVersion();
 	public function isCacheableValue($value): bool;
 }

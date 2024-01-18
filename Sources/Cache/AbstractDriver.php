@@ -17,6 +17,8 @@ abstract class AbstractDriver implements DriverInterface
 	protected string $prefix;
 	// set the SMF default ttl
 	protected ?int $ttl = 120;
+	// used by CacheDirectoryAwareInterface
+	protected ?string $cachedir;
 
 	/**
 	 * Invalidate all cached data.

@@ -42,6 +42,7 @@ class Cache
 
 	public static $default_driver = FileSystem::class;
 
+	public static ?CacheInterface $loadedApi = null;
 	/**
 	 * @var array
 	 *
@@ -60,33 +61,6 @@ class Cache
 	/**************************
 	 * Public static properties
 	 **************************/
-
-	/**
-	 * @var int
-	 *
-	 * Caching level. Values range from 0 to 3.
-	 *
-	 * This is an copy of the $cache_enable setting in Settings.php.
-	 */
-	public static int $enable;
-
-	/**
-	 * @var string
-	 *
-	 * Name of the selected cache engine.
-	 *
-	 * This is an copy of the $cache_accelerator setting in Settings.php.
-	 */
-	public static string $accelerator;
-
-	/**
-	 * @var object|bool
-	 *
-	 * The loaded cache API, or false on failure.
-	 *
-	 * For backward compatibilty, also referenced as global $cacheAPI.
-	 */
-	public static $loadedApi;
 
 	/**
 	 * @var array
@@ -146,7 +120,7 @@ class Cache
 	/**
 	 * @var int The default TTL.
 	 */
-	protected $ttl = 120;
+	protected int $ttl = 120;
 
 	/****************
 	 * Public methods
@@ -158,6 +132,7 @@ class Cache
 	 */
 	public function __construct(
 		private DriverInterface $driver,
+		private int $level,
 		private ?ClockInterface $clock = null,
 	) {
 		if ($this->setPrefix()) {
@@ -185,15 +160,9 @@ class Cache
 	public function isSupported(bool $test = false): bool
 	{
 		return $this->driver->isSupported($test);
-		// if ($test) {
-		// 	return true;
-		// }
-
-		// return !empty(self::$enable);
 	}
 
 	/**
-	 * Sets the cache prefix.
 	 *
 	 * @param string $prefix The prefix to use.
 	 *     If empty, the prefix will be generated automatically.
@@ -201,10 +170,6 @@ class Cache
 	 */
 	public function setPrefix(string $prefix = ''): bool
 	{
-		if (!is_string($prefix)) {
-			$prefix = '';
-		}
-
 		// Use the supplied prefix, if there is one.
 		if (!empty($prefix)) {
 			$this->prefix = $prefix;
@@ -237,6 +202,10 @@ class Cache
 	 */
 	public function getPrefix(): string
 	{
+		// if this is still empty, generate us one for use.
+		if (empty($this->prefix)) {
+			$this->setPrefix();
+		}
 		return $this->prefix;
 	}
 
@@ -246,11 +215,11 @@ class Cache
 	 * @param int $ttl The default TTL
 	 * @return bool If this was successful or not.
 	 */
-	public function setDefaultTTL(int $ttl = 120): bool
+	public function setDefaultTTL(int $ttl = 120): self
 	{
 		$this->ttl = $ttl;
 
-		return true;
+		return $this;
 	}
 
 	/**
@@ -284,9 +253,9 @@ class Cache
 	 *
 	 * @param array $config_vars Additional config_vars, see ManageSettings.php for usage.
 	 */
-	// public function cacheSettings(array &$config_vars): void
-	// {
-	// }
+	public function cacheSettings(array &$config_vars): void
+	{
+	}
 
 	/**
 	 * Gets the latest version of SMF this is compatible with.
@@ -316,6 +285,11 @@ class Cache
 	public function getVersion(): string|bool
 	{
 		return $this->min_smf_version;
+	}
+
+	public function getDriverVersion(): string|int|float
+	{
+		return $this->driver->getVersion();
 	}
 
 	/**
@@ -665,12 +639,12 @@ class Cache
 	public function clear(string $type = ''): bool
 	{
 		// proxy to the driver
-		$this->driver->clear($type);
-
-		IntegrationHook::call('integrate_clean_cache');
-
-		clearstatcache();
-		return true;
+		if ($this->driver->clear($type)) {
+			IntegrationHook::call('integrate_clean_cache');
+			clearstatcache();
+			return true;
+		}
+		return false;
 	}
 
 	public function getMultiple(iterable $keys, mixed $default = null): iterable
@@ -709,8 +683,6 @@ class Cache
 	{
 		return true;
 	}
-
-
 }
 
 // Export properties to global namespace for backward compatibility.

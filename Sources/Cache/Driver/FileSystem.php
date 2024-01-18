@@ -40,7 +40,7 @@ class FileSystem extends AbstractDriver
 	/**
 	 * @var string The path to the current directory.
 	 */
-	private $cachedir = null;
+	protected ?string $cachedir = null;
 
 	/**
 	 * {@inheritDoc}
@@ -51,13 +51,17 @@ class FileSystem extends AbstractDriver
 		$this->setCachedir();
 	}
 
+	public function setTtl(int $ttl = 120): void { }
+
+	public function getTtl(): ?int { }
+
 	public function setPrefix(string $prefix): void { }
 
 	public function getPrefix(): string { }
 
 	public function delete(string $key): bool { }
 
-	public function getMultiple(iterable $keys, ?mixed $default = null): iterable { }
+	public function getMultiple(iterable $keys, mixed $default = null): iterable { }
 
 	public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool { }
 

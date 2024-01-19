@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SMF\Cache;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Cache\Driver;
 use SMF\Clock;
 use SMF\Config;
@@ -13,7 +14,8 @@ use function is_string;
 
 final class CacheFactory
 {
-	private static ?Cache $instance = null;
+
+	private static ?CacheInterface $instance = null;
 
 	/**
 	 *
@@ -40,7 +42,7 @@ final class CacheFactory
 		 */
 		if (
 			isset(self::$instance)
-			&& self::$instance instanceof DriverInterface
+			&& self::$instance instanceof CacheInterface
 			&& $override === null
 		) {
 			return self::$instance;

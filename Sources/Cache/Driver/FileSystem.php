@@ -25,6 +25,7 @@ use SMF\Lang;
 use SMF\Utils;
 
 use function serialize;
+use function unserialize;
 
 if (!defined('SMF')) {
 	die('No direct access...');
@@ -90,11 +91,26 @@ class FileSystem extends AbstractDriver
 
 		// SMF Data returns $value and $expired.  $expired has a unix timestamp of when this expires.
 		if (file_exists($file) && ($raw = $this->readFile($file)) !== false) {
-			if (($value = Utils::jsonDecode($raw, false, 512, 0, false)) !== null && isset($value->expiration) && $value->expiration >= time()) {
-				return $value->value;
-			}
 
-			@unlink($file);
+			try {
+				$value = unserialize($raw, ['allowed_classes' =>  true]);
+				if () {
+
+				} elseif (
+					() !== false
+					&& isset($value->expiration)
+					&& $value->expiration >= time()
+				) {
+					return $value;
+				}
+			} catch (\Throwable $th) {
+				//throw $th;
+			}
+			// if (($value = Utils::jsonDecode($raw, false, 512, 0, false)) !== null && isset($value->expiration) && $value->expiration >= time()) {
+			// 	return $value->value;
+			// }
+
+			unlink($file);
 		}
 
 		return null;
@@ -118,14 +134,14 @@ class FileSystem extends AbstractDriver
 		}
 
 		if ($value instanceof CacheableInterface) {
+			$value->expiration = time() + ($ttl ?? $this->ttl);
 			$cache_data = serialize($value);
 		} else {
-			$cache_data = json_encode(
+			$cache_data = serialize(
 				[
 					'expiration' => time() + ($ttl ?? $this->ttl),
 					'value' => $value,
 				],
-				JSON_NUMERIC_CHECK,
 			);
 		}
 
@@ -133,12 +149,9 @@ class FileSystem extends AbstractDriver
 		// If it fails due to low diskspace, or other, remove the cache file
 		if ($this->writeFile($file, $cache_data) !== strlen($cache_data)) {
 			unlink($file);
-
 			return false;
 		}
-
 		return true;
-
 	}
 
 	/**

@@ -307,85 +307,6 @@ class Cache
 	 ***********************/
 
 	/**
-	 * Try to load up a supported caching method.
-	 * This is saved in $loadedApi if we are not overriding it.
-	 *
-	 * @param string class-string $overrideCache Allows manually specifying a cache accelerator engine.
-	 * @param bool $fallbackSMF Use the default SMF method if the accelerator fails.
-	 * @return ?object An instance of a child class of this class, or false on failure.
-	 */
-	final public static function load(string $overrideCache = '', bool $fallbackSMF = true): ?object
-	{
-		if (!isset(self::$enable)) {
-			self::$enable = min(max((int) Config::$cache_enable, 0), 3);
-		}
-
-		if (!isset(self::$accelerator)) {
-			// todo: update setting creation to pass ApiClass::class
-			self::$accelerator = Config::$cache_accelerator;
-		}
-
-		// Is caching enabled?
-		if (empty(self::$enable) && empty($overrideCache)) {
-			return null;
-		}
-
-		// Not overriding this and we have a cacheAPI, send it back.
-		if (empty($overrideCache) && is_object(self::$loadedApi)) {
-			return self::$loadedApi;
-		}
-
-		if (is_null(self::$loadedApi)) {
-			self::$loadedApi = false;
-		}
-
-		// What accelerator we are going to try.
-		$cache_class_name = !empty(self::$accelerator) ? self::$accelerator : self::APIS_DEFAULT;
-		$fully_qualified_class_name = !empty($overrideCache) ? $overrideCache :
-			self::APIS_NAMESPACE . $cache_class_name;
-
-		// Do some basic tests.
-		$cache_api = false;
-
-		if (class_exists($fully_qualified_class_name)) {
-			$cache_api = new $fully_qualified_class_name();
-
-			// There are rules you know...
-			if (!($cache_api instanceof CacheApiInterface)) {
-				$cache_api = false;
-			}
-
-			// No Support?  NEXT!
-			if ($cache_api && !$cache_api->isSupported()) {
-				// Can we save ourselves?
-				if (!empty($fallbackSMF) && $overrideCache == '' && $cache_class_name !== self::APIS_DEFAULT) {
-					return self::load(self::APIS_NAMESPACE . self::APIS_DEFAULT, false);
-				}
-
-				$cache_api = false;
-			}
-
-			// Connect up to the accelerator.
-			/** @var \SMF\Cache\CacheApiInterface $cache_api */
-			if ($cache_api && $cache_api->connect() === false) {
-				$cache_api = false;
-			}
-
-			// Don't set this if we are overriding the cache.
-			if ($cache_api && empty($overrideCache)) {
-				self::$loadedApi = $cache_api;
-			}
-		}
-
-		if (!$cache_api && !empty($fallbackSMF) && $overrideCache == '' && $cache_class_name !== self::APIS_DEFAULT) {
-			$cache_api = self::load(self::APIS_NAMESPACE . self::APIS_DEFAULT, false);
-		}
-
-		// Allow ?-> nullsafe operator usage
-		return $cache_api instanceof CacheInterface ? $cache_api : null;
-	}
-
-	/**
 	 * Get the installed Drivers and suppored drivers
 	 */
 	final public static function detect(): array
@@ -591,11 +512,8 @@ class Cache
 	/** @inheritDoc */
 	public function set(string $key, mixed $value = null, null|int|DateInterval $ttl = null): bool
 	{
-		if (empty(self::$enable) || empty(self::$loadedApi)) {
-			return false;
-		}
-
 		if (!$this->driver->isCacheableValue($value)) {
+			// todo: replace with correct Lang string
 			throw new InvalidArgumentException(
 				sprintf(
 					'$value must be of type string, int, float, bool, null, array, object received: %s',
@@ -617,23 +535,23 @@ class Cache
 
 		// proxy to the driver
 		//$value = $value === null ? null : Utils::jsonEncode($value);
-		$this->driver->set($key, $value, $ttl);
+		$result = $this->driver->set($key, $value, $ttl);
 
 		if (class_exists(IntegrationHook::class, false)) {
 			// todo: update hook name or transition to events
 			IntegrationHook::call('cache_put_data', [&$key, &$value, &$ttl]);
 		}
 
-		if (isset(Config::$db_show_debug) && Config::$db_show_debug === true) {
+		if (Config::$db_show_debug) {
 			self::$hits[self::$count_hits]['t'] = microtime(true) - $st;
 		}
 
-		return true;
+		return $result;
 	}
 
 	public function delete(string $key): bool
 	{
-		return true;
+		return $this->driver->delete($key);
 	}
 
 	public function clear(string $type = ''): bool

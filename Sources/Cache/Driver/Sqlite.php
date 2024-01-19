@@ -45,7 +45,7 @@ class Sqlite extends AbstractDriver implements ConnectableInterface
 
 	public function __construct()
 	{
-		parent::__construct();
+		//parent::__construct();
 
 		// Set our default cachedir.
 		$this->setCachedir();

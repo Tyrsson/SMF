@@ -265,7 +265,7 @@ class Config
 	 *
 	 * Whether to show debug info.
 	 */
-	public static $db_show_debug;
+	public static bool $db_show_debug = false;
 
 	/**
 	 * @var string
@@ -1053,9 +1053,9 @@ class Config
 				self::$modSettings['attachmentUploadDir'] = !empty($attachmentUploadDir) ? $attachmentUploadDir : self::$modSettings['attachmentUploadDir'];
 			}
 
-			if (!empty(Cache\CacheApi::$enable)) {
-				$cache->set('modSettings', self::$modSettings, 90);
-			}
+			//if (!empty(Cache\CacheApi::$enable)) {
+				$cache?->set('modSettings', self::$modSettings, 90);
+			//}
 		}
 
 		// Going anything further when the files don't match the database can make nasty messes (unless we're actively installing or upgrading)

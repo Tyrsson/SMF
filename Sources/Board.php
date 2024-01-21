@@ -448,7 +448,7 @@ class Board implements \ArrayAccess
 	 */
 	protected static array $parsed_descriptions = [];
 
-	private static ?CacheInterface $cache;
+	private static CacheInterface|Cache|null $cache;
 
 	/****************
 	 * Public methods
@@ -879,7 +879,7 @@ class Board implements \ArrayAccess
 
 		if (Cache::$enable) {
 			if (empty(self::$parsed_descriptions)) {
-				self::$parsed_descriptions = self::$cache?->get('parsed_boards_descriptions', 864000) ?? [];
+				self::$parsed_descriptions = self::$cache?->get(key: 'parsed_boards_descriptions', ttl: 864000) ?? [];
 			}
 
 			if (!isset(self::$parsed_descriptions[$this->id])) {
@@ -2123,7 +2123,7 @@ class Board implements \ArrayAccess
 	public static function getParents(int $id_parent): array
 	{
 		// First check if we have this cached already.
-		if (($boards = self::$cache?->get('board_parents-' . $id_parent, 480)) === null) {
+		if (($boards = self::$cache?->get(key: 'board_parents-' . $id_parent, ttl: 480)) === null) {
 			$boards = [];
 			$original_parent = $id_parent;
 
@@ -2412,7 +2412,7 @@ class Board implements \ArrayAccess
 		$_REQUEST['msg'] = (int) $_REQUEST['msg'];
 
 		// Looking through the message table can be slow, so try using the cache first.
-		if ((Topic::$topic_id = self::$cache?->get('msg_topic-' . $_REQUEST['msg'], 120)) === null) {
+		if ((Topic::$topic_id = self::$cache?->get(key: 'msg_topic-' . $_REQUEST['msg'], ttl: 120)) === null) {
 			$request = Db::$db->query(
 				'',
 				'SELECT id_topic
@@ -2462,9 +2462,9 @@ class Board implements \ArrayAccess
 		// First, try the cache.
 		if (Cache::$enable && (empty(Topic::$topic_id) || Cache::$level >= 3)) {
 			if (!empty(Topic::$topic_id)) {
-				$temp = self::$cache?->get('topic_board-' . Topic::$topic_id, 120);
+				$temp = self::$cache?->get(key: 'topic_board-' . Topic::$topic_id, ttl: 120);
 			} else {
-				$temp = self::$cache?->get('board-' . self::$board_id, 120);
+				$temp = self::$cache?->get(key: 'board-' . self::$board_id, ttl: 120);
 			}
 
 			if (!empty($temp)) {

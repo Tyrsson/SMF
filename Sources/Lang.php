@@ -349,7 +349,7 @@ class Lang
 		$cache = (new CacheFactory())();
 
 		// Either we don't use the cache, or its expired.
-		if (!$use_cache || (Utils::$context['languages'] = $cache?->get('known_languages', Cache::$enable && Cache::$level < 1 ? 86400 : 3600)) == null) {
+		if (!$use_cache || (Utils::$context['languages'] = $cache?->get('known_languages', ttl: Cache::$level < 1 ? 86400 : 3600)) == null) {
 			// If we don't have our theme information yet, let's get it.
 			if (empty(Theme::$current->settings['default_theme_dir'])) {
 				Theme::load(0, false);

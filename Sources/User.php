@@ -845,7 +845,7 @@ class User implements \ArrayAccess
 	 * Internal properties
 	 *********************/
 
-	private static ?CacheInterface $cache;
+	private static CacheInterface|Cache|null $cache;
 
 	/**
 	 * @var bool
@@ -973,7 +973,7 @@ class User implements \ArrayAccess
 			if (
 				Cache::$level >= 2
 				&& !empty(Board::$info->id)
-				&& ($temp = self::$cache?->get('permissions:' . $cache_groups . ':' . Board::$info->id, 240)) != null
+				&& ($temp = self::$cache?->get(key: 'permissions:' . $cache_groups . ':' . Board::$info->id, ttl: 240)) != null
 				&& time() - 240 > Config::$modSettings['settings_updated']
 			) {
 				list($this->permissions) = $temp;
@@ -983,7 +983,7 @@ class User implements \ArrayAccess
 			}
 
 			if (
-				($temp = self::$cache?->get('permissions:' . $cache_groups, 240)) != null
+				($temp = self::$cache?->get(key: 'permissions:' . $cache_groups, ttl: 240)) != null
 				&& time() - 240 > Config::$modSettings['settings_updated']
 			) {
 				list($this->permissions, $removals) = $temp;
@@ -1340,7 +1340,7 @@ class User implements \ArrayAccess
 		$session_id = $this->is_guest ? 'ip' . $this->ip : session_id();
 
 		// Grab the last all-of-SMF-specific log_online deletion time.
-		$do_delete = self::$cache?->get('log_online-update', 30) < time() - 30;
+		$do_delete = self::$cache?->get(key: 'log_online-update', ttl: 30) < time() - 30;
 
 		// If the last click wasn't a long time ago, and there was a last click...
 		if (!empty($_SESSION['log_time']) && $_SESSION['log_time'] >= time() - Config::$modSettings['lastActive'] * 20) {
@@ -2624,7 +2624,7 @@ class User implements \ArrayAccess
 	 */
 	public static function setModerators(): void
 	{
-		if (isset(Board::$info) && ($moderator_group_info = self::$cache?->get('moderator_group_info', 480)) == null) {
+		if (isset(Board::$info) && ($moderator_group_info = self::$cache?->get(key: 'moderator_group_info', ttl: 480)) == null) {
 			$request = Db::$db->query(
 				'',
 				'SELECT group_name, online_color, icons
@@ -5006,7 +5006,7 @@ class User implements \ArrayAccess
 			&& empty($_SESSION['id_msg_last_visit'])
 			&& (
 				empty(Cache::$enable)
-				|| ($_SESSION['id_msg_last_visit'] = self::$cache?->get('user_last_visit-' . self::$my_id, 5 * 3600)) === null
+				|| ($_SESSION['id_msg_last_visit'] = self::$cache?->get(key: 'user_last_visit-' . self::$my_id, ttl: 5 * 3600)) === null
 			)
 		) {
 			// @todo can this be cached?
@@ -5157,7 +5157,7 @@ class User implements \ArrayAccess
 				$_SESSION['robot_check'] = time();
 
 				// We cache the spider data for ten minutes if we can.
-				if (($spider_data = self::$cache?->get('spider_search', 600)) === null) {
+				if (($spider_data = self::$cache?->get(key: 'spider_search', ttl: 600)) === null) {
 					$spider_data = [];
 
 					$request = Db::$db->query(
@@ -5345,7 +5345,7 @@ class User implements \ArrayAccess
 						continue;
 					}
 
-					if (($data = self::$cache?->get('user_settings-' . $id, 60) == null)) {
+					if (($data = self::$cache?->get(key: 'user_settings-' . $id, ttl: 60) == null)) {
 						continue;
 					}
 				} else {
@@ -5353,7 +5353,7 @@ class User implements \ArrayAccess
 						continue;
 					}
 
-					if (($data = self::$cache?->get('member_data-' . $dataset . '-' . $id, 240)) == null) {
+					if (($data = self::$cache?->get(key: 'member_data-' . $dataset . '-' . $id, ttl: 240)) == null) {
 						continue;
 					}
 				}

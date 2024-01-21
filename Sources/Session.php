@@ -15,7 +15,9 @@ declare(strict_types=1);
 
 namespace SMF;
 
-use SMF\Cache\CacheApi;
+use Psr\SimpleCache\CacheInterface;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 use SMF\Db\DatabaseApi as Db;
 
 /**
@@ -237,7 +239,7 @@ class Session implements \SessionHandlerInterface
 			}
 
 			// Use cache setting sessions?
-			if (empty(Config::$modSettings['databaseSession_enable']) && !empty(CacheApi::$enable) && php_sapi_name() != 'cli') {
+			if (empty(Config::$modSettings['databaseSession_enable']) && Cache::$enable && php_sapi_name() != 'cli') {
 				IntegrationHook::call('integrate_session_handlers');
 			}
 

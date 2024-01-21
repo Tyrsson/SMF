@@ -77,7 +77,7 @@ class FileSystem extends AbstractDriver
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get(string $key, mixed $default = null, int $ttl = 120): mixed
+	public function get(string $key, mixed $default = null, ?int $ttl = 120): mixed
 	{
 		$file = sprintf(
 			'%s/data_%s.cache',
@@ -89,9 +89,10 @@ class FileSystem extends AbstractDriver
 		if (file_exists($file) && ($raw = $this->readFile($file)) !== false) {
 
 			try {
-				$value = unserialize($raw, ['allowed_classes' =>  true]);
-				if (is_array($value) && isset($value['expiration']) && $value['expiration'] >= time()) {
-					return $value;
+				//$value = unserialize($raw, ['allowed_classes' =>  true]);
+
+				if (($value = Utils::jsonDecode($raw, false, 512, 0, false)) !== null && isset($value->expiration) && $value->expiration >= time()) {
+					return (array) $value->value;
 				} elseif (
 					$value instanceof CacheableInterface
 					&& isset($value->expiration)
@@ -121,7 +122,7 @@ class FileSystem extends AbstractDriver
 		);
 
 		if ($value === null) {
-			unlink($file);
+			@unlink($file);
 
 			return true;
 		}
@@ -130,7 +131,7 @@ class FileSystem extends AbstractDriver
 			$value->expiration = time() + ($ttl ?? $this->ttl);
 			$cache_data = serialize($value);
 		} else {
-			$cache_data = serialize(
+			$cache_data = json_encode(
 				[
 					'expiration' => time() + ($ttl ?? $this->ttl),
 					'value' => $value,
@@ -141,7 +142,7 @@ class FileSystem extends AbstractDriver
 		// Write out the cache file, check that the cache write was successful; all the data must be written
 		// If it fails due to low diskspace, or other, remove the cache file
 		if ($this->writeFile($file, $cache_data) !== strlen($cache_data)) {
-			unlink($file);
+			@unlink($file);
 			return false;
 		}
 		return true;
@@ -161,7 +162,9 @@ class FileSystem extends AbstractDriver
 		$files = new GlobIterator($this->cachedir . '/' . $type . '*.cache', FilesystemIterator::NEW_CURRENT_AND_KEY);
 
 		foreach ($files as $file => $info) {
-			unlink($this->cachedir . '/' . $file);
+			if ($info->isFile()) {
+				unlink($this->cachedir . '/' . $file);
+			}
 		}
 
 		// Make this invalid.

@@ -398,14 +398,14 @@ class Cache implements CacheInterface
 			4. The cached item has a custom expiration condition evaluating to true.
 			5. The expire time set in the cache item has passed (needed for Zend).
 		*/
-		if (empty(self::$enable) || self::$enable < $level || !is_array($cache_block = self::get($key, 3600)) || (!empty($cache_block['refresh_eval']) && eval($cache_block['refresh_eval'])) || (!empty($cache_block['expires']) && $cache_block['expires'] < time())) {
+		if (self::$enable || self::$level < $level || !is_array($cache_block = self::get(key: $key, ttl: 3600)) || (!empty($cache_block['refresh_eval']) && eval($cache_block['refresh_eval'])) || (!empty($cache_block['expires']) && $cache_block['expires'] < time())) {
 			if (!empty($file) && is_file(Config::$sourcedir . '/' . $file)) {
 				require_once Config::$sourcedir . '/' . $file;
 			}
 
 			$cache_block = call_user_func_array($function, $params);
 
-			if (!empty(self::$enable) && self::$enable >= $level) {
+			if (self::$enable && self::$level >= $level) {
 				$this->set($key, $cache_block, $cache_block['expires'] - time());
 			}
 		}
@@ -474,9 +474,9 @@ class Cache implements CacheInterface
 	 */
 	final public function get(string $key, mixed $default = null, int $ttl = 120): mixed
 	{
-		if (empty(self::$enable) || empty(self::$loadedApi)) {
-			return null;
-		}
+		// if (empty(self::$enable) || empty(self::$loadedApi)) {
+		// 	return null;
+		// }
 
 		self::$count_hits++;
 
@@ -505,7 +505,7 @@ class Cache implements CacheInterface
 
 		if (empty($value)) {
 			return null;
-		} else if (is_string($value)) {
+		} elseif (is_string($value)) {
 			return Utils::jsonDecode($value, true);
 		} else {
 			return $value;

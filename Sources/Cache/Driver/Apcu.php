@@ -47,7 +47,7 @@ class Apcu extends AbstractDriver
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get(string $key, mixed $default = null): mixed
+	public function get(string $key, mixed $default = null, ?int $ttl = 120): mixed
 	{
 		$key = $this->prefix . strtr($key, ':/', '-_');
 

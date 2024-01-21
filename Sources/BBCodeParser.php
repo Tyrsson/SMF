@@ -1215,7 +1215,8 @@ class BBCodeParser
 		}
 
 		// Or maybe we cached the results recently?
-		if (($this->results[$cache_key] = self::$cache?->get($cache_key, 240)) != null) {
+		$temp = self::$cache?->get(key: $cache_key, ttl: 240);
+		if (($this->results[$cache_key] = self::$cache?->get(key: $cache_key, ttl: 240)) != null) {
 			return $this->results[$cache_key];
 		}
 
@@ -1262,7 +1263,7 @@ class BBCodeParser
 			$cache_time = !$this->custom_smileys_enabled ? 7200 : 480;
 
 			// Load the smileys in reverse order by length so they don't get parsed incorrectly.
-			if (($temp = self::$cache?->get('parsing_smileys_' . $this->smiley_set, $cache_time)) == null) {
+			if (($temp = self::$cache->get(key: 'parsing_smileys_' . $this->smiley_set, ttl: $cache_time)) == null) {
 				$smileysfrom = [];
 				$smileysto = [];
 				$smileysdescs = [];
@@ -1288,7 +1289,7 @@ class BBCodeParser
 				}
 				Db::$db->free_result($result);
 
-				self::$cache?->set('parsing_smileys_' . $this->smiley_set, [$smileysfrom, $smileysto, $smileysdescs], $cache_time);
+				self::$cache->set('parsing_smileys_' . $this->smiley_set, [$smileysfrom, $smileysto, $smileysdescs], $cache_time);
 			} else {
 				list($smileysfrom, $smileysto, $smileysdescs) = $temp;
 			}

@@ -140,7 +140,7 @@ class Theme
 	];
 
 	/** Private static */
-	private static ?CacheInterface $cache;
+	private static CacheInterface|Cache|null $cache;
 
 	/**************************
 	 * Public static properties
@@ -949,7 +949,7 @@ class Theme
 
 		// All the buttons we can possibly want and then some.
 		// Try pulling the final list of buttons from cache first.
-		if (($menu_buttons = self::$cache?->get('menu_buttons-' . implode('_', User::$me->groups) . '-' . User::$me->language, $cacheTime)) === null || time() - $cacheTime <= Config::$modSettings['settings_updated']) {
+		if (($menu_buttons = self::$cache?->get(key: 'menu_buttons-' . implode('_', User::$me->groups) . '-' . User::$me->language, ttl: $cacheTime)) === null || time() - $cacheTime <= Config::$modSettings['settings_updated']) {
 			$buttons = [
 				'home' => [
 					'title' => Lang::$txt['home'],
@@ -2244,10 +2244,10 @@ class Theme
 
 		$this->id = $id;
 
-		if (Cache::$enable && Cache::$level >= 2 && ($temp = self::$cache?->get('theme_settings-' . $this->id . ':' . $member, 60)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
+		if (Cache::$enable && Cache::$level >= 2 && ($temp = self::$cache?->get(key: 'theme_settings-' . $this->id . ':' . $member, ttl: 60)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
 			$themeData = $temp;
 			$flag = true;
-		} elseif (($temp = self::$cache?->get('theme_settings-' . $this->id, 90)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
+		} elseif (($temp = self::$cache?->get(key: 'theme_settings-' . $this->id, ttl: 90)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
 			$themeData = $temp;
 
 			// If $member is 0 or -1, we might already have everything we need.

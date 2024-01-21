@@ -205,7 +205,7 @@ class Category implements \ArrayAccess
 	 */
 	protected static array $parsed_descriptions = [];
 
-	private static ?CacheInterface $cache;
+	private static CacheInterface|Cache|null $cache;
 
 	/****************
 	 * Public methods
@@ -227,7 +227,7 @@ class Category implements \ArrayAccess
 
 		if (Cache::$enable) {
 			if (empty(self::$parsed_descriptions)) {
-				self::$parsed_descriptions = self::$cache?->get('parsed_category_descriptions', 864000) ?? [];
+				self::$parsed_descriptions = self::$cache?->get(key: 'parsed_category_descriptions', ttl: 864000) ?? [];
 			}
 
 			if (!isset(self::$parsed_descriptions[$this->id])) {
@@ -621,7 +621,7 @@ class Category implements \ArrayAccess
 			return self::$tree_order;
 		}
 
-		if (($cached = self::$cache?->get('board_order', 86400)) !== null) {
+		if (($cached = self::$cache?->get(key: 'board_order', ttl: 86400)) !== null) {
 			self::$tree_order = $cached;
 
 			return $cached;

@@ -15,7 +15,9 @@ declare(strict_types=1);
 
 namespace SMF;
 
-use SMF\Cache\CacheApi;
+use Psr\SimpleCache\CacheInterface;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 use SMF\Db\DatabaseApi as Db;
 
 /**
@@ -446,6 +448,8 @@ class Board implements \ArrayAccess
 	 */
 	protected static array $parsed_descriptions = [];
 
+	private static ?CacheInterface $cache;
+
 	/****************
 	 * Public methods
 	 ****************/
@@ -702,7 +706,7 @@ class Board implements \ArrayAccess
 
 		// The caches might now be wrong.
 		Config::updateModSettings(['settings_updated' => time()]);
-		CacheApi::clean('data');
+		self::$cache?->clear('data');
 	}
 
 	/**
@@ -873,15 +877,15 @@ class Board implements \ArrayAccess
 			$this->custom['unparsed_description'] = $this->description;
 		}
 
-		if (!empty(CacheApi::$enable)) {
+		if (Cache::$enable) {
 			if (empty(self::$parsed_descriptions)) {
-				self::$parsed_descriptions = CacheApi::get('parsed_boards_descriptions', 864000) ?? [];
+				self::$parsed_descriptions = self::$cache?->get('parsed_boards_descriptions', 864000) ?? [];
 			}
 
 			if (!isset(self::$parsed_descriptions[$this->id])) {
 				self::$parsed_descriptions[$this->id] = BBCodeParser::load()->parse($this->description, false, '', Utils::$context['description_allowed_tags']);
 
-				CacheApi::put('parsed_boards_descriptions', self::$parsed_descriptions, 864000);
+				self::$cache?->set('parsed_boards_descriptions', self::$parsed_descriptions, 864000);
 			}
 
 			$this->description = self::$parsed_descriptions[$this->id];
@@ -1869,7 +1873,7 @@ class Board implements \ArrayAccess
 		Config::updateModSettings(['settings_updated' => time()]);
 
 		// Clean the cache as well.
-		CacheApi::clean('data');
+		self::$cache?->clear('data');
 
 		// Let's do some serious logging.
 		foreach ($boards_to_remove as $id_board) {
@@ -1908,7 +1912,7 @@ class Board implements \ArrayAccess
 		}
 
 		// Empty the board order cache
-		CacheApi::put('board_order', null, -3600);
+		self::$cache?->set('board_order', null, -3600);
 	}
 
 	/**
@@ -2119,7 +2123,7 @@ class Board implements \ArrayAccess
 	public static function getParents(int $id_parent): array
 	{
 		// First check if we have this cached already.
-		if (($boards = CacheApi::get('board_parents-' . $id_parent, 480)) === null) {
+		if (($boards = self::$cache?->get('board_parents-' . $id_parent, 480)) === null) {
 			$boards = [];
 			$original_parent = $id_parent;
 
@@ -2149,7 +2153,7 @@ class Board implements \ArrayAccess
 				}
 			}
 
-			CacheApi::put('board_parents-' . $original_parent, $boards, 480);
+			self::$cache?->set('board_parents-' . $original_parent, $boards, 480);
 		}
 
 		$loaded_boards = [];
@@ -2303,6 +2307,8 @@ class Board implements \ArrayAccess
 	 */
 	protected function __construct(?int $id = null, array $props = [])
 	{
+		self::$cache = (new CacheFactory())();
+
 		// This should already have been set, but just in case...
 		if (!isset(self::$board_id)) {
 			self::$board_id = (int) ($_REQUEST['board'] ?? 0);
@@ -2406,7 +2412,7 @@ class Board implements \ArrayAccess
 		$_REQUEST['msg'] = (int) $_REQUEST['msg'];
 
 		// Looking through the message table can be slow, so try using the cache first.
-		if ((Topic::$topic_id = CacheApi::get('msg_topic-' . $_REQUEST['msg'], 120)) === null) {
+		if ((Topic::$topic_id = self::$cache?->get('msg_topic-' . $_REQUEST['msg'], 120)) === null) {
 			$request = Db::$db->query(
 				'',
 				'SELECT id_topic
@@ -2424,7 +2430,7 @@ class Board implements \ArrayAccess
 				Db::$db->free_result($request);
 
 				// Save save save.
-				CacheApi::put('msg_topic-' . $_REQUEST['msg'], Topic::$topic_id, 120);
+				self::$cache?->set('msg_topic-' . $_REQUEST['msg'], Topic::$topic_id, 120);
 			}
 		}
 
@@ -2454,11 +2460,11 @@ class Board implements \ArrayAccess
 	protected function loadBoardInfo(): void
 	{
 		// First, try the cache.
-		if (!empty(CacheApi::$enable) && (empty(Topic::$topic_id) || CacheApi::$enable >= 3)) {
+		if (Cache::$enable && (empty(Topic::$topic_id) || Cache::$level >= 3)) {
 			if (!empty(Topic::$topic_id)) {
-				$temp = CacheApi::get('topic_board-' . Topic::$topic_id, 120);
+				$temp = self::$cache?->get('topic_board-' . Topic::$topic_id, 120);
 			} else {
-				$temp = CacheApi::get('board-' . self::$board_id, 120);
+				$temp = self::$cache?->get('board-' . self::$board_id, 120);
 			}
 
 			if (!empty($temp)) {
@@ -2594,14 +2600,14 @@ class Board implements \ArrayAccess
 				$this->set($props);
 			}
 
-			if (!empty($this->id) && !empty(CacheApi::$enable) && (empty(Topic::$topic_id) || CacheApi::$enable >= 3)) {
+			if (!empty($this->id) && Cache::$enable && (empty(Topic::$topic_id) || Cache::$level >= 3)) {
 				$to_cache = array_intersect_key((array) $this, array_flip(self::$cache_props['info']));
 
 				if (!empty(Topic::$topic_id)) {
-					CacheApi::put('topic_board-' . Topic::$topic_id, $to_cache, 120);
+					self::$cache?->set('topic_board-' . Topic::$topic_id, $to_cache, 120);
 				}
 
-				CacheApi::put('board-' . self::$board_id, $to_cache, 120);
+				self::$cache?->set('board-' . self::$board_id, $to_cache, 120);
 			}
 		}
 

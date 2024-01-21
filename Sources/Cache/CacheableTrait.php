@@ -11,7 +11,6 @@ use ReflectionProperty;
 trait CacheableTrait
 {
 	public null|int|DateInterval $expiration;
-	public mixed $value;
 
 	public function __serialize(): array
 	{
@@ -32,5 +31,10 @@ trait CacheableTrait
 		foreach ($data as $name => $value) {
 			$this->{$name} = $value;
 		}
+	}
+
+	public function setExpiration(null|int|DateInterval $expiration): void
+	{
+		$this->expiration = $expiration;
 	}
 }

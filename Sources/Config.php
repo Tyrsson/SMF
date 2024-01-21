@@ -1006,11 +1006,10 @@ class Config
 	public static function reloadModSettings(): void
 	{
 		// We need some caching support, maybe.
-		//$cache = Cache\CacheApi::load();
 		$cache = (new CacheFactory())();
 
 		// Try to load it from the cache first; it'll never get cached if the setting is off.
-		if ((self::$modSettings = $cache->get(key: 'modSettings', ttl: 90)) == null) {
+		if ((self::$modSettings = $cache?->get(key: 'modSettings', ttl: 90)) == null) {
 			self::$modSettings = [];
 
 			$request = Db\DatabaseApi::$db->query(
@@ -1053,9 +1052,9 @@ class Config
 				self::$modSettings['attachmentUploadDir'] = !empty($attachmentUploadDir) ? $attachmentUploadDir : self::$modSettings['attachmentUploadDir'];
 			}
 
-			//if (!empty(Cache\CacheApi::$enable)) {
+			if (Cache::$enable) {
 				$cache?->set('modSettings', self::$modSettings, 90);
-			//}
+			}
 		}
 
 		// Going anything further when the files don't match the database can make nasty messes (unless we're actively installing or upgrading)
@@ -1085,7 +1084,7 @@ class Config
 			die('SMF file version (' . SMF_VERSION . ') does not match SMF database version (' . self::$modSettings['smfVersion'] . ').<br>Run the SMF upgrader to fix this.<br><a href="https://wiki.simplemachines.org/smf/Upgrading">More information</a>.');
 		}
 
-		self::$modSettings['cache_enable'] = Cache\CacheApi::$enable;
+		self::$modSettings['cache_enable'] = CacheFactory::$enable;
 
 		// Used to force browsers to download fresh CSS and JavaScript when necessary
 		self::$modSettings['browser_cache'] = !empty(self::$modSettings['browser_cache']) ? (int) self::$modSettings['browser_cache'] : 0;
@@ -1228,7 +1227,7 @@ class Config
 			return;
 		}
 
-		$cache = CacheApi::load();
+		$cache = (new CacheFactory())();
 
 		$to_remove = [];
 

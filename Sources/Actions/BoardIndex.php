@@ -13,8 +13,10 @@
 
 namespace SMF\Actions;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Board;
-use SMF\Cache\CacheApi;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 use SMF\Category;
 use SMF\Config;
 use SMF\IntegrationHook;
@@ -25,7 +27,6 @@ use SMF\Theme;
 use SMF\Time;
 use SMF\User;
 use SMF\Utils;
-use Psr\SimpleCache\CacheInterface;
 
 /**
  * This class shows the board index.
@@ -38,7 +39,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 class BoardIndex implements ActionInterface
 {
-	private CacheInterface|CacheApi $cache;
+	private CacheInterface $cache;
 
 	/****************************
 	 * Internal static properties
@@ -603,7 +604,7 @@ class BoardIndex implements ActionInterface
 	 */
 	protected function __construct()
 	{
-		$this->cache = CacheApi::load();
+		$this->cache = (new CacheFactory())();
 
 		Theme::loadTemplate('BoardIndex');
 		Utils::$context['template_layers'][] = 'boardindex_outer';

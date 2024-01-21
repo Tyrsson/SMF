@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace SMF\Cache\APIs;
+namespace SMF\Cache\Driver;
 
 use SMF\Cache\AbstractDriver;
 use SMF\Cache\ConnectableInterface;
@@ -21,6 +21,8 @@ use SMF\Config;
 use SMF\Lang;
 use SMF\Utils;
 use SQLite3;
+
+use const SQLITE3_ASSOC;
 
 if (!defined('SMF')) {
 	die('No direct access...');
@@ -51,6 +53,10 @@ class Sqlite extends AbstractDriver implements ConnectableInterface
 		$this->setCachedir();
 	}
 
+	public function delete(string $key): bool { }
+
+	public function has(string $key): bool { }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -68,24 +74,24 @@ class Sqlite extends AbstractDriver implements ConnectableInterface
 		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function isSupported(bool $test = false): bool
+	/** @inheritDoc */
+	public function quit(): bool
 	{
-		$supported = class_exists('SQLite3') && is_writable($this->cachedir);
-
-		if ($test) {
-			return $supported;
-		}
-
-		return parent::isSupported() && $supported;
+		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getData(string $key, ?int $ttl = null): mixed
+	public function isSupported(bool $test = false): bool
+	{
+		return class_exists(SQLite3::class) && is_writable($this->cachedir);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get(string $key, mixed $default = null, ?int $ttl = null): mixed
 	{
 		$query = 'SELECT value FROM cache WHERE key = \'' . $this->cacheDB->escapeString($key) . '\' AND ttl >= ' . time() . ' LIMIT 1';
 		$result = $this->cacheDB->query($query);
@@ -102,7 +108,7 @@ class Sqlite extends AbstractDriver implements ConnectableInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function putData(string $key, mixed $value, ?int $ttl = null): mixed
+	public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
 	{
 		$ttl = time() + (int) ($ttl !== null ? $ttl : $this->ttl);
 
@@ -119,7 +125,7 @@ class Sqlite extends AbstractDriver implements ConnectableInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function cleanCache(string $type = ''): bool
+	public function clear(string $type = ''): bool
 	{
 		if ($type == 'expired') {
 			$query = 'DELETE FROM cache WHERE ttl < ' . time() . ';';
@@ -142,7 +148,7 @@ class Sqlite extends AbstractDriver implements ConnectableInterface
 	 */
 	public function cacheSettings(array &$config_vars): void
 	{
-		$class_name = $this->getImplementationClassKeyName();
+		$class_name = $this->getDriverClassName();
 		$class_name_txt_key = strtolower($class_name);
 
 		$config_vars[] = Lang::$txt['cache_' . $class_name_txt_key . '_settings'];
@@ -208,7 +214,7 @@ class Sqlite extends AbstractDriver implements ConnectableInterface
 	 */
 	public function housekeeping(): void
 	{
-		$this->cleanCache('expired');
+		$this->clear('expired');
 	}
 }
 

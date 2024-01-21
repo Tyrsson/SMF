@@ -20,7 +20,7 @@ use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use SMF\BackwardCompatibility;
-use SMF\Cache\Driver\FileSystem;
+use SMF\Cache\Driver;
 use SMF\Config;
 use SMF\IntegrationHook;
 use SMF\Utils;
@@ -33,16 +33,19 @@ use function is_bool;
 use function is_numeric;
 use function sprintf;
 
-class Cache
+class Cache implements CacheInterface
 {
 	use BackwardCompatibility;
 
-	public const APIS_FOLDER = __DIR__ . '/Driver';
-	public const APIS_NAMESPACE = __NAMESPACE__ . '\\APIs\\';
+	public const DRIVER_DIR = __DIR__ . '/Driver';
+	public const DRIVER_NAMESPACE = __NAMESPACE__ . '\\Driver\\';
 
-	public static $default_driver = FileSystem::class;
+	public static $default_driver = Driver\FileSystem::class;
 
-	public static ?CacheInterface $loadedApi = null;
+	public static ?DriverInterface $loadedApi = null;
+
+	public static $enable;
+	public static $level;
 	/**
 	 * @var array
 	 *
@@ -132,7 +135,6 @@ class Cache
 	 */
 	public function __construct(
 		private DriverInterface $driver,
-		private int $level,
 		private ?ClockInterface $clock = null,
 	) {
 		if ($this->setPrefix()) {
@@ -314,13 +316,14 @@ class Cache
 		$drivers = [];
 
 		$installed_drivers = new \GlobIterator(
-			__DIR__ . 'Driver/*.php',
+			self::DRIVER_DIR . '/*.php',
 			\FilesystemIterator::NEW_CURRENT_AND_KEY|\FilesystemIterator::SKIP_DOTS
 		);
 
 		foreach ($installed_drivers as $file_path => $file_info) {
 			$class_name = $file_info->getBasename('.php');
-			$fully_qualified_class_name = self::APIS_NAMESPACE . $class_name;
+			//$fully_qualified_class_name = self::APIS_NAMESPACE . $class_name;
+			$fully_qualified_class_name =  self::DRIVER_NAMESPACE . $class_name;
 
 			if (!class_exists($fully_qualified_class_name)) {
 				continue;

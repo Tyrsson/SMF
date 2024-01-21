@@ -15,7 +15,9 @@ declare(strict_types=1);
 
 namespace SMF;
 
-use SMF\Cache\CacheApi;
+use Psr\SimpleCache\CacheInterface;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 use SMF\Db\DatabaseApi as Db;
 
 /**
@@ -1046,6 +1048,8 @@ class BBCodeParser
 	 */
 	private static $parser;
 
+	private static ?CacheInterface $cache;
+
 	/*****************
 	 * Public methods.
 	 *****************/
@@ -1058,6 +1062,8 @@ class BBCodeParser
 	 */
 	public function __construct()
 	{
+		self::$cache = (new CacheFactory())();
+
 		/**********************
 		 * Set up localization.
 		 **********************/
@@ -1209,7 +1215,7 @@ class BBCodeParser
 		}
 
 		// Or maybe we cached the results recently?
-		if (($this->results[$cache_key] = CacheApi::get($cache_key, 240)) != null) {
+		if (($this->results[$cache_key] = self::$cache?->get($cache_key, 240)) != null) {
 			return $this->results[$cache_key];
 		}
 
@@ -1223,8 +1229,8 @@ class BBCodeParser
 		IntegrationHook::call('integrate_post_parsebbc', [&$this->message, &$this->smileys, &$cache_id, &$this->parse_tags]);
 
 		// Cache the output if it took some time...
-		if (!empty(CacheApi::$enable) && microtime(true) - $cache_t > pow(50, -CacheApi::$enable)) {
-			CacheApi::put($cache_key, $this->message, 240);
+		if (Cache::$enable && microtime(true) - $cache_t > pow(50, - Cache::$level)) {
+			self::$cache?->set($cache_key, $this->message, 240);
 		}
 
 		// Remember for later.
@@ -1256,7 +1262,7 @@ class BBCodeParser
 			$cache_time = !$this->custom_smileys_enabled ? 7200 : 480;
 
 			// Load the smileys in reverse order by length so they don't get parsed incorrectly.
-			if (($temp = CacheApi::get('parsing_smileys_' . $this->smiley_set, $cache_time)) == null) {
+			if (($temp = self::$cache?->get('parsing_smileys_' . $this->smiley_set, $cache_time)) == null) {
 				$smileysfrom = [];
 				$smileysto = [];
 				$smileysdescs = [];
@@ -1282,7 +1288,7 @@ class BBCodeParser
 				}
 				Db::$db->free_result($result);
 
-				CacheApi::put('parsing_smileys_' . $this->smiley_set, [$smileysfrom, $smileysto, $smileysdescs], $cache_time);
+				self::$cache?->set('parsing_smileys_' . $this->smiley_set, [$smileysfrom, $smileysto, $smileysdescs], $cache_time);
 			} else {
 				list($smileysfrom, $smileysto, $smileysdescs) = $temp;
 			}

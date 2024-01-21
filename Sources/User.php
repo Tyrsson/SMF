@@ -15,12 +15,14 @@ declare(strict_types=1);
 
 namespace SMF;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Actions\Admin\ACP;
 use SMF\Actions\Admin\Bans;
 use SMF\Actions\Login2;
 use SMF\Actions\Logout;
 use SMF\Actions\Moderation\ReportedContent;
-use SMF\Cache\CacheApi;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 use SMF\Db\DatabaseApi as Db;
 use SMF\PersonalMessage\PM;
 
@@ -843,6 +845,8 @@ class User implements \ArrayAccess
 	 * Internal properties
 	 *********************/
 
+	private static ?CacheInterface $cache;
+
 	/**
 	 * @var bool
 	 *
@@ -956,7 +960,7 @@ class User implements \ArrayAccess
 			return;
 		}
 
-		if (!empty(CacheApi::$enable)) {
+		if (Cache::$enable) {
 			$cache_groups = $this->groups;
 			asort($cache_groups);
 			$cache_groups = implode(',', $cache_groups);
@@ -967,9 +971,9 @@ class User implements \ArrayAccess
 			}
 
 			if (
-				CacheApi::$enable >= 2
+				Cache::$level >= 2
 				&& !empty(Board::$info->id)
-				&& ($temp = CacheApi::get('permissions:' . $cache_groups . ':' . Board::$info->id, 240)) != null
+				&& ($temp = self::$cache?->get('permissions:' . $cache_groups . ':' . Board::$info->id, 240)) != null
 				&& time() - 240 > Config::$modSettings['settings_updated']
 			) {
 				list($this->permissions) = $temp;
@@ -979,7 +983,7 @@ class User implements \ArrayAccess
 			}
 
 			if (
-				($temp = CacheApi::get('permissions:' . $cache_groups, 240)) != null
+				($temp = self::$cache?->get('permissions:' . $cache_groups, 240)) != null
 				&& time() - 240 > Config::$modSettings['settings_updated']
 			) {
 				list($this->permissions, $removals) = $temp;
@@ -1014,7 +1018,7 @@ class User implements \ArrayAccess
 			Db::$db->free_result($request);
 
 			if (isset($cache_groups)) {
-				CacheApi::put('permissions:' . $cache_groups, [$this->permissions, $removals], 240);
+				self::$cache?->set('permissions:' . $cache_groups, [$this->permissions, $removals], 240);
 			}
 		}
 
@@ -1054,8 +1058,8 @@ class User implements \ArrayAccess
 			$this->permissions = array_diff($this->permissions, $removals);
 		}
 
-		if (isset($cache_groups) && !empty(Board::$info->id) && CacheApi::$enable >= 2) {
-			CacheApi::put('permissions:' . $cache_groups . ':' . Board::$info->id, [$this->permissions, null], 240);
+		if (isset($cache_groups) && !empty(Board::$info->id) && Cache::$level >= 2) {
+			self::$cache?->set('permissions:' . $cache_groups . ':' . Board::$info->id, [$this->permissions, null], 240);
 		}
 
 		// Banned?  Watch, don't touch..
@@ -1336,7 +1340,7 @@ class User implements \ArrayAccess
 		$session_id = $this->is_guest ? 'ip' . $this->ip : session_id();
 
 		// Grab the last all-of-SMF-specific log_online deletion time.
-		$do_delete = CacheApi::get('log_online-update', 30) < time() - 30;
+		$do_delete = self::$cache?->get('log_online-update', 30) < time() - 30;
 
 		// If the last click wasn't a long time ago, and there was a last click...
 		if (!empty($_SESSION['log_time']) && $_SESSION['log_time'] >= time() - Config::$modSettings['lastActive'] * 20) {
@@ -1353,7 +1357,7 @@ class User implements \ArrayAccess
 				);
 
 				// Cache when we did it last.
-				CacheApi::put('log_online-update', time(), 30);
+				self::$cache?->set('log_online-update', time(), 30);
 			}
 
 			Db::$db->query(
@@ -1427,8 +1431,8 @@ class User implements \ArrayAccess
 
 			self::updateMemberData($this->id, ['last_login' => time(), 'member_ip' => $this->ip, 'member_ip2' => $_SERVER['BAN_CHECK_IP'], 'total_time_logged_in' => $this->total_time_logged_in]);
 
-			if (!empty(CacheApi::$enable) && CacheApi::$enable >= 2) {
-				CacheApi::put('user_settings-' . $this->id, self::$profiles[$this->id], 60);
+			if (Cache::$enable && Cache::$level >= 2) {
+				self::$cache?->set('user_settings-' . $this->id, self::$profiles[$this->id], 60);
 			}
 
 			$_SESSION['timeOnlineUpdated'] = time();
@@ -2620,7 +2624,7 @@ class User implements \ArrayAccess
 	 */
 	public static function setModerators(): void
 	{
-		if (isset(Board::$info) && ($moderator_group_info = CacheApi::get('moderator_group_info', 480)) == null) {
+		if (isset(Board::$info) && ($moderator_group_info = self::$cache?->get('moderator_group_info', 480)) == null) {
 			$request = Db::$db->query(
 				'',
 				'SELECT group_name, online_color, icons
@@ -2634,7 +2638,7 @@ class User implements \ArrayAccess
 			$moderator_group_info = Db::$db->fetch_assoc($request);
 			Db::$db->free_result($request);
 
-			CacheApi::put('moderator_group_info', $moderator_group_info, 480);
+			self::$cache?->set('moderator_group_info', $moderator_group_info, 480);
 		}
 
 		foreach (self::$profiles as $id => &$profile) {
@@ -3049,20 +3053,20 @@ class User implements \ArrayAccess
 		Logging::updateStats('postgroups', $members, array_keys($data));
 
 		// Clear any caching?
-		if (!empty(CacheApi::$enable) && CacheApi::$enable >= 2 && !empty($members)) {
+		if (Cache::$enable && Cache::$level >= 2 && !empty($members)) {
 			if (!is_array($members)) {
 				$members = [$members];
 			}
 
 			foreach ($members as $member) {
-				if (CacheApi::$enable >= 3) {
-					CacheApi::put('member_data-profile-' . $member, null, 120);
-					CacheApi::put('member_data-normal-' . $member, null, 120);
-					CacheApi::put('member_data-basic-' . $member, null, 120);
-					CacheApi::put('member_data-minimal-' . $member, null, 120);
+				if (Cache::$level >= 3) {
+					self::$cache?->set('member_data-profile-' . $member, null, 120);
+					self::$cache?->set('member_data-normal-' . $member, null, 120);
+					self::$cache?->set('member_data-basic-' . $member, null, 120);
+					self::$cache?->set('member_data-minimal-' . $member, null, 120);
 				}
 
-				CacheApi::put('user_settings-' . $member, null, 60);
+				self::$cache?->set('user_settings-' . $member, null, 60);
 			}
 		}
 	}
@@ -3231,8 +3235,8 @@ class User implements \ArrayAccess
 			];
 
 			// Remove any cached data if enabled.
-			if (!empty(CacheApi::$enable) && CacheApi::$enable >= 2) {
-				CacheApi::put('user_settings-' . $user[0], null, 60);
+			if (Cache::$enable && Cache::$level >= 2) {
+				self::$cache?->set('user_settings-' . $user[0], null, 60);
 			}
 		}
 
@@ -4534,6 +4538,7 @@ class User implements \ArrayAccess
 	 */
 	protected function __construct(?int $id = null, ?string $dataset = null)
 	{
+		self::$cache = (new CacheFactory())();
 		// No ID given, so load current user.
 		if (!isset($id)) {
 			// Only do this once.
@@ -5000,8 +5005,8 @@ class User implements \ArrayAccess
 			)
 			&& empty($_SESSION['id_msg_last_visit'])
 			&& (
-				empty(CacheApi::$enable)
-				|| ($_SESSION['id_msg_last_visit'] = CacheApi::get('user_last_visit-' . self::$my_id, 5 * 3600)) === null
+				empty(Cache::$enable)
+				|| ($_SESSION['id_msg_last_visit'] = self::$cache?->get('user_last_visit-' . self::$my_id, 5 * 3600)) === null
 			)
 		) {
 			// @todo can this be cached?
@@ -5027,12 +5032,12 @@ class User implements \ArrayAccess
 
 				self::$profiles[self::$my_id]['last_login'] = time();
 
-				if (!empty(CacheApi::$enable) && CacheApi::$enable >= 2) {
-					CacheApi::put('user_settings-' . self::$my_id, self::$profiles[self::$my_id], 60);
+				if (Cache::$enable && Cache::$level >= 2) {
+					self::$cache?->set('user_settings-' . self::$my_id, self::$profiles[self::$my_id], 60);
 				}
 
-				if (!empty(CacheApi::$enable)) {
-					CacheApi::put('user_last_visit-' . self::$my_id, $_SESSION['id_msg_last_visit'], 5 * 3600);
+				if (Cache::$enable) {
+					self::$cache?->set('user_last_visit-' . self::$my_id, $_SESSION['id_msg_last_visit'], 5 * 3600);
 				}
 			}
 		} elseif (empty($_SESSION['id_msg_last_visit'])) {
@@ -5152,7 +5157,7 @@ class User implements \ArrayAccess
 				$_SESSION['robot_check'] = time();
 
 				// We cache the spider data for ten minutes if we can.
-				if (($spider_data = CacheApi::get('spider_search', 600)) === null) {
+				if (($spider_data = self::$cache?->get('spider_search', 600)) === null) {
 					$spider_data = [];
 
 					$request = Db::$db->query(
@@ -5169,7 +5174,7 @@ class User implements \ArrayAccess
 					}
 					Db::$db->free_result($request);
 
-					CacheApi::put('spider_search', $spider_data, 600);
+					self::$cache?->set('spider_search', $spider_data, 600);
 				}
 
 				if (empty($spider_data)) {
@@ -5333,22 +5338,22 @@ class User implements \ArrayAccess
 		}
 
 		// Is the member data cached?
-		if ($type === self::LOAD_BY_ID && !empty(CacheApi::$enable)) {
+		if ($type === self::LOAD_BY_ID && Cache::$enable) {
 			foreach ($users as $key => $id) {
 				if ($id === (self::$my_id ?? NAN)) {
-					if (CacheApi::$enable < 2) {
+					if (Cache::$level < 2) {
 						continue;
 					}
 
-					if (($data = CacheApi::get('user_settings-' . $id, 60) == null)) {
+					if (($data = self::$cache?->get('user_settings-' . $id, 60) == null)) {
 						continue;
 					}
 				} else {
-					if (CacheApi::$enable < 3) {
+					if (Cache::$level < 3) {
 						continue;
 					}
 
-					if (($data = CacheApi::get('member_data-' . $dataset . '-' . $id, 240)) == null) {
+					if (($data = self::$cache?->get('member_data-' . $dataset . '-' . $id, 240)) == null) {
 						continue;
 					}
 				}
@@ -5498,14 +5503,14 @@ class User implements \ArrayAccess
 			// This hook's name is due to historical reasons.
 			IntegrationHook::call('integrate_load_min_user_settings', [&self::$profiles]);
 
-			if ($type === self::LOAD_BY_ID && !empty(CacheApi::$enable)) {
+			if ($type === self::LOAD_BY_ID && Cache::$enable) {
 				foreach ($users as $id) {
 					if ($id === (self::$my_id ?? NAN)) {
-						if (CacheApi::$enable >= 2) {
-							CacheApi::put('user_settings-' . $id, self::$profiles[$id], 60);
+						if (Cache::$level >= 2) {
+							self::$cache?->set('user_settings-' . $id, self::$profiles[$id], 60);
 						}
-					} elseif (CacheApi::$enable >= 3) {
-						CacheApi::put('member_data-' . $dataset . '-' . $id, self::$profiles[$id], 240);
+					} elseif (Cache::$level >= 3) {
+						self::$cache?->set('member_data-' . $dataset . '-' . $id, self::$profiles[$id], 240);
 					}
 				}
 			}

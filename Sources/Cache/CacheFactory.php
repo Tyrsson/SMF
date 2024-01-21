@@ -14,6 +14,7 @@ use function is_string;
 
 final class CacheFactory
 {
+	public static bool $enable = false;
 
 	private static ?CacheInterface $instance = null;
 
@@ -25,14 +26,13 @@ final class CacheFactory
 	 */
 	public function __invoke(DriverInterface|string $override = null, bool $fallback = true): Cache|null
 	{
-		$enabled = (bool) min(max((int) Config::$cache_enable, 0), 3);
-		$level   = min(max((int) Config::$cache_enable, 1), 3);
+		Cache::$enable = (bool) Cache::$level = min(max((int) Config::$cache_enable, 0), 3);
 
 		/**
 		 * If the cache is not enabled, step out now
 		 * return null as to allow nullsafe operator usage in userland
 		 */
-		if (!$enabled) {
+		if (!Cache::$enable) {
 			return null;
 		}
 
@@ -56,7 +56,7 @@ final class CacheFactory
 				$override instanceof DriverInterface
 				&& is_array(get_class($override), $supported_drivers, true)
 			) {
-				self::$instance = new Cache($override, $level);
+				self::$instance = new Cache($override);
 			}
 			/**
 			 * All conditions must be met
@@ -67,25 +67,29 @@ final class CacheFactory
 				&& class_exists($override, false)
 				&& in_array($override, $supported_drivers, true)
 			) {
-				self::$instance = new Cache(new $override(), $level);
+				self::$instance = new Cache(new $override());
 			}
-
 			return self::$instance;
 		}
 
-		// todo: insure we are being returned a class-string string
+		// todo: insure we are being returned a class-string string, currently its only class name
+		$targetDriver = Cache::DRIVER_NAMESPACE . Config::$cache_accelerator;
 		if (
 			$override === null
 			&& isset(Config::$cache_accelerator)
-			&& class_exists(Config::$cache_accelerator, false)
-			&& in_array(Config::$cache_accelerator, $supported_drivers, true)
+			&& class_exists($targetDriver, false)
+			&& in_array(
+				$targetDriver,
+				$supported_drivers,
+				true
+			)
 		) {
-			self::$instance = new Cache(new Config::$cache_accelerator(), $level);
+			self::$instance = new Cache(new $targetDriver());
 		}
 
 		// if we do not have a cache by now, and fallback in true, kick it off
 		if ($fallback && !self::$instance instanceof Cache) {
-			self::$instance = new Cache(new Cache::$default_driver(), $level);
+			self::$instance = new Cache(new Cache::$default_driver());
 		}
 		return self::$instance;
 	}

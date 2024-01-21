@@ -15,9 +15,11 @@ declare(strict_types=1);
 
 namespace SMF;
 
+use Psr\SimpleCache\CacheInterface;
 use SMF\Actions\Agreement;
 use SMF\Actions\Notify;
-use SMF\Cache\CacheApi;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 use SMF\Db\DatabaseApi as Db;
 use SMF\WebFetch\WebFetchApi;
 
@@ -136,6 +138,9 @@ class Theme
 		'notifytopic',
 		'notifyboard',
 	];
+
+	/** Private static */
+	private static ?CacheInterface $cache;
 
 	/**************************
 	 * Public static properties
@@ -944,7 +949,7 @@ class Theme
 
 		// All the buttons we can possibly want and then some.
 		// Try pulling the final list of buttons from cache first.
-		if (($menu_buttons = CacheApi::get('menu_buttons-' . implode('_', User::$me->groups) . '-' . User::$me->language, $cacheTime)) === null || time() - $cacheTime <= Config::$modSettings['settings_updated']) {
+		if (($menu_buttons = self::$cache?->get('menu_buttons-' . implode('_', User::$me->groups) . '-' . User::$me->language, $cacheTime)) === null || time() - $cacheTime <= Config::$modSettings['settings_updated']) {
 			$buttons = [
 				'home' => [
 					'title' => Lang::$txt['home'],
@@ -1147,8 +1152,8 @@ class Theme
 				}
 			}
 
-			if (!empty(CacheApi::$enable) && CacheApi::$enable >= 2) {
-				CacheApi::put('menu_buttons-' . implode('_', User::$me->groups) . '-' . User::$me->language, $menu_buttons, $cacheTime);
+			if (Cache::$enable && Cache::$level >= 2) {
+				self::$cache?->set('menu_buttons-' . implode('_', User::$me->groups) . '-' . User::$me->language, $menu_buttons, $cacheTime);
 			}
 		}
 
@@ -1324,7 +1329,7 @@ class Theme
 				if (
 					!empty($securityFiles)
 					|| (
-						!empty(CacheApi::$enable)
+						Cache::$enable
 						&& !is_writable(Config::$cachedir)
 					)
 					|| !empty($agreement)
@@ -1346,7 +1351,7 @@ class Theme
 						}
 					}
 
-					if (!empty(CacheApi::$enable) && !is_writable(Config::$cachedir)) {
+					if (Cache::$enable && !is_writable(Config::$cachedir)) {
 						echo '
 					<strong>', Lang::$txt['cache_writable'], '</strong><br>';
 					}
@@ -1829,7 +1834,7 @@ class Theme
 		// Use a specific theme?
 		if (isset($_GET['th']) || isset($_GET['id'])) {
 			// Invalidate the current themes cache too.
-			CacheApi::put('theme_settings-' . self::$current->settings['theme_id'] . ':' . User::$me->id, null, 60);
+			self::$cache?->set('theme_settings-' . self::$current->settings['theme_id'] . ':' . User::$me->id, null, 60);
 
 			self::$current->settings['theme_id'] = isset($_GET['th']) ? (int) $_GET['th'] : (int) $_GET['id'];
 		}
@@ -1856,7 +1861,7 @@ class Theme
 			['id_theme', 'id_member', 'variable'],
 		);
 
-		CacheApi::put('theme_settings-' . self::$current->settings['theme_id'] . ':' . User::$me->id, null, 60);
+		self::$cache?->set('theme_settings-' . self::$current->settings['theme_id'] . ':' . User::$me->id, null, 60);
 
 		// Don't output anything...
 		Utils::redirectexit(self::$current->settings['images_url'] . '/blank.png');
@@ -1995,7 +2000,7 @@ class Theme
 						[$id_theme, $_REQUEST['u'], 'theme_variant', $variant],
 						['id_theme', 'id_member', 'variable'],
 					);
-					CacheApi::put('theme_settings-' . $id_theme . ':' . $_REQUEST['u'], null, 90);
+					self::$cache?->set('theme_settings-' . $id_theme . ':' . $_REQUEST['u'], null, 90);
 
 					if (User::$me->id == $_REQUEST['u']) {
 						$_SESSION['id_variant'] = 0;
@@ -2235,12 +2240,14 @@ class Theme
 	 */
 	protected function __construct(int $id = 0, int $member = -1)
 	{
+		self::$cache = (new CacheFactory())();
+
 		$this->id = $id;
 
-		if (!empty(CacheApi::$enable) && CacheApi::$enable >= 2 && ($temp = CacheApi::get('theme_settings-' . $this->id . ':' . $member, 60)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
+		if (Cache::$enable && Cache::$level >= 2 && ($temp = self::$cache?->get('theme_settings-' . $this->id . ':' . $member, 60)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
 			$themeData = $temp;
 			$flag = true;
-		} elseif (($temp = CacheApi::get('theme_settings-' . $this->id, 90)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
+		} elseif (($temp = self::$cache?->get('theme_settings-' . $this->id, 90)) != null && time() - 60 > Config::$modSettings['settings_updated']) {
 			$themeData = $temp;
 
 			// If $member is 0 or -1, we might already have everything we need.
@@ -2303,12 +2310,12 @@ class Theme
 				}
 			}
 
-			if (!empty(CacheApi::$enable) && CacheApi::$enable >= 2) {
-				CacheApi::put('theme_settings-' . $this->id . ':' . $member, $themeData, 60);
+			if (Cache::$enable && Cache::$level >= 2) {
+				self::$cache?->set('theme_settings-' . $this->id . ':' . $member, $themeData, 60);
 			}
 			// Only if we didn't already load that part of the cache...
 			elseif (!isset($temp)) {
-				CacheApi::put('theme_settings-' . $this->id, [-1 => $themeData[-1], 0 => $themeData[0]], 90);
+				self::$cache?->set('theme_settings-' . $this->id, [-1 => $themeData[-1], 0 => $themeData[0]], 90);
 			}
 		}
 

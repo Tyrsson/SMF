@@ -47,7 +47,7 @@ class Apcu extends AbstractDriver
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getData(string $key, ?int $ttl = null): mixed
+	public function get(string $key, mixed $default = null): mixed
 	{
 		$key = $this->prefix . strtr($key, ':/', '-_');
 
@@ -88,6 +88,19 @@ class Apcu extends AbstractDriver
 	{
 		return phpversion('apcu');
 	}
+
+	/** @inheritDoc*/
+	public function has(string $key): bool
+	{
+
+	}
+
+	/** @inheritDoc */
+	public function delete(string $key): bool
+	{
+
+	}
+
 }
 
 ?>

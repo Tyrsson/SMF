@@ -15,7 +15,9 @@ declare(strict_types=1);
 
 namespace SMF;
 
-use SMF\Cache\CacheApi;
+use Psr\SimpleCache\CacheInterface;
+use SMF\Cache\Cache;
+use SMF\Cache\CacheFactory;
 use SMF\Db\DatabaseApi as Db;
 
 /**
@@ -203,6 +205,8 @@ class Category implements \ArrayAccess
 	 */
 	protected static array $parsed_descriptions = [];
 
+	private static ?CacheInterface $cache;
+
 	/****************
 	 * Public methods
 	 ****************/
@@ -221,15 +225,15 @@ class Category implements \ArrayAccess
 			$this->custom['unparsed_description'] = $this->description;
 		}
 
-		if (!empty(CacheApi::$enable)) {
+		if (Cache::$enable) {
 			if (empty(self::$parsed_descriptions)) {
-				self::$parsed_descriptions = CacheApi::get('parsed_category_descriptions', 864000) ?? [];
+				self::$parsed_descriptions = self::$cache?->get('parsed_category_descriptions', 864000) ?? [];
 			}
 
 			if (!isset(self::$parsed_descriptions[$this->id])) {
 				self::$parsed_descriptions[$this->id] = BBCodeParser::load()->parse($this->description, false, '', Utils::$context['description_allowed_tags']);
 
-				CacheApi::put('parsed_category_descriptions', self::$parsed_descriptions, 864000);
+				self::$cache?->set('parsed_category_descriptions', self::$parsed_descriptions, 864000);
 			}
 
 			$this->description = self::$parsed_descriptions[$this->id];
@@ -402,8 +406,8 @@ class Category implements \ArrayAccess
 			$catUpdates[] = 'description = {string:cat_desc}';
 			$catParameters['cat_desc'] = $catOptions['cat_desc'];
 
-			if (!empty(CacheApi::$enable)) {
-				CacheApi::put('parsed_category_descriptions', null);
+			if (Cache::$enable) {
+				self::$cache?->set('parsed_category_descriptions', null);
 			}
 		}
 
@@ -617,7 +621,7 @@ class Category implements \ArrayAccess
 			return self::$tree_order;
 		}
 
-		if (($cached = CacheApi::get('board_order', 86400)) !== null) {
+		if (($cached = self::$cache?->get('board_order', 86400)) !== null) {
 			self::$tree_order = $cached;
 
 			return $cached;
@@ -640,7 +644,7 @@ class Category implements \ArrayAccess
 		}
 		Db::$db->free_result($request);
 
-		CacheApi::put('board_order', self::$tree_order, 86400);
+		self::$cache?->set('board_order', self::$tree_order, 86400);
 
 		return self::$tree_order;
 	}
@@ -796,6 +800,8 @@ class Category implements \ArrayAccess
 	 */
 	protected function __construct(int $id, array $props = [])
 	{
+		self::$cache = (new CacheFactory())();
+
 		// No props provided, so get the standard ones.
 		if (empty($props)) {
 			$request = Db::$db->query(

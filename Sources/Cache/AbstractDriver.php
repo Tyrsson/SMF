@@ -18,7 +18,29 @@ abstract class AbstractDriver implements DriverInterface
 	// set the SMF default ttl
 	protected ?int $ttl = 120;
 	// used by CacheDirectoryAwareInterface
-	protected ?string $cachedir;
+	private ?string $cachedir;
+
+	public function setPrefix(string $prefix): void
+	{
+		$this->prefix = $prefix;
+	}
+
+	public function getPrefix(): string
+	{
+		return $this->prefix;
+	}
+
+	/** @inheritDoc */
+	public function setTtl(int $ttl = 120): void
+	{
+		$this->ttl = $ttl;
+	}
+
+	/** @inheritDoc */
+	public function getTtl(): ?int
+	{
+		return $this->ttl;
+	}
 
 	/**
 	 * Invalidate all cached data.

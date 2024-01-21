@@ -56,10 +56,6 @@ class FileSystem extends AbstractDriver
 
 	public function getTtl(): ?int { }
 
-	public function setPrefix(string $prefix): void { }
-
-	public function getPrefix(): string { }
-
 	public function delete(string $key): bool { }
 
 	public function getMultiple(iterable $keys, mixed $default = null): iterable { }
@@ -94,10 +90,10 @@ class FileSystem extends AbstractDriver
 
 			try {
 				$value = unserialize($raw, ['allowed_classes' =>  true]);
-				if () {
-
+				if (is_array($value) && isset($value['expiration']) && $value['expiration'] >= time()) {
+					return $value;
 				} elseif (
-					() !== false
+					$value instanceof CacheableInterface
 					&& isset($value->expiration)
 					&& $value->expiration >= time()
 				) {
@@ -106,9 +102,6 @@ class FileSystem extends AbstractDriver
 			} catch (\Throwable $th) {
 				//throw $th;
 			}
-			// if (($value = Utils::jsonDecode($raw, false, 512, 0, false)) !== null && isset($value->expiration) && $value->expiration >= time()) {
-			// 	return $value->value;
-			// }
 
 			unlink($file);
 		}

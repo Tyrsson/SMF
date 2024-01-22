@@ -1938,7 +1938,7 @@ class PM implements \ArrayAccess
 		}
 		Db::$db->free_result($request);
 
-		return self::$recent[$paramskey];
+		return self::$recent[$paramskey] ?? [];
 	}
 
 	/**

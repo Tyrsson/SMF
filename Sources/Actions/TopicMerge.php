@@ -13,6 +13,8 @@
  * Original module by Mach8 - We'll never forget you.
  */
 
+declare(strict_types=1);
+
 namespace SMF\Actions;
 
 use SMF\Board;
@@ -168,12 +170,12 @@ class TopicMerge implements ActionInterface
 	 ****************************/
 
 	/**
-	 * @var object
+	 * @var self
 	 *
 	 * An instance of this class.
 	 * This is used by the load() method to prevent mulitple instantiations.
 	 */
-	protected static object $obj;
+	protected static self $obj;
 
 	/****************
 	 * Public methods
@@ -208,7 +210,7 @@ class TopicMerge implements ActionInterface
 	 * - Uses 'merge' sub template of the MoveTopic template.
 	 * - Allows setting a different target board.
 	 */
-	public function index()
+	public function index(): void
 	{
 		if (!isset($_GET['from'])) {
 			ErrorHandler::fatalLang('no_access', false);
@@ -490,6 +492,7 @@ class TopicMerge implements ActionInterface
 			],
 		);
 
+		$num_replies = 0;
 		while ($row = Db::$db->fetch_assoc($request)) {
 			// If this is approved, or is fully unapproved.
 			if ($row['approved'] || !empty($first_msg)) {
@@ -975,6 +978,7 @@ class TopicMerge implements ActionInterface
 		Mail::sendNotifications($id_topic, 'merge');
 
 		// If there's a search index that needs updating, update it...
+		/** @var \SMF\Search\SearchApiInterface $searchAPI */
 		$searchAPI = SearchApi::load();
 
 		if (is_callable([$searchAPI, 'topicMerge'])) {
@@ -1011,7 +1015,7 @@ class TopicMerge implements ActionInterface
 	 * - Accessed via ?action=mergetopics;sa=done.
 	 * - Uses 'merge_done' sub template of the SplitTopics template.
 	 */
-	public function done()
+	public function done(): void
 	{
 		// Make sure the template knows everything...
 		Utils::$context['target_board'] = (int) $_GET['targetboard'];
@@ -1028,9 +1032,9 @@ class TopicMerge implements ActionInterface
 	/**
 	 * Static wrapper for constructor.
 	 *
-	 * @return object An instance of this class.
+	 * @return self An instance of this class.
 	 */
-	public static function load(): object
+	public static function load(): self
 	{
 		if (!isset(self::$obj)) {
 			self::$obj = new self();
@@ -1054,7 +1058,7 @@ class TopicMerge implements ActionInterface
 	 *
 	 * @param array $topics The IDs of the topics to merge
 	 */
-	public static function initiate($topics = [])
+	public static function initiate(array $topics = []): void
 	{
 		self::load();
 		self::$obj->subaction = 'options';
@@ -1068,7 +1072,7 @@ class TopicMerge implements ActionInterface
 	 *
 	 * @param array $topics The IDs of the topics to merge
 	 */
-	public static function mergeExecute($topics = [])
+	public static function mergeExecute(array $topics = []): void
 	{
 		self::load();
 		self::$obj->subaction = !empty($_GET['sa']) && $_GET['sa'] === 'merge' ? 'merge' : 'options';
@@ -1099,7 +1103,7 @@ class TopicMerge implements ActionInterface
 	/**
 	 * Sets up some stuff needed for both $this->options() and $this->merge().
 	 */
-	protected function initOptionsAndMerge()
+	protected function initOptionsAndMerge(): void
 	{
 		// Check the session.
 		User::$me->checkSession('request');
@@ -1148,7 +1152,7 @@ class TopicMerge implements ActionInterface
 	/**
 	 * Sets the value of $this->topics.
 	 */
-	protected function getTopics()
+	protected function getTopics(): void
 	{
 		// Already set.
 		if (count($this->topics) > 1) {
@@ -1169,7 +1173,7 @@ class TopicMerge implements ActionInterface
 	/**
 	 * Gets info about the topics and polls that will be merged.
 	 */
-	protected function getTopicData()
+	protected function getTopicData(): void
 	{
 		$request = Db::$db->query(
 			'',
@@ -1281,7 +1285,7 @@ class TopicMerge implements ActionInterface
 	/**
 	 * Gets the boards in which the user is allowed to merge topics.
 	 */
-	protected function getMergeBoards()
+	protected function getMergeBoards(): void
 	{
 		$this->merge_boards = User::$me->boardsAllowedTo('merge_any');
 

@@ -11,6 +11,8 @@
  * @version 3.0 Alpha 1
  */
 
+declare(strict_types=1);
+
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
@@ -80,12 +82,12 @@ class SearchEngines implements ActionInterface
 	 ****************************/
 
 	/**
-	 * @var object
+	 * @var self
 	 *
 	 * An instance of this class.
 	 * This is used by the load() method to prevent mulitple instantiations.
 	 */
-	protected static object $obj;
+	protected static self $obj;
 
 	/**
 	 * @var string
@@ -774,9 +776,9 @@ class SearchEngines implements ActionInterface
 	/**
 	 * Static wrapper for constructor.
 	 *
-	 * @return object An instance of this class.
+	 * @return self An instance of this class.
 	 */
-	public static function load(): object
+	public static function load(): self
 	{
 		if (!isset(self::$obj)) {
 			self::$obj = new self();
@@ -916,7 +918,7 @@ class SearchEngines implements ActionInterface
 	 * @param string $sort A string indicating how to sort the results
 	 * @return array An array of information about known spiders
 	 */
-	public static function list_getSpiders($start, $items_per_page, $sort): array
+	public static function list_getSpiders(int $start, int $items_per_page, string $sort): array
 	{
 		$spiders = [];
 
@@ -958,7 +960,7 @@ class SearchEngines implements ActionInterface
 		list($numSpiders) = Db::$db->fetch_row($request);
 		Db::$db->free_result($request);
 
-		return $numSpiders;
+		return (int) $numSpiders;
 	}
 
 	/**
@@ -969,7 +971,7 @@ class SearchEngines implements ActionInterface
 	 * @param string $sort A string indicating how to sort the results
 	 * @return array An array of spider log data
 	 */
-	public static function list_getSpiderLogs($start, $items_per_page, $sort): array
+	public static function list_getSpiderLogs(int $start, int $items_per_page, string $sort): array
 	{
 		$spider_logs = [];
 
@@ -1012,7 +1014,7 @@ class SearchEngines implements ActionInterface
 		list($numLogs) = Db::$db->fetch_row($request);
 		Db::$db->free_result($request);
 
-		return $numLogs;
+		return (int) $numLogs;
 	}
 
 	/**
@@ -1024,7 +1026,7 @@ class SearchEngines implements ActionInterface
 	 * @param string $sort A string indicating how to sort the results
 	 * @return array An array of spider statistics info
 	 */
-	public static function list_getSpiderStats($start, $items_per_page, $sort): array
+	public static function list_getSpiderStats(int $start, int $items_per_page, string $sort): array
 	{
 		$spider_stats = [];
 
@@ -1068,7 +1070,7 @@ class SearchEngines implements ActionInterface
 		list($numStats) = Db::$db->fetch_row($request);
 		Db::$db->free_result($request);
 
-		return $numStats;
+		return (int) $numStats;
 	}
 
 	/**

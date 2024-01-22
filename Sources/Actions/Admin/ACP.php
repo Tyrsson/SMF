@@ -11,6 +11,8 @@
  * @version 3.0 Alpha 1
  */
 
+declare(strict_types=1);
+
 namespace SMF\Actions\Admin;
 
 use SMF\Actions\ActionInterface;
@@ -713,12 +715,12 @@ class ACP implements ActionInterface
 	 ****************************/
 
 	/**
-	 * @var object
+	 * @var self
 	 *
 	 * An instance of this class.
 	 * This is used by the load() method to prevent mulitple instantiations.
 	 */
-	protected static object $obj;
+	protected static self $obj;
 
 	/****************
 	 * Public methods
@@ -796,9 +798,9 @@ class ACP implements ActionInterface
 	/**
 	 * Static wrapper for constructor.
 	 *
-	 * @return object An instance of this class.
+	 * @return self An instance of this class.
 	 */
-	public static function load(): object
+	public static function load(): self
 	{
 		if (!isset(self::$obj)) {
 			self::$obj = new self();
@@ -822,7 +824,7 @@ class ACP implements ActionInterface
 	 *
 	 * @param array $config_vars An array of configuration variables
 	 */
-	public static function prepareDBSettingContext(&$config_vars): void
+	public static function prepareDBSettingContext(array &$config_vars): void
 	{
 		Lang::load('Help');
 
@@ -883,7 +885,7 @@ class ACP implements ActionInterface
 							break;
 
 						default:
-							$value = Utils::htmlspecialchars(Config::$modSettings[$config_var[1]]);
+							$value = Utils::htmlspecialchars((string) Config::$modSettings[$config_var[1]]);
 					}
 				} else {
 					// Darn, it's empty. What type is expected?
@@ -1070,7 +1072,7 @@ class ACP implements ActionInterface
 	 *
 	 * @param array $config_vars An array of configuration variables
 	 */
-	public static function saveSettings(&$config_vars): void
+	public static function saveSettings(array &$config_vars): void
 	{
 		SecurityToken::validate('admin-ssc');
 
@@ -1277,11 +1279,9 @@ class ACP implements ActionInterface
 	/**
 	 * Helper function for saving database settings.
 	 *
-	 * @todo see rev. 10406 from 2.1-requests
-	 *
 	 * @param array $config_vars An array of configuration variables
 	 */
-	public static function saveDBSettings(&$config_vars)
+	public static function saveDBSettings(array &$config_vars): void
 	{
 		static $board_list = null;
 
@@ -1416,7 +1416,7 @@ class ACP implements ActionInterface
 	 * @param array $checkFor An array of what to check versions for - can contain one or more of 'gd', 'imagemagick', 'db_server', 'phpa', 'memcache', 'php' or 'server'
 	 * @return array An array of versions (keys are same as what was in $checkFor, values are the versions)
 	 */
-	public static function getServerVersions(array $checkFor)
+	public static function getServerVersions(array $checkFor): array
 	{
 		Lang::load('Admin');
 		Lang::load('ManageSettings');
@@ -1502,7 +1502,7 @@ class ACP implements ActionInterface
 	 * @param array &$versionOptions An array of options. Can contain one or more of 'include_root', 'include_tasks' and 'sort_results'
 	 * @return array An array of file version info.
 	 */
-	public static function getFileVersions(&$versionOptions)
+	public static function getFileVersions(array &$versionOptions): array
 	{
 		// Default place to find the languages would be the default theme dir.
 		$lang_dir = Theme::$current->settings['default_theme_dir'] . '/languages';
@@ -1688,11 +1688,11 @@ class ACP implements ActionInterface
 	/**
 	 * Saves the admin's current preferences to the database.
 	 */
-	public static function updateAdminPreferences()
+	public static function updateAdminPreferences(): void
 	{
 		// This must exist!
 		if (!isset(Utils::$context['admin_preferences'])) {
-			return false;
+			return;
 		}
 
 		// This is what we'll be saving.
@@ -1733,7 +1733,7 @@ class ACP implements ActionInterface
 	 * @param array $replacements An array of items to replace the variables in the template
 	 * @param array $additional_recipients An array of arrays of info for additional recipients. Should have 'id', 'email' and 'name' for each.
 	 */
-	public static function emailAdmins($template, $replacements = [], $additional_recipients = [])
+	public static function emailAdmins(string $template, array $replacements = [], array $additional_recipients = []): void
 	{
 		// Load all members which are effectively admins.
 		$members = User::membersAllowedTo('admin_forum');
@@ -1802,7 +1802,7 @@ class ACP implements ActionInterface
 	 *
 	 * @param string $type What login type is this - can be 'admin' or 'moderate'
 	 */
-	public static function adminLogin($type = 'admin')
+	public static function adminLogin(string $type = 'admin'): void
 	{
 		Lang::load('Admin');
 		Theme::loadTemplate('Login');
@@ -1914,10 +1914,12 @@ class ACP implements ActionInterface
 					$value = Lang::$txt[$value] ?? $value;
 				}
 
-				$value = strtr($value, [
-					'{scripturl}' => Config::$scripturl,
-					'{boardurl}' => Config::$boardurl,
-				]);
+				if (is_string($value)) {
+					$value = strtr($value, [
+						'{scripturl}' => Config::$scripturl,
+						'{boardurl}' => Config::$boardurl,
+					]);	
+				}
 			},
 		);
 
@@ -1968,10 +1970,10 @@ class ACP implements ActionInterface
 	 * If 'value' is an array, calls itself recursively.
 	 *
 	 * @param string $k The keys
-	 * @param string $v The values
+	 * @param string|array $v The values
 	 * @return string 'hidden' HTML form fields, containing key-value pairs
 	 */
-	protected static function adminLogin_outputPostVars(string $k, string $v): string
+	protected static function adminLogin_outputPostVars(string $k, string|array $v): string
 	{
 		if (!is_array($v)) {
 			return "\n" . '<input type="hidden" name="' . Utils::htmlspecialchars($k) . '" value="' . strtr($v, ['"' => '&quot;', '<' => '&lt;', '>' => '&gt;']) . '">';

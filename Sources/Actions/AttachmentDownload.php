@@ -11,6 +11,8 @@
  * @version 3.0 Alpha 1
  */
 
+declare(strict_types=1);
+
 namespace SMF\Actions;
 
 use SMF\Attachment;
@@ -53,19 +55,19 @@ class AttachmentDownload implements ActionInterface
 	 *
 	 * Whether to show the thumbnail image, if one is available.
 	 */
-	public int $showThumb;
+	public bool $showThumb;
 
 	/****************************
 	 * Internal static properties
 	 ****************************/
 
 	/**
-	 * @var object
+	 * @var self
 	 *
 	 * An instance of this class.
 	 * This is used by the load() method to prevent mulitple instantiations.
 	 */
-	protected static object $obj;
+	protected static self $obj;
 
 	/****************
 	 * Public methods
@@ -324,9 +326,9 @@ class AttachmentDownload implements ActionInterface
 	/**
 	 * Static wrapper for constructor.
 	 *
-	 * @return object An instance of this class.
+	 * @return self An instance of this class.
 	 */
-	public static function load(): object
+	public static function load(): self
 	{
 		if (!isset(self::$obj)) {
 			self::$obj = new self();

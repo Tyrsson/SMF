@@ -91,8 +91,12 @@ class FileSystem extends AbstractDriver
 			try {
 				//$value = unserialize($raw, ['allowed_classes' =>  true]);
 
-				if (($value = Utils::jsonDecode($raw, false, 512, 0, false)) !== null && isset($value->expiration) && $value->expiration >= time()) {
-					return (array) $value->value;
+				if (
+					($value = Utils::jsonDecode($raw, false, 512, 0, false)) !== null
+					&& isset($value->expiration)
+					&& $value->expiration >= time()
+				) {
+					return $value->value;
 				} elseif (
 					$value instanceof CacheableInterface
 					&& isset($value->expiration)
@@ -129,7 +133,7 @@ class FileSystem extends AbstractDriver
 
 		if ($value instanceof CacheableInterface) {
 			$value->expiration = time() + ($ttl ?? $this->ttl);
-			$cache_data = serialize($value);
+			//$cache_data = serialize($value);
 		} else {
 			$cache_data = json_encode(
 				[
@@ -268,7 +272,7 @@ class FileSystem extends AbstractDriver
 		return false;
 	}
 
-	private function writeFile(string $file, mixed $string): mixed
+	private function writeFile(string $file, string $string): mixed
 	{
 		if (($fp = fopen($file, 'cb')) !== false) {
 			if (!flock($fp, LOCK_EX)) {

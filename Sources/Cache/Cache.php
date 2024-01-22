@@ -24,6 +24,7 @@ use SMF\Cache\Driver;
 use SMF\Config;
 use SMF\IntegrationHook;
 use SMF\Utils;
+use stdClass;
 use Traversable;
 use TypeError;
 
@@ -398,7 +399,15 @@ class Cache implements CacheInterface
 			4. The cached item has a custom expiration condition evaluating to true.
 			5. The expire time set in the cache item has passed (needed for Zend).
 		*/
-		if (self::$enable || self::$level < $level || !is_array($cache_block = self::get(key: $key, ttl: 3600)) || (!empty($cache_block['refresh_eval']) && eval($cache_block['refresh_eval'])) || (!empty($cache_block['expires']) && $cache_block['expires'] < time())) {
+		if (
+			self::$enable
+			|| self::$level < $level
+			|| !is_array($cache_block = self::get(key: $key, ttl: 3600))
+			|| (!empty($cache_block['refresh_eval'])
+			&& eval($cache_block['refresh_eval']))
+			|| (!empty($cache_block['expires'])
+			&& $cache_block['expires'] < time())
+		) {
 			if (!empty($file) && is_file(Config::$sourcedir . '/' . $file)) {
 				require_once Config::$sourcedir . '/' . $file;
 			}
@@ -499,17 +508,16 @@ class Cache implements CacheInterface
 			}
 		}
 
-		if (class_exists('SMF\\IntegrationHook', false) && isset($value)) {
+		if (class_exists(IntegrationHook::class, false) && isset($value)) {
 			IntegrationHook::call('cache_get_data', [&$key, &$ttl, &$value]);
 		}
 
-		if (empty($value)) {
-			return null;
-		} elseif (is_string($value)) {
-			return Utils::jsonDecode($value, true);
-		} else {
-			return $value;
-		}
+		return match(true) {
+			empty($value) => null,
+			is_string($value) => Utils::jsonDecode($value, true),
+			$value instanceof stdClass => (array) $value,
+			default => $value
+		};
 	}
 
 	/** @inheritDoc */

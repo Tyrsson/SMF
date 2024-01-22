@@ -77,6 +77,7 @@ class BoardIndex implements ActionInterface
 		// Retrieve the latest posts if the theme settings require it.
 		if (!empty(Theme::$current->settings['number_recent_posts'])) {
 			if (Theme::$current->settings['number_recent_posts'] > 1) {
+				// was call to quickGet
 				Utils::$context['latest_posts'] = $this->cache->quickGet('boardindex-latest_posts:' . md5(User::$me->query_wanna_see_board . User::$me->language), '', [$this, 'cache_getLastPosts'], [Theme::$current->settings['number_recent_posts']]);
 			}
 

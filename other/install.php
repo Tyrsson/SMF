@@ -902,7 +902,7 @@ function DatabaseSettings()
 		// Do they meet the install requirements?
 		// @todo Old client, new server?
 		if (version_compare($databases[Config::$db_type]['version'], preg_replace('~^\D*|\-.+?$~', '', $databases[Config::$db_type]['version_check']())) > 0) {
-			$incontext['error'] = Lang::$txt['error_db_too_low'];
+			$incontext['error'] = sprintf(Lang::$txt['error_db_too_low'], $databases[Config::$db_type]['name']);
 
 			return false;
 		}
@@ -1906,9 +1906,13 @@ function fixModSecurity()
 		}
 
 			return true;
-	} elseif (file_exists(Config::$boarddir . '/.htaccess')) {
+	}
+
+	if (file_exists(Config::$boarddir . '/.htaccess')) {
 		return strpos(implode('', file(Config::$boarddir . '/.htaccess')), '<IfModule mod_security.c>') !== false;
-	} elseif (is_writable(Config::$boarddir)) {
+	}
+
+	if (is_writable(Config::$boarddir)) {
 		if ($ht_handle = fopen(Config::$boarddir . '/.htaccess', 'w')) {
 			fwrite($ht_handle, $htaccess_addition);
 			fclose($ht_handle);
